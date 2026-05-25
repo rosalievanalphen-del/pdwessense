@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profile — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest);margin:0;padding:0;min-height:100vh;display:flex;flex-direction:column}
+.header{padding:2rem 2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b7e4c7;font-weight:500;margin-bottom:.35rem}
+.name{font-family:var(--font-head);font-size:2rem;color:var(--white);line-height:1.1;transition:all .2s}
+.role-line{font-size:.875rem;color:#b7e4c7;margin-top:.3rem}
+.level-badge{background:var(--yellow);color:var(--forest);border-radius:12px;padding:1rem 1.25rem;text-align:center;flex-shrink:0;min-width:90px}
+.level-num{font-family:var(--font-head);font-size:1.75rem;color:var(--forest);line-height:1}
+.level-lbl{font-size:.65rem;font-weight:600;color:var(--forest);margin-top:.15rem;text-transform:uppercase;letter-spacing:.06em}
+.level-arr{font-size:.75rem;color:var(--forest);margin-top:.1rem;font-weight:500}
+.progress-section{margin-top:1rem}
+.progress-label{font-size:.75rem;color:#b7e4c7;margin-bottom:.4rem}
+.progress-track{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:var(--yellow);transition:width .6s ease}
+.progress-pct{font-size:.7rem;color:#b7e4c7;margin-top:.3rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08);flex:1}
+.cell{background:var(--forest);padding:1.1rem 1.5rem}
+.cell-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#b7e4c7;font-weight:500;margin-bottom:.45rem}
+.cell input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:var(--white);font-family:var(--font-body);font-size:.875rem;width:100%;outline:none;padding-bottom:.25rem;transition:border .2s}
+.cell input:focus{border-bottom-color:var(--yellow)}
+.cell input::placeholder{color:rgba(255,255,255,.25);font-style:italic}
+.dim-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.2rem}
+.dim-chip{padding:.2rem .6rem;border-radius:99px;font-size:.7rem;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.45);background:transparent}
+.dim-chip.active{background:var(--yellow);color:var(--forest);border-color:var(--yellow)}
+.budget-row{display:flex;align-items:baseline;gap:.5rem;margin-top:.2rem}
+.budget-val{font-family:var(--font-head);font-size:1.3rem;color:var(--white);line-height:1}
+.budget-sub{font-size:.7rem;color:#b7e4c7;line-height:1.3}
+.toggle-row{display:flex;align-items:center;gap:.65rem;margin-top:.35rem}
+.toggle{width:34px;height:19px;border-radius:99px;background:rgba(255,255,255,.15);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--yellow)}
+.toggle-dot{position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;border-radius:50%;background:var(--white);transition:left .2s}
+.toggle.on .toggle-dot{left:18px}
+.toggle-lbl{font-size:.78rem;color:#b7e4c7}
+.fw-link{color:var(--yellow);text-decoration:none;font-size:.8rem;display:inline-block;margin-top:.2rem}
+.fw-link:hover{opacity:.8}
+.footer{padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.08)}
+.footer-hint{font-size:.75rem;color:#b7e4c7;font-style:italic}
+.save-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;transition:filter .2s}
+.save-btn:hover{filter:brightness(.95)}
+.saved{font-size:.75rem;color:var(--yellow);margin-right:.75rem;display:none}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="label">your pd profile</div>
+      <div class="name" id="disp-name">Rosie</div>
+      <div class="role-line" id="disp-role">Junior Service Designer · Service Design track</div>
+    </div>
+    <div class="level-badge">
+      <div class="level-num" id="disp-clevel">L1</div>
+      <div class="level-lbl" id="disp-clevel-name">The Learner</div>
+      <div class="level-arr" id="disp-tlevel">→ L2</div>
+    </div>
+  </div>
+  <div class="progress-section">
+    <div class="progress-label">progress toward target level this year</div>
+    <div class="progress-track"><div class="progress-fill" style="width:5%"></div></div>
+    <div class="progress-pct">5% · 1 goal active · 0 actions done · 0 reflections logged</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="cell">
+    <div class="cell-label">name</div>
+    <input id="f-name" value="Rosie" placeholder="your name" oninput="upd()"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">role</div>
+    <input id="f-role" value="Junior Service Designer" placeholder="your role" oninput="upd()"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">track</div>
+    <input id="f-track" value="Service Design" placeholder="your track" oninput="upd()"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">current level</div>
+    <input id="f-clevel" value="L1 — The Learner" placeholder="L0–L6" oninput="upd()"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">target level this year</div>
+    <input id="f-tlevel" value="L2 — The Practitioner" placeholder="L0–L6" oninput="upd()"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">coach</div>
+    <input id="f-coach" value="" placeholder="fill in"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">capability lead</div>
+    <input id="f-lead" value="" placeholder="fill in"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">joined essense</div>
+    <input id="f-joined" value="" placeholder="month + year"/>
+  </div>
+  <div class="cell">
+    <div class="cell-label">focus dimension</div>
+    <div class="dim-chips">
+      <div class="dim-chip active" onclick="pickDim(this)">Delivery</div>
+      <div class="dim-chip" onclick="pickDim(this)">People</div>
+      <div class="dim-chip" onclick="pickDim(this)">Added value</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="cell-label">weekly pd budget</div>
+    <div class="budget-row">
+      <div class="budget-val">1.6 hrs</div>
+      <div class="budget-sub">= 4% of a<br>40 hr week</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="cell-label">calendar sanctity</div>
+    <div class="toggle-row">
+      <div class="toggle" id="cal-tog" onclick="togCal()"><div class="toggle-dot"></div></div>
+      <div class="toggle-lbl" id="cal-lbl">off — opt in when ready</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="cell-label">career framework</div>
+    <a class="fw-link" href="https://www.notion.so/eidra/Essense-Career-Framework-3611f15509d880738b78ffc6740a7f49" target="_blank">→ open framework ↗</a>
+  </div>
+</div>
+<div class="footer">
+  <div class="footer-hint">fill in once · everything in your Hub personalises from here</div>
+  <div style="display:flex;align-items:center">
+    <span class="saved" id="saved-msg">saved ✓</span>
+    <button class="save-btn" onclick="save()">save profile</button>
+  </div>
+</div>
+<script>
+const levelNames={0:'The Apprentice',1:'The Learner',2:'The Practitioner',3:'The Solver',4:'The Scaler',5:'The Shaper',6:'The Architect'};
+function upd(){
+  const n=document.getElementById('f-name').value||'your name';
+  const r=document.getElementById('f-role').value||'your role';
+  const t=document.getElementById('f-track').value||'your track';
+  document.getElementById('disp-name').textContent=n;
+  document.getElementById('disp-role').textContent=r+' · '+t+' track';
+  const cl=document.getElementById('f-clevel').value||'';
+  const tl=document.getElementById('f-tlevel').value||'';
+  const clNum=cl.match(/L(\d)/)?parseInt(cl.match(/L(\d)/)[1]):1;
+  const tlNum=tl.match(/L(\d)/)?parseInt(tl.match(/L(\d)/)[1]):2;
+  document.getElementById('disp-clevel').textContent='L'+clNum;
+  document.getElementById('disp-clevel-name').textContent=levelNames[clNum]||'';
+  document.getElementById('disp-tlevel').textContent='→ L'+tlNum;
+}
+function pickDim(el){document.querySelectorAll('.dim-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function togCal(){const t=document.getElementById('cal-tog');const l=document.getElementById('cal-lbl');t.classList.toggle('on');l.textContent=t.classList.contains('on')?'on — blocks will be scheduled':'off — opt in when ready';}
+function save(){
+  const d={name:document.getElementById('f-name').value,role:document.getElementById('f-role').value,track:document.getElementById('f-track').value,clevel:document.getElementById('f-clevel').value,tlevel:document.getElementById('f-tlevel').value,coach:document.getElementById('f-coach').value,lead:document.getElementById('f-lead').value,joined:document.getElementById('f-joined').value};
+  try{localStorage.setItem('essense-profile',JSON.stringify(d));}catch(e){}
+  const m=document.getElementById('saved-msg');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);
+}
+function load(){
+  try{const s=localStorage.getItem('essense-profile');if(s){const d=JSON.parse(s);['name','role','track','clevel','tlevel','coach','lead','joined'].forEach(k=>{if(d[k])document.getElementById('f-'+k).value=d[k];});upd();}}catch(e){}
+}
+load();
+</script>
+</body>
+</html>

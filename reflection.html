@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reflection — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
+.step{display:none}.step.active{display:block;animation:up .3s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.dots{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
+.dot.done{background:var(--essense)}.dot.cur{background:var(--forest)}
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.75rem}
+.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s}
+.fmt-btn:hover{border-color:var(--essense);background:var(--bright)}
+.fmt-btn.sel{border-color:var(--forest);background:var(--bright)}
+.fmt-icon{font-size:1.3rem;margin-bottom:.4rem}
+.fmt-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
+.fmt-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.card{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.875rem}
+.card-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
+.card-q{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
+textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:72px;line-height:1.6;outline:none;transition:border .2s}
+textarea:focus{border-color:var(--essense)}
+.energy-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .5rem}
+.energy-row{display:flex;gap:.5rem}
+.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted)}
+.e-btn:hover{border-color:var(--essense);background:var(--bright)}
+.e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
+.e-emoji{font-size:.95rem;display:block;margin-bottom:.2rem}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
+.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.4;cursor:not-allowed}
+.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.output-box{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;font-size:.8rem;color:var(--forest);line-height:1.75;white-space:pre-wrap;margin-bottom:1rem}
+.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin:.875rem 0;line-height:1.6}
+.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.tag{display:inline-block;background:var(--forest);color:var(--bright);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;font-weight:500;margin:.15rem}
+.fmt-feedback{display:flex;gap:.5rem;flex-wrap:wrap}
+.fmt-fb-btn{background:var(--egg);border:1px solid var(--border);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;color:var(--charcoal);transition:all .2s}
+.fmt-fb-btn:hover{border-color:var(--essense);background:var(--bright)}
+.fmt-fb-btn.sel{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.back-link{display:inline-block;font-size:.8rem;color:var(--essense);text-decoration:none;margin-bottom:1.5rem}
+.back-link:hover{color:var(--forest)}
+</style>
+</head>
+<body>
+<a class="back-link" href="./dashboard.html">← back to dashboard</a>
+<div class="dots" id="dots-bar"></div>
+<div class="step active" id="s0">
+  <p class="label">reflection</p>
+  <h1 class="heading">how do you want to reflect today?</h1>
+  <p class="sub">pick a format. the questions adapt to your choice and to what you've been working on.</p>
+  <div class="fmt-grid">
+    <button class="fmt-btn" onclick="pickFmt('written',this)"><div class="fmt-icon">✍️</div><div class="fmt-title">written</div><div class="fmt-desc">structured questions, write at your own pace</div></button>
+    <button class="fmt-btn" onclick="pickFmt('walk',this)"><div class="fmt-icon">🚶</div><div class="fmt-title">walk-and-talk</div><div class="fmt-desc">prompts to say aloud, paste your transcript back</div></button>
+    <button class="fmt-btn" onclick="pickFmt('quick',this)"><div class="fmt-icon">⚡</div><div class="fmt-title">quick check-in</div><div class="fmt-desc">three questions, five minutes, done</div></button>
+    <button class="fmt-btn" onclick="pickFmt('free',this)"><div class="fmt-icon">🌊</div><div class="fmt-title">free-form</div><div class="fmt-desc">write freely, the system structures it for you</div></button>
+  </div>
+  <div class="btn-row"><button class="btn-p" id="btn-start" disabled onclick="goTo(1)">continue →</button></div>
+</div>
+<div class="step" id="s1">
+  <p class="label">reflection · <span id="fmt-name">written</span></p>
+  <h2 class="heading" id="s1-head">what happened since you last reflected?</h2>
+  <p class="sub" id="s1-sub">this anchors the reflection to something real. one sentence is enough.</p>
+  <div class="card"><div class="card-tag">context</div><div class="card-q" id="q1">what have you been working on, and what stood out?</div><textarea id="a1" placeholder="e.g. I attended a blueprinting session and tried mapping the back-stage for the first time…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="goTo(2)">continue →</button><button class="btn-s" onclick="goTo(0)">back</button></div>
+</div>
+<div class="step" id="s2">
+  <p class="label">reflection · what worked</p>
+  <h2 class="heading">what went well — and what gave you energy?</h2>
+  <p class="sub">successes and energy are the signal, not the afterthought.</p>
+  <div class="card"><div class="card-tag">what went well</div><div class="card-q">what are you proud of from this period?</div><textarea id="a2" placeholder="e.g. I asked a question the senior designer said was exactly right…" rows="3"></textarea></div>
+  <div class="card"><div class="card-tag">energy</div><div class="card-q">what energised you? when did you feel most like yourself?</div><textarea id="a3" placeholder="e.g. The moment the back-stage connection clicked…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="goTo(3)">continue →</button><button class="btn-s" onclick="goTo(1)">back</button></div>
+</div>
+<div class="step" id="s3">
+  <p class="label">reflection · what I learned</p>
+  <h2 class="heading">what did you actually learn?</h2>
+  <p class="sub">connect it to your goal if you can. what moved, even slightly?</p>
+  <div class="card"><div class="card-tag">insight</div><div class="card-q">what do you know now that you didn't before?</div><textarea id="a4" placeholder="e.g. Back-stage mapping is about asking the right questions…" rows="3"></textarea></div>
+  <div class="card"><div class="card-tag">try differently</div><div class="card-q">what would you do differently next time?</div><textarea id="a5" placeholder="e.g. I'd prepare a question guide before the session…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="goTo(4)">continue →</button><button class="btn-s" onclick="goTo(2)">back</button></div>
+</div>
+<div class="step" id="s4">
+  <p class="label">reflection · next step</p>
+  <h2 class="heading">what's one thing you'll do next?</h2>
+  <p class="sub">keep it small. a 15-minute action counts.</p>
+  <div class="card"><div class="card-tag">next step</div><div class="card-q">one concrete thing, before your next check-in</div><textarea id="a6" placeholder="e.g. Prepare a back-stage question guide (15 min)…" rows="2"></textarea></div>
+  <div class="energy-label">how are you feeling after reflecting?</div>
+  <div class="energy-row">
+    <button class="e-btn" onclick="pickEnergy('energised',this)"><span class="e-emoji">🔋</span>energised</button>
+    <button class="e-btn" onclick="pickEnergy('neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
+    <button class="e-btn" onclick="pickEnergy('drained',this)"><span class="e-emoji">🪫</span>drained</button>
+    <button class="e-btn" onclick="pickEnergy('surprised',this)"><span class="e-emoji">✨</span>surprised</button>
+  </div>
+  <div class="btn-row" style="margin-top:1.25rem"><button class="btn-y" onclick="buildOutput()">save reflection →</button><button class="btn-s" onclick="goTo(3)">back</button></div>
+</div>
+<div class="step" id="s5">
+  <p class="label">reflection saved</p>
+  <h2 class="heading">here's your reflection</h2>
+  <p class="sub">copy this into Notion, or paste it into Claude with the save prompt from the Agent flows page.</p>
+  <div class="output-box" id="out-text"></div>
+  <div style="margin-bottom:1rem"><span style="font-size:.8rem;color:var(--muted);margin-right:.5rem">linked goal</span><span class="tag">Journey & Blueprinting L1→L2</span></div>
+  <div class="insight" id="out-insight"></div>
+  <div style="margin:1.1rem 0 .5rem;font-size:.8rem;color:var(--muted)">did this format work for you?</div>
+  <div class="fmt-feedback">
+    <button class="fmt-fb-btn" onclick="fbPick(this)">do this again</button>
+    <button class="fmt-fb-btn" onclick="fbPick(this)">it was fine</button>
+    <button class="fmt-fb-btn" onclick="fbPick(this)">try something else</button>
+  </div>
+  <div class="btn-row" style="margin-top:1.5rem">
+    <button class="btn-y" onclick="copyOutput()">copy to clipboard</button>
+    <button class="btn-s" onclick="resetAll()">new reflection</button>
+    <a class="btn-s" href="./dashboard.html" style="text-decoration:none;display:inline-flex;align-items:center">← dashboard</a>
+  </div>
+</div>
+<script>
+let fmt='',energy='',totalSteps=5;
+const stepIds=['s0','s1','s2','s3','s4','s5'];
+function buildDots(){
+  const bar=document.getElementById('dots-bar');bar.innerHTML='';
+  for(let i=0;i<totalSteps;i++){const d=document.createElement('div');d.className='dot';d.id='d'+i;bar.appendChild(d);}
+}
+function updateDots(cur){for(let i=0;i<totalSteps;i++){const d=document.getElementById('d'+i);if(d)d.className='dot'+(i<cur?' done':i===cur?' cur':'');}}
+function goTo(n){stepIds.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});const t=document.getElementById('s'+n);if(t){t.classList.add('active');updateDots(n);}window.scrollTo({top:0,behavior:'smooth'});}
+function pickFmt(f,el){fmt=f;document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');document.getElementById('btn-start').disabled=false;const names={written:'written',walk:'walk-and-talk',quick:'quick check-in',free:'free-form'};document.getElementById('fmt-name').textContent=names[f]||f;if(f==='quick'){totalSteps=4;document.getElementById('s1-head').textContent='what stood out this week?';}else{totalSteps=5;document.getElementById('s1-head').textContent='what happened since you last reflected?';}buildDots();updateDots(0);}
+function pickEnergy(e,el){energy=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function buildOutput(){
+  const emojiMap={energised:'🔋',neutral:'⚖️',drained:'🪫',surprised:'✨'};
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const get=id=>document.getElementById(id)?.value||'—';
+  const body=`reflection · ${date}\nformat: ${fmt} · energy: ${emojiMap[energy]||'—'} ${energy}\n\ncontext\n${get('a1')}\n\nwhat went well\n${get('a2')}\n\nwhat energised me\n${get('a3')}\n\nwhat I learned\n${get('a4')}\n\nwhat to try differently\n${get('a5')}\n\nnext step\n${get('a6')}\n\nlinked goal: Journey & Blueprinting L1→L2`;
+  document.getElementById('out-text').textContent=body;
+  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. copy this and paste into your Reflections database in Notion, or use the save prompt from the Agent flows page.';
+  goTo(5);
+}
+function fbPick(el){document.querySelectorAll('.fmt-fb-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function copyOutput(){const text=document.getElementById('out-text').textContent;navigator.clipboard.writeText(text).then(()=>alert('copied to clipboard'));}
+function resetAll(){fmt='';energy='';document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));document.querySelectorAll('textarea').forEach(t=>t.value='');document.getElementById('btn-start').disabled=true;totalSteps=5;buildDots();goTo(0);}
+buildDots();updateDots(0);
+</script>
+</body>
+</html>

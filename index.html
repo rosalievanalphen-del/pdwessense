@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Essense PD System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.wrap{max-width:560px;width:100%;text-align:center}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.75rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:2rem;color:var(--forest);margin-bottom:.5rem}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:2.5rem;line-height:1.6}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:2rem}
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.25rem;text-decoration:none;color:var(--charcoal);transition:all .2s;text-align:left;display:block}
+.card:hover{border-color:var(--essense);box-shadow:0 4px 16px rgba(4,69,36,.08);transform:translateY(-1px)}
+.card-icon{font-size:1.5rem;margin-bottom:.5rem}
+.card-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.25rem}
+.card-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.footer{font-size:.75rem;color:var(--muted);margin-top:1.5rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="label">essense pd system</p>
+  <h1 class="heading">the invisible agent</h1>
+  <p class="sub">personal development that feels like a byproduct of your work, not extra to it. open these tools from your Notion Hub.</p>
+  <div class="grid">
+    <a class="card" href="./dashboard.html"><div class="card-icon">📊</div><div class="card-title">dashboard</div><div class="card-desc">time budget, goal roadmap, and reflection insights at a glance</div></a>
+    <a class="card" href="./reflection.html"><div class="card-icon">🌀</div><div class="card-title">reflect now</div><div class="card-desc">choose your format — written, walk, quick check-in, or free-form</div></a>
+    <a class="card" href="./tracker.html"><div class="card-icon">🧱</div><div class="card-title">action tracker</div><div class="card-desc">mark today's micro-actions done and log energy and time</div></a>
+    <a class="card" href="./coach.html"><div class="card-icon">🤝</div><div class="card-title">coach prep</div><div class="card-desc">auto-generated prep for your next coaching session</div></a>
+    <a class="card" href="./breakdown.html"><div class="card-icon">🎯</div><div class="card-title">goal breakdown</div><div class="card-desc">turn a big yearly goal into approved, doable sub-goals</div></a>
+    <a class="card" href="./growth.html"><div class="card-icon">🌱</div><div class="card-title">growth over time</div><div class="card-desc">your development trajectory across the career framework, year by year</div></a>
+  </div>
+  <div class="footer">essense · prototype · all data is private unless you choose to share</div>
+</div>
+</body>
+</html>

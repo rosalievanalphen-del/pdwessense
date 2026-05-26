@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coach Overview — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;--good:#52b788;--warn:#e9a44b;--alert:#e2796a}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:840px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:1.55rem;color:var(--forest);margin-bottom:.4rem}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.divider{height:1px;background:var(--border);margin:1.75rem 0}
+.coach-header{background:var(--forest);color:var(--bright);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.75rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.ch-name{font-family:var(--font-head);font-size:1.3rem;color:var(--white);line-height:1}
+.ch-role{font-size:.8rem;color:var(--bright);margin-top:.2rem}
+.ch-stats{display:flex;gap:1.25rem;flex-wrap:wrap}
+.ch-stat{text-align:center}
+.ch-stat-num{font-family:var(--font-head);font-size:1.6rem;color:var(--yellow);line-height:1}
+.ch-stat-lbl{font-size:.7rem;color:var(--bright);margin-top:.15rem;text-transform:uppercase;letter-spacing:.05em}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem}
+.section-title{font-family:var(--font-head);font-size:1.05rem;color:var(--forest)}
+.coachee-card{background:var(--egg);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:.875rem;transition:all .2s}
+.coachee-card:hover{border-color:var(--essense);box-shadow:0 4px 14px rgba(4,69,36,.06)}
+.coachee-card.flag{border-left:4px solid var(--warn)}
+.coachee-card.alert{border-left:4px solid var(--alert)}
+.coachee-card.good{border-left:4px solid var(--good)}
+.cc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.65rem;flex-wrap:wrap}
+.cc-identity{flex:1;min-width:200px}
+.cc-name{font-size:1rem;font-weight:500;color:var(--charcoal);line-height:1.2;margin-bottom:.2rem}
+.cc-role{font-size:.75rem;color:var(--muted)}
+.cc-status{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
+.cc-status-dot{width:8px;height:8px;border-radius:50%}
+.cc-status-dot.good{background:var(--good)}
+.cc-status-dot.flag{background:var(--warn)}
+.cc-status-dot.alert{background:var(--alert)}
+.cc-status-text{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.cc-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;margin-top:.75rem}
+.cc-metric{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.55rem .65rem}
+.cc-metric-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.2rem}
+.cc-metric-val{font-family:var(--font-head);font-size:1rem;color:var(--forest);line-height:1}
+.cc-metric-sub{font-size:.65rem;color:var(--muted);margin-top:.1rem}
+.cc-summary{font-size:.78rem;color:var(--charcoal);background:var(--white);border-radius:9px;padding:.6rem .85rem;border-left:3px solid var(--essense);margin-top:.875rem;line-height:1.5;font-style:italic}
+.cc-summary strong{color:var(--forest);font-style:normal}
+.cc-actions{display:flex;gap:.5rem;margin-top:.875rem;flex-wrap:wrap}
+.cc-act{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:.4rem .85rem;font-family:var(--font-body);font-size:.72rem;cursor:pointer;color:var(--charcoal);transition:all .2s;text-decoration:none;display:inline-block}
+.cc-act:hover{border-color:var(--essense);background:var(--bright);color:var(--forest)}
+.cc-act.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
+.cc-act.primary{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.cc-act.primary:hover{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.upcoming-strip{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.us-text{flex:1}
+.us-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:500;margin-bottom:.2rem}
+.us-title{font-family:var(--font-head);font-size:1rem;color:var(--forest)}
+.us-sub{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
+.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.privacy-note{background:var(--egg);border-radius:10px;padding:.75rem 1rem;font-size:.75rem;color:var(--muted);line-height:1.5;margin-top:1.5rem;display:flex;gap:.6rem;align-items:flex-start}
+.privacy-icon{font-size:1rem;flex-shrink:0}
+</style>
+</head>
+<body>
+<p class="label">coach view</p>
+<h1 class="heading">your coachees</h1>
+<p class="sub">overview of the people you coach. tap a card to see their full profile, prep for upcoming sessions, or send a session summary.</p>
+
+<div class="coach-header">
+  <div>
+    <div class="ch-name">Coach view — Sander</div>
+    <div class="ch-role">Senior coach · Service Design lead</div>
+  </div>
+  <div class="ch-stats">
+    <div class="ch-stat"><div class="ch-stat-num">3</div><div class="ch-stat-lbl">coachees</div></div>
+    <div class="ch-stat"><div class="ch-stat-num">2</div><div class="ch-stat-lbl">sessions this week</div></div>
+    <div class="ch-stat"><div class="ch-stat-num">1</div><div class="ch-stat-lbl">needs attention</div></div>
+  </div>
+</div>
+
+<div class="upcoming-strip">
+  <div class="us-text">
+    <div class="us-label">next session</div>
+    <div class="us-title">Tuesday 3 June · 14:00 · with Rosie</div>
+    <div class="us-sub">9 days away · Google Meet · Rosie has prepared topics</div>
+  </div>
+  <a class="btn-y" href="https://pdwessense.vercel.app/coach.html" target="_blank">open her prep ↗</a>
+</div>
+
+<div class="section-head">
+  <div class="section-title">all coachees</div>
+  <span style="font-size:.75rem;color:var(--muted)">sorted by next session</span>
+</div>
+
+<div class="coachee-card flag">
+  <div class="cc-head">
+    <div class="cc-identity">
+      <div class="cc-name">Rosie</div>
+      <div class="cc-role">Junior Service Designer · L1 → L2 · joined 2024</div>
+    </div>
+    <div class="cc-status">
+      <span class="cc-status-dot flag"></span>
+      <span class="cc-status-text">needs activation</span>
+    </div>
+  </div>
+  <div class="cc-metrics">
+    <div class="cc-metric"><div class="cc-metric-lbl">active goals</div><div class="cc-metric-val">1</div><div class="cc-metric-sub">0% complete</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">actions done</div><div class="cc-metric-val">0</div><div class="cc-metric-sub">3 ready</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">reflections</div><div class="cc-metric-val">1</div><div class="cc-metric-sub">last 30 days</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">energy avg</div><div class="cc-metric-val">🪫</div><div class="cc-metric-sub">low</div></div>
+  </div>
+  <div class="cc-summary">
+    <strong>since last session:</strong> Rosie set Journey & Blueprinting L1→L2 as her main goal. She's done the goal breakdown but hasn't started any of the 3 sub-actions. One reflection logged showed low energy. Worth opening with <em>"what's making it hard to start?"</em>
+  </div>
+  <div class="cc-actions">
+    <a class="cc-act primary" href="https://pdwessense.vercel.app/coach.html" target="_blank">open prep doc</a>
+    <button class="cc-act yellow" onclick="scheduleMeeting('Rosie')">schedule session</button>
+    <button class="cc-act" onclick="sendSummary('Rosie')">send overview to her</button>
+    <a class="cc-act" href="https://www.notion.so/36a1f15509d8815cac90e602f49973bf" target="_blank">view her Hub ↗</a>
+  </div>
+</div>
+
+<div class="coachee-card good">
+  <div class="cc-head">
+    <div class="cc-identity">
+      <div class="cc-name">Pieter</div>
+      <div class="cc-role">Senior CX Consultant · L3 → L4 · joined 2021</div>
+    </div>
+    <div class="cc-status">
+      <span class="cc-status-dot good"></span>
+      <span class="cc-status-text">on track</span>
+    </div>
+  </div>
+  <div class="cc-metrics">
+    <div class="cc-metric"><div class="cc-metric-lbl">active goals</div><div class="cc-metric-val">2</div><div class="cc-metric-sub">avg 45%</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">actions done</div><div class="cc-metric-val">8</div><div class="cc-metric-sub">last 30 days</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">reflections</div><div class="cc-metric-val">4</div><div class="cc-metric-sub">consistent</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">energy avg</div><div class="cc-metric-val">🔋🔋</div><div class="cc-metric-sub">good</div></div>
+  </div>
+  <div class="cc-summary">
+    <strong>since last session:</strong> Pieter's been steady — both goals advancing, regular reflections, good energy. Next session can be lighter: check in on stakeholder management goal (could be ready for L4 stretch), celebrate progress on facilitation.
+  </div>
+  <div class="cc-actions">
+    <a class="cc-act primary" href="#" onclick="alert('Coach prep for Pieter — would open his prep doc in production');return false;">open prep doc</a>
+    <button class="cc-act yellow" onclick="scheduleMeeting('Pieter')">schedule session</button>
+    <button class="cc-act" onclick="sendSummary('Pieter')">send overview to him</button>
+  </div>
+</div>
+
+<div class="coachee-card alert">
+  <div class="cc-head">
+    <div class="cc-identity">
+      <div class="cc-name">Mira</div>
+      <div class="cc-role">Mid Service Designer · L2 → L3 · joined 2022</div>
+    </div>
+    <div class="cc-status">
+      <span class="cc-status-dot alert"></span>
+      <span class="cc-status-text">no contact 5 weeks</span>
+    </div>
+  </div>
+  <div class="cc-metrics">
+    <div class="cc-metric"><div class="cc-metric-lbl">active goals</div><div class="cc-metric-val">3</div><div class="cc-metric-sub">2 stalled</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">actions done</div><div class="cc-metric-val">1</div><div class="cc-metric-sub">last 30 days</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">reflections</div><div class="cc-metric-val">0</div><div class="cc-metric-sub">none recent</div></div>
+    <div class="cc-metric"><div class="cc-metric-lbl">energy avg</div><div class="cc-metric-val">—</div><div class="cc-metric-sub">no data</div></div>
+  </div>
+  <div class="cc-summary">
+    <strong>since last session:</strong> Mira has gone quiet — no reflections in 5 weeks, only 1 action done, 2 goals stalled. Could be a busy project or could be disengagement. Reach out with a low-pressure check-in: <em>"hey, want to grab 20 min before next month?"</em>
+  </div>
+  <div class="cc-actions">
+    <a class="cc-act primary" href="#" onclick="alert('Coach prep for Mira — would open her prep doc');return false;">open prep doc</a>
+    <button class="cc-act yellow" onclick="scheduleMeeting('Mira')">schedule check-in</button>
+    <button class="cc-act" onclick="sendSummary('Mira')">send caring nudge</button>
+  </div>
+</div>
+
+<div class="insight">
+  <span class="arrow">→</span>across your 3 coachees: 1 needs activation help, 1 is steady and ready for stretch, 1 may need a low-pressure outreach. balance support, challenge, and care this month.
+</div>
+
+<div class="privacy-note">
+  <span class="privacy-icon">🔒</span>
+  <span>this view shows aggregated patterns only. you cannot see your coachees' raw reflections, feedback, or private notes unless they explicitly share. respect their boundary.</span>
+</div>
+
+<script>
+function scheduleMeeting(name){
+  const url='https://calendar.google.com/calendar/u/0/r/eventedit?text='+encodeURIComponent('Coaching session — '+name)+'&details='+encodeURIComponent('30 min coaching session.\n\nUse the prep doc: https://pdwessense.vercel.app/coach.html');
+  window.open(url,'_blank');
+}
+function sendSummary(name){
+  const messages={
+    'Rosie':'Hi Rosie,\n\nQuick note before our next session — I saw you set Journey & Blueprinting as your main goal and broke it into 5 sub-goals. Brilliant. Before we meet, no pressure, but if you can:\n\n1. Try sub-goal 1 (15 min reading)\n2. Note what felt hard, even if nothing happened\n\nWe\'ll talk about what\'s making it hard to start.\n\n— Sander',
+    'Pieter':'Hi Pieter,\n\nGreat momentum this month. For our next session I\'d like to spend most of the time on your stakeholder goal — feels like you\'re close to L4 territory there. Bring one stakeholder you\'re struggling with.\n\n— Sander',
+    'Mira':'Hi Mira,\n\nIt\'s been a few weeks. No pressure on the PD front — these things ebb and flow with project load. Want to grab 20 min before the end of the month, just to catch up? Nothing prepared needed.\n\n— Sander'
+  };
+  const msg=messages[name]||'';
+  navigator.clipboard.writeText(msg).then(()=>{
+    alert('Message for '+name+' copied to clipboard. Paste into email or Slack.');
+  });
+}
+</script>
+</body>
+</html>

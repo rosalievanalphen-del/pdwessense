@@ -1,153 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reflection — Essense PD</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflectie — Essense PD</title>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
-.step{display:none}.step.active{display:block;animation:up .3s ease}
-@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
-.dots{display:flex;gap:.5rem;margin-bottom:1.5rem}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
-.dot.done{background:var(--essense)}.dot.cur{background:var(--forest)}
-.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.75rem}
-.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s}
-.fmt-btn:hover{border-color:var(--essense);background:var(--bright)}
-.fmt-btn.sel{border-color:var(--forest);background:var(--bright)}
-.fmt-icon{font-size:1.3rem;margin-bottom:.4rem}
-.fmt-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
-.fmt-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
-.card{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.875rem}
-.card-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
-.card-q{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
-textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:72px;line-height:1.6;outline:none;transition:border .2s}
-textarea:focus{border-color:var(--essense)}
-.energy-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .5rem}
-.energy-row{display:flex;gap:.5rem}
-.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted)}
-.e-btn:hover{border-color:var(--essense);background:var(--bright)}
-.e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
-.e-emoji{font-size:.95rem;display:block;margin-bottom:.2rem}
-.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
-.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
-.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.4;cursor:not-allowed}
-.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer}
-.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
-.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
-.output-box{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;font-size:.8rem;color:var(--forest);line-height:1.75;white-space:pre-wrap;margin-bottom:1rem}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin:.875rem 0;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
-.tag{display:inline-block;background:var(--forest);color:var(--bright);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;font-weight:500;margin:.15rem}
-.fmt-feedback{display:flex;gap:.5rem;flex-wrap:wrap}
-.fmt-fb-btn{background:var(--egg);border:1px solid var(--border);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;color:var(--charcoal);transition:all .2s}
-.fmt-fb-btn:hover{border-color:var(--essense);background:var(--bright)}
-.fmt-fb-btn.sel{background:var(--forest);color:var(--white);border-color:var(--forest)}
-.back-link{display:inline-block;font-size:.8rem;color:var(--essense);text-decoration:none;margin-bottom:1.5rem}
-.back-link:hover{color:var(--forest)}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:20px 28px}
+h1{font-size:1.35rem;font-weight:normal}
+.meta{font-size:.8rem;opacity:.7;margin-top:2px}
+main{padding:24px 28px;max-width:680px}
+/* insight hint from Feedback/Insights section */
+.insight-hint{background:var(--eggshell);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
+.ih-icon{font-size:1.2rem;flex-shrink:0}
+.ih-body{font-size:.78rem;color:var(--text);line-height:1.5}
+.ih-body strong{color:var(--forest)}
+.ih-link{font-size:.72rem;color:var(--green);cursor:pointer;text-decoration:underline;margin-top:4px;display:block}
+.step{display:none}.step.active{display:block}
+.step-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.step-dots{display:flex;gap:5px}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--border)}
+.sdot.active{background:var(--forest)}
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fmt-card{background:#fff;border-radius:var(--radius);padding:16px 12px;box-shadow:var(--shadow);cursor:pointer;text-align:center;transition:all .2s;border:2px solid transparent}
+.fmt-card:hover,.fmt-card.sel{border-color:var(--green)}
+.fmt-card .ico{font-size:1.8rem;margin-bottom:6px}
+.fmt-card .name{font-size:.82rem;color:var(--text)}
+.fmt-card .desc{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.3}
+/* audio recording UI */
+.audio-ui{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center}
+.rec-btn{width:72px;height:72px;border-radius:50%;background:var(--forest);border:none;cursor:pointer;font-size:1.8rem;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.rec-btn:hover{background:var(--green)}
+.rec-btn.recording{background:#b33;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(180,50,50,.4)}50%{box-shadow:0 0 0 12px rgba(180,50,50,0)}}
+.rec-status{font-size:.8rem;color:var(--muted);margin-bottom:10px}
+.audio-waveform{height:36px;background:var(--eggshell);border-radius:8px;display:flex;align-items:center;justify-content:center;gap:2px;margin-bottom:12px;overflow:hidden}
+.wbar{width:3px;border-radius:2px;background:var(--border);animation:wave 1s infinite}
+.wbar:nth-child(2n){animation-delay:.1s}
+.wbar:nth-child(3n){animation-delay:.2s}
+@keyframes wave{0%,100%{height:6px}50%{height:22px}}
+.audio-note{font-size:.72rem;color:var(--muted);line-height:1.4;background:var(--eggshell);border-radius:8px;padding:8px 10px}
+.q-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:12px}
+.q-text{font-size:.88rem;line-height:1.5;margin-bottom:10px}
+textarea{width:100%;font-family:Georgia,serif;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;min-height:75px;outline:none}
+textarea:focus{border-color:var(--green)}
+.energy-row{display:flex;gap:6px;flex-wrap:wrap}
+.en-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.8rem;cursor:pointer;font-family:Georgia,serif;transition:all .15s}
+.en-btn:hover,.en-btn.sel{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:10px 20px;font-size:.82rem;font-family:Georgia,serif;cursor:pointer;font-weight:600}
+.btn:hover{opacity:.85}
+.btn.sec{background:none;border:1px solid var(--border);color:var(--muted);font-weight:normal}
+.saved-box{background:#eef5f0;border:1px solid var(--green);border-radius:var(--radius);padding:24px;text-align:center}
+.saved-box h3{color:var(--forest);font-size:1rem;margin-bottom:8px}
+.saved-box p{font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.5}
+.next-step-card{background:#fff;border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);font-size:.78rem;text-align:left;margin-bottom:8px;border-left:3px solid var(--green)}
+.nsc-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
 </style>
 </head>
 <body>
-<a class="back-link" href="./dashboard.html">← back to dashboard</a>
-<div class="dots" id="dots-bar"></div>
-<div class="step active" id="s0">
-  <p class="label">reflection</p>
-  <h1 class="heading">how do you want to reflect today?</h1>
-  <p class="sub">pick a format. the questions adapt to your choice and to what you've been working on.</p>
-  <div class="fmt-grid">
-    <button class="fmt-btn" onclick="pickFmt('written',this)"><div class="fmt-icon">✍️</div><div class="fmt-title">written</div><div class="fmt-desc">structured questions, write at your own pace</div></button>
-    <button class="fmt-btn" onclick="pickFmt('walk',this)"><div class="fmt-icon">🚶</div><div class="fmt-title">walk-and-talk</div><div class="fmt-desc">prompts to say aloud, paste your transcript back</div></button>
-    <button class="fmt-btn" onclick="pickFmt('quick',this)"><div class="fmt-icon">⚡</div><div class="fmt-title">quick check-in</div><div class="fmt-desc">three questions, five minutes, done</div></button>
-    <button class="fmt-btn" onclick="pickFmt('free',this)"><div class="fmt-icon">🌊</div><div class="fmt-title">free-form</div><div class="fmt-desc">write freely, the system structures it for you</div></button>
+<header><div class="meta">Essense PD · Rosie de Vries</div><h1>Reflectie</h1></header>
+<main>
+
+<!-- Insight hint from insights/feedback -->
+<div class="insight-hint">
+  <div class="ih-icon">💡</div>
+  <div class="ih-body">
+    <strong>Vanuit je inzichten:</strong> Je energie was vorige week hoog na de blueprint workshop. Gebruik dit moment om te verankeren wat werkte.
+    <span class="ih-link" onclick="location.href='insights.html'">→ Bekijk je inzichten</span>
   </div>
-  <div class="btn-row"><button class="btn-p" id="btn-start" disabled onclick="goTo(1)">continue →</button></div>
 </div>
-<div class="step" id="s1">
-  <p class="label">reflection · <span id="fmt-name">written</span></p>
-  <h2 class="heading" id="s1-head">what happened since you last reflected?</h2>
-  <p class="sub" id="s1-sub">this anchors the reflection to something real. one sentence is enough.</p>
-  <div class="card"><div class="card-tag">context</div><div class="card-q" id="q1">what have you been working on, and what stood out?</div><textarea id="a1" placeholder="e.g. I attended a blueprinting session and tried mapping the back-stage for the first time…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="goTo(2)">continue →</button><button class="btn-s" onclick="goTo(0)">back</button></div>
+
+<div class="step active" id="s1">
+  <div class="step-label">Stap 1 van 3 — Kies een format<div class="step-dots"><div class="sdot active"></div><div class="sdot"></div><div class="sdot"></div></div></div>
+  <div class="format-grid">
+    <div class="fmt-card" onclick="pickFormat('gesprek')"><div class="ico">💬</div><div class="name">Gesprek</div><div class="desc">Vrij schrijven, alsof je het uitlegt</div></div>
+    <div class="fmt-card" onclick="pickFormat('schrijven')"><div class="ico">✍️</div><div class="name">Schrijven</div><div class="desc">Gestructureerde tekst</div></div>
+    <div class="fmt-card" onclick="pickFormat('audio')"><div class="ico">🎙️</div><div class="name">Audio</div><div class="desc">Inspreken, systeem transcribeert</div></div>
+    <div class="fmt-card" onclick="pickFormat('tekenen')"><div class="ico">✏️</div><div class="name">Tekenen</div><div class="desc">Schets of mindmap beschrijven</div></div>
+    <div class="fmt-card" onclick="pickFormat('stilte')"><div class="ico">🌿</div><div class="name">Stilte</div><div class="desc">Korte vragen, ruimte om te denken</div></div>
+    <div class="fmt-card" onclick="pickFormat('gesprek')"><div class="ico">⚡</div><div class="name">Snel (2 min)</div><div class="desc">Eén vraag, één antwoord</div></div>
+  </div>
 </div>
+
 <div class="step" id="s2">
-  <p class="label">reflection · what worked</p>
-  <h2 class="heading">what went well — and what gave you energy?</h2>
-  <p class="sub">successes and energy are the signal, not the afterthought.</p>
-  <div class="card"><div class="card-tag">what went well</div><div class="card-q">what are you proud of from this period?</div><textarea id="a2" placeholder="e.g. I asked a question the senior designer said was exactly right…" rows="3"></textarea></div>
-  <div class="card"><div class="card-tag">energy</div><div class="card-q">what energised you? when did you feel most like yourself?</div><textarea id="a3" placeholder="e.g. The moment the back-stage connection clicked…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="goTo(3)">continue →</button><button class="btn-s" onclick="goTo(1)">back</button></div>
+  <div class="step-label">Stap 2 van 3 — Reflecteer<div class="step-dots"><div class="sdot"></div><div class="sdot active"></div><div class="sdot"></div></div></div>
+  
+  <!-- Audio mode -->
+  <div id="audioMode" style="display:none">
+    <div class="audio-ui">
+      <div class="rec-btn" id="recBtn" onclick="toggleRec()">🎙️</div>
+      <div class="rec-status" id="recStatus">Druk om op te nemen</div>
+      <div class="audio-waveform" id="waveform" style="display:none">
+        <div class="wbar" style="height:8px"></div><div class="wbar" style="height:14px"></div><div class="wbar" style="height:20px"></div><div class="wbar" style="height:12px"></div><div class="wbar" style="height:24px"></div><div class="wbar" style="height:10px"></div><div class="wbar" style="height:18px"></div><div class="wbar" style="height:8px"></div><div class="wbar" style="height:16px"></div>
+      </div>
+      <div class="audio-note">🤖 In de productieversie wordt je audio automatisch getranscribeerd en gekoppeld aan je doelen via de AI-agent. Nu kun je je aantekeningen hieronder typen.</div>
+    </div>
+    <div style="margin-top:14px">
+      <div class="q-card">
+        <div class="q-text">Transcriptie / aantekeningen (optioneel)</div>
+        <textarea placeholder="Of typ hier een samenvatting van wat je insprak..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Text mode -->
+  <div id="textMode">
+    <div class="q-card">
+      <div class="q-text">Wat heb je de afgelopen periode gedaan dat je goed is afgegaan?</div>
+      <textarea id="q1" placeholder="Vertel..."></textarea>
+    </div>
+    <div class="q-card">
+      <div class="q-text">Waar liep je tegenaan? Wat was lastig of onverwacht?</div>
+      <textarea id="q2" placeholder="Vertel..."></textarea>
+    </div>
+    <div class="q-card">
+      <div class="q-text">Wat wil je de volgende periode anders of meer doen?</div>
+      <textarea id="q3" placeholder="Vertel..."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" onclick="goStep('s3')">Volgende →</button>
+    <button class="btn sec" onclick="goStep('s1')">← Terug</button>
+  </div>
 </div>
+
 <div class="step" id="s3">
-  <p class="label">reflection · what I learned</p>
-  <h2 class="heading">what did you actually learn?</h2>
-  <p class="sub">connect it to your goal if you can. what moved, even slightly?</p>
-  <div class="card"><div class="card-tag">insight</div><div class="card-q">what do you know now that you didn't before?</div><textarea id="a4" placeholder="e.g. Back-stage mapping is about asking the right questions…" rows="3"></textarea></div>
-  <div class="card"><div class="card-tag">try differently</div><div class="card-q">what would you do differently next time?</div><textarea id="a5" placeholder="e.g. I'd prepare a question guide before the session…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="goTo(4)">continue →</button><button class="btn-s" onclick="goTo(2)">back</button></div>
-</div>
-<div class="step" id="s4">
-  <p class="label">reflection · next step</p>
-  <h2 class="heading">what's one thing you'll do next?</h2>
-  <p class="sub">keep it small. a 15-minute action counts.</p>
-  <div class="card"><div class="card-tag">next step</div><div class="card-q">one concrete thing, before your next check-in</div><textarea id="a6" placeholder="e.g. Prepare a back-stage question guide (15 min)…" rows="2"></textarea></div>
-  <div class="energy-label">how are you feeling after reflecting?</div>
-  <div class="energy-row">
-    <button class="e-btn" onclick="pickEnergy('energised',this)"><span class="e-emoji">🔋</span>energised</button>
-    <button class="e-btn" onclick="pickEnergy('neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
-    <button class="e-btn" onclick="pickEnergy('drained',this)"><span class="e-emoji">🪫</span>drained</button>
-    <button class="e-btn" onclick="pickEnergy('surprised',this)"><span class="e-emoji">✨</span>surprised</button>
+  <div class="step-label">Stap 3 van 3 — Energie &amp; opslaan<div class="step-dots"><div class="sdot"></div><div class="sdot"></div><div class="sdot active"></div></div></div>
+  <div class="q-card">
+    <div class="q-text">Hoe voelde deze reflectie? Kies je energieniveau:</div>
+    <div class="energy-row">
+      <button class="en-btn" onclick="selE(this)">😴 1 — Leeg</button>
+      <button class="en-btn" onclick="selE(this)">😐 2 — Neutraal</button>
+      <button class="en-btn" onclick="selE(this)">🙂 3 — Oké</button>
+      <button class="en-btn" onclick="selE(this)">😊 4 — Goed</button>
+      <button class="en-btn" onclick="selE(this)">🌟 5 — Energiek</button>
+    </div>
   </div>
-  <div class="btn-row" style="margin-top:1.25rem"><button class="btn-y" onclick="buildOutput()">save reflection →</button><button class="btn-s" onclick="goTo(3)">back</button></div>
-</div>
-<div class="step" id="s5">
-  <p class="label">reflection saved</p>
-  <h2 class="heading">here's your reflection</h2>
-  <p class="sub">copy this into Notion, or paste it into Claude with the save prompt from the Agent flows page.</p>
-  <div class="output-box" id="out-text"></div>
-  <div style="margin-bottom:1rem"><span style="font-size:.8rem;color:var(--muted);margin-right:.5rem">linked goal</span><span class="tag">Journey & Blueprinting L1→L2</span></div>
-  <div class="insight" id="out-insight"></div>
-  <div style="margin:1.1rem 0 .5rem;font-size:.8rem;color:var(--muted)">did this format work for you?</div>
-  <div class="fmt-feedback">
-    <button class="fmt-fb-btn" onclick="fbPick(this)">do this again</button>
-    <button class="fmt-fb-btn" onclick="fbPick(this)">it was fine</button>
-    <button class="fmt-fb-btn" onclick="fbPick(this)">try something else</button>
+  <div class="q-card">
+    <div class="q-text">Werkte dit format voor je?</div>
+    <div class="energy-row">
+      <button class="en-btn" onclick="selF(this)">✅ Ja, goed gewerkt</button>
+      <button class="en-btn" onclick="selF(this)">🔄 Volgende keer iets anders</button>
+      <button class="en-btn" onclick="selF(this)">🤷 Neutraal</button>
+    </div>
   </div>
-  <div class="btn-row" style="margin-top:1.5rem">
-    <button class="btn-y" onclick="copyOutput()">copy to clipboard</button>
-    <button class="btn-s" onclick="resetAll()">new reflection</button>
-    <a class="btn-s" href="./dashboard.html" style="text-decoration:none;display:inline-flex;align-items:center">← dashboard</a>
+  <div class="q-card">
+    <div class="q-text">Nog iets anders? (optioneel)</div>
+    <textarea placeholder="..."></textarea>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="save()">Opslaan ✓</button>
+    <button class="btn sec" onclick="goStep('s2')">← Terug</button>
   </div>
 </div>
+
+<div class="step" id="s-done">
+  <div class="saved-box">
+    <h3>Reflectie opgeslagen ✓</h3>
+    <p>Je reflectie is bewaard en zichtbaar voor je coach voor jullie volgende sessie. Je inzichten zijn bijgewerkt.</p>
+    <div class="next-step-card"><div class="nsc-label">Volgende stap</div>Bekijk of je openstaande acties wil bijwerken op basis van deze reflectie.</div>
+    <div class="next-step-card"><div class="nsc-label">Op basis van je reflectie</div>Je energieniveau was hoog — goed moment om een nieuwe actie te zetten.</div>
+    <div class="btn-row" style="justify-content:center;margin-top:14px">
+      <button class="btn" onclick="location.href='tracker.html'">Acties bijhouden</button>
+      <button class="btn sec" onclick="location.href='insights.html'">Mijn inzichten →</button>
+    </div>
+  </div>
+</div>
+
+</main>
 <script>
-let fmt='',energy='',totalSteps=5;
-const stepIds=['s0','s1','s2','s3','s4','s5'];
-function buildDots(){
-  const bar=document.getElementById('dots-bar');bar.innerHTML='';
-  for(let i=0;i<totalSteps;i++){const d=document.createElement('div');d.className='dot';d.id='d'+i;bar.appendChild(d);}
+let audioMode = false;
+function goStep(id){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function pickFormat(f){
+  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+  audioMode = (f==='audio');
+  setTimeout(()=>{
+    goStep('s2');
+    document.getElementById('audioMode').style.display = audioMode ? 'block' : 'none';
+    document.getElementById('textMode').style.display = audioMode ? 'none' : 'block';
+  }, 250);
 }
-function updateDots(cur){for(let i=0;i<totalSteps;i++){const d=document.getElementById('d'+i);if(d)d.className='dot'+(i<cur?' done':i===cur?' cur':'');}}
-function goTo(n){stepIds.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});const t=document.getElementById('s'+n);if(t){t.classList.add('active');updateDots(n);}window.scrollTo({top:0,behavior:'smooth'});}
-function pickFmt(f,el){fmt=f;document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');document.getElementById('btn-start').disabled=false;const names={written:'written',walk:'walk-and-talk',quick:'quick check-in',free:'free-form'};document.getElementById('fmt-name').textContent=names[f]||f;if(f==='quick'){totalSteps=4;document.getElementById('s1-head').textContent='what stood out this week?';}else{totalSteps=5;document.getElementById('s1-head').textContent='what happened since you last reflected?';}buildDots();updateDots(0);}
-function pickEnergy(e,el){energy=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function buildOutput(){
-  const emojiMap={energised:'🔋',neutral:'⚖️',drained:'🪫',surprised:'✨'};
-  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  const get=id=>document.getElementById(id)?.value||'—';
-  const body=`reflection · ${date}\nformat: ${fmt} · energy: ${emojiMap[energy]||'—'} ${energy}\n\ncontext\n${get('a1')}\n\nwhat went well\n${get('a2')}\n\nwhat energised me\n${get('a3')}\n\nwhat I learned\n${get('a4')}\n\nwhat to try differently\n${get('a5')}\n\nnext step\n${get('a6')}\n\nlinked goal: Journey & Blueprinting L1→L2`;
-  document.getElementById('out-text').textContent=body;
-  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. copy this and paste into your Reflections database in Notion, or use the save prompt from the Agent flows page.';
-  goTo(5);
+function toggleRec(){
+  const btn=document.getElementById('recBtn');
+  const st=document.getElementById('recStatus');
+  const wf=document.getElementById('waveform');
+  const isRec=btn.classList.contains('recording');
+  if(isRec){btn.classList.remove('recording');btn.textContent='🎙️';st.textContent='Opname gestopt · Druk opnieuw om opnieuw te nemen';wf.style.display='none'}
+  else{btn.classList.add('recording');btn.textContent='⏹️';st.textContent='Opname loopt... Druk om te stoppen';wf.style.display='flex'}
 }
-function fbPick(el){document.querySelectorAll('.fmt-fb-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function copyOutput(){const text=document.getElementById('out-text').textContent;navigator.clipboard.writeText(text).then(()=>alert('copied to clipboard'));}
-function resetAll(){fmt='';energy='';document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));document.querySelectorAll('textarea').forEach(t=>t.value='');document.getElementById('btn-start').disabled=true;totalSteps=5;buildDots();goTo(0);}
-buildDots();updateDots(0);
+function selE(btn){btn.closest('.energy-row').querySelectorAll('.en-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
+function selF(btn){btn.closest('.energy-row').querySelectorAll('.en-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
+function save(){goStep('s-done')}
 </script>
 </body>
 </html>

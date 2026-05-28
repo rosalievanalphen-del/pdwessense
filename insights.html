@@ -1,266 +1,233 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Insights — Essense PD</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inzichten — Essense PD</title>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;--good:#52b788;--grow:#e9a44b}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:720px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.55rem;color:var(--forest);margin-bottom:.4rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:1.75rem 0}
-.period-tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap}
-.ptab{background:var(--egg);border:1.5px solid var(--border);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;color:var(--muted);transition:all .2s;font-weight:500;font-family:var(--font-body)}
-.ptab:hover{border-color:var(--essense);color:var(--charcoal)}
-.ptab.active{background:var(--forest);border-color:var(--forest);color:var(--white)}
-.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem}
-.summary-card{border-radius:14px;padding:1.25rem;position:relative;overflow:hidden}
-.summary-card.good{background:var(--bright);border:1.5px solid var(--good)}
-.summary-card.grow{background:#fdf5e7;border:1.5px solid var(--grow)}
-.sc-icon{font-size:1.4rem;margin-bottom:.5rem}
-.sc-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:.5rem}
-.summary-card.good .sc-label{color:var(--good)}
-.summary-card.grow .sc-label{color:var(--grow)}
-.sc-title{font-family:var(--font-head);font-size:1.05rem;color:var(--forest);margin-bottom:.5rem;line-height:1.3}
-.sc-themes{display:flex;flex-direction:column;gap:.35rem}
-.sc-theme{font-size:.825rem;color:var(--charcoal);line-height:1.4;padding-left:.85rem;position:relative}
-.sc-theme::before{content:'';position:absolute;left:0;top:.5rem;width:5px;height:5px;border-radius:50%}
-.summary-card.good .sc-theme::before{background:var(--good)}
-.summary-card.grow .sc-theme::before{background:var(--grow)}
-.sc-count{font-size:.7rem;color:var(--muted);margin-top:.65rem;font-style:italic}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem}
-.section-title{font-family:var(--font-head);font-size:1.1rem;color:var(--forest)}
-.section-count{font-size:.75rem;color:var(--muted);background:var(--egg);border-radius:99px;padding:.2rem .65rem}
-.feedback-card{background:var(--egg);border:1px solid var(--border);border-left:3px solid var(--essense);border-radius:0 12px 12px 0;padding:.9rem 1.1rem;margin-bottom:.6rem;font-size:.85rem;line-height:1.5}
-.fb-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem;align-items:center}
-.fb-from{font-size:.7rem;color:var(--essense);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-.fb-date{font-size:.7rem;color:var(--muted)}
-.fb-type-pill{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.1rem .5rem;font-size:.65rem;color:var(--muted)}
-.fb-type-pill.positive{background:var(--bright);color:var(--good);border-color:var(--good)}
-.fb-type-pill.constructive{background:#fdf5e7;color:var(--grow);border-color:var(--grow)}
-.fb-text{color:var(--charcoal);font-style:italic;line-height:1.5}
-.fb-actions{display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap}
-.fb-act-btn{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:.25rem .65rem;font-family:var(--font-body);font-size:.7rem;cursor:pointer;color:var(--charcoal);transition:all .2s}
-.fb-act-btn:hover{border-color:var(--essense);background:var(--bright)}
-.fb-act-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
-.refl-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.5rem;font-size:.825rem;line-height:1.5;cursor:pointer;transition:all .2s}
-.refl-card:hover{border-color:var(--essense);background:var(--bright)}
-.refl-head{display:flex;justify-content:space-between;gap:.5rem;margin-bottom:.35rem;flex-wrap:wrap;align-items:center}
-.refl-title{font-weight:500;color:var(--charcoal);font-size:.825rem}
-.refl-date{font-size:.7rem;color:var(--muted)}
-.refl-fmt-pill{background:var(--bright);color:var(--forest);border-radius:99px;padding:.1rem .5rem;font-size:.65rem;font-weight:500}
-.refl-energy{font-size:.85rem;margin-left:.35rem}
-.refl-snippet{color:var(--muted);font-size:.75rem;font-style:italic;line-height:1.4}
-.create-goal-strip{background:var(--forest);color:var(--bright);border-radius:14px;padding:1.25rem 1.5rem;margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.cgs-text{flex:1}
-.cgs-title{font-family:var(--font-head);font-size:1.1rem;color:var(--white);margin-bottom:.25rem}
-.cgs-sub{font-size:.8rem;color:var(--bright)}
-.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.65rem 1.2rem;font-family:var(--font-body);font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
-.btn-y:hover{filter:brightness(.96)}
-.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.5rem 1rem;font-family:var(--font-body);font-size:.8rem;cursor:pointer;text-decoration:none;display:inline-block}
-.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
-.empty-state{background:var(--egg);border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;color:var(--muted);font-size:.85rem;line-height:1.5}
-.empty-state strong{color:var(--forest);display:block;margin-bottom:.3rem;font-family:var(--font-head);font-size:1rem}
-.empty-state a{color:var(--essense);text-decoration:underline}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
-.add-feedback{background:var(--egg);border:1.5px dashed var(--border);border-radius:12px;padding:1rem;margin-top:.875rem}
-.af-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
-.af-input,.af-select{border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--charcoal);background:var(--white);outline:none;width:100%}
-.af-input:focus,.af-select:focus{border-color:var(--essense)}
-.af-text{width:100%;border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--charcoal);background:var(--white);outline:none;resize:vertical;min-height:54px;line-height:1.5}
-.af-text:focus{border-color:var(--essense)}
-.btn-add{background:var(--forest);color:var(--white);border:none;border-radius:7px;padding:.5rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:500;cursor:pointer}
-.collapsible-toggle{font-size:.78rem;color:var(--essense);cursor:pointer;font-weight:500;margin-top:.5rem;display:inline-block}
-.collapsible-toggle:hover{color:var(--forest)}
-.collapsible{display:none}
-.collapsible.open{display:block}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:1.35rem;font-weight:normal}
+.meta{font-size:.8rem;opacity:.7;margin-top:2px}
+main{padding:24px 28px;max-width:860px}
+.period-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:0}
+.ptab{background:none;border:none;border-bottom:2px solid transparent;padding:8px 20px;font-size:.82rem;color:var(--muted);cursor:pointer;font-family:Georgia,serif;transition:all .15s;margin-bottom:-1px}
+.ptab.active{color:var(--forest);border-bottom-color:var(--forest);font-weight:600}
+.period-c{display:none}
+.period-c.active{display:block}
+.period-label{font-size:.75rem;color:var(--muted);margin-bottom:16px}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.icard{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.icard.wide{grid-column:span 2}
+.i-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+/* Energy bar chart */
+.ebar-wrap{display:flex;gap:6px;align-items:flex-end;height:60px;margin-bottom:6px}
+.ebar{flex:1;border-radius:3px 3px 0 0;position:relative;min-width:18px}
+.ebar .el{position:absolute;bottom:-16px;width:100%;text-align:center;font-size:.58rem;color:var(--muted)}
+.ebar .ev{position:absolute;top:-14px;width:100%;text-align:center;font-size:.6rem;color:var(--muted)}
+/* Donut-ish for formats */
+.fmt-rows{display:flex;flex-direction:column;gap:7px}
+.fmt-row{display:flex;align-items:center;gap:8px;font-size:.75rem}
+.fmt-bar{height:8px;border-radius:4px;background:var(--green);transition:width .3s}
+.fmt-name{width:80px;flex-shrink:0}
+.fmt-pct{color:var(--muted);font-size:.68rem;margin-left:auto}
+/* Themes */
+.theme-cloud{display:flex;flex-wrap:wrap;gap:6px}
+.theme-tag{padding:4px 12px;border-radius:20px;font-size:.72rem}
+.theme-tag.hi{background:var(--green);color:#fff}
+.theme-tag.mid{background:#eef5f0;color:var(--forest)}
+.theme-tag.lo{background:var(--border);color:var(--muted)}
+/* Stats row */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.scard{background:#fff;border-radius:10px;padding:14px;box-shadow:var(--shadow);text-align:center}
+.scard .n{font-size:1.6rem;color:var(--forest)}
+.scard .l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.scard .delta{font-size:.7rem;color:var(--green);margin-top:2px}
+.scard .delta.neg{color:#c75;} 
+/* Reflection list */
+.ref-list{display:flex;flex-direction:column;gap:8px}
+.rcard{background:#fff;border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
+.rcard:hover{border-left:3px solid var(--green);padding-left:11px}
+.rcard .rd{font-size:.68rem;color:var(--muted);margin-bottom:3px}
+.rcard .rt{font-size:.82rem;color:var(--text)}
+.rcard .re{font-size:.7rem;color:var(--muted);margin-top:4px;display:flex;gap:8px}
+.energydot{width:8px;height:8px;border-radius:50%;display:inline-block}
 </style>
 </head>
 <body>
-<p class="label">insights</p>
-<h1 class="heading">what feedback and reflection tell you</h1>
-<p class="sub">patterns from your feedback and reflections — what you're good at, where to grow, and what could become a goal.</p>
+<header>
+  <div><div class="meta">Essense PD · Rosie de Vries</div><h1>Inzichten</h1></div>
+</header>
+<main>
 
 <div class="period-tabs">
-  <span style="font-size:.78rem;color:var(--muted);font-weight:500">period:</span>
-  <button class="ptab active" onclick="setPeriod('month',this)">this month</button>
-  <button class="ptab" onclick="setPeriod('quarter',this)">this quarter</button>
-  <button class="ptab" onclick="setPeriod('year',this)">this year</button>
+  <button class="ptab active" onclick="showPeriod('month',this)">Maand</button>
+  <button class="ptab" onclick="showPeriod('quarter',this)">Kwartaal</button>
+  <button class="ptab" onclick="showPeriod('year',this)">Jaar</button>
 </div>
 
-<div class="summary-grid">
-  <div class="summary-card good">
-    <div class="sc-icon">✨</div>
-    <div class="sc-label">what you're good at</div>
-    <div class="sc-title">your strengths from feedback + reflection</div>
-    <div class="sc-themes" id="strengths-themes">
-      <div class="sc-theme">asking precise questions in client sessions</div>
-      <div class="sc-theme">spotting customer-side gaps in journey maps</div>
-      <div class="sc-theme">staying curious when complexity grows</div>
-    </div>
-    <div class="sc-count" id="strengths-count">based on 3 positive feedback items + 2 reflections marked high energy</div>
+<!-- MAAND VIEW -->
+<div id="period-month" class="period-c active">
+  <div class="period-label">Juli 2025 · 4 reflecties · 12 acties</div>
+  <div class="stat-row">
+    <div class="scard"><div class="n">4</div><div class="l">reflecties</div><div class="delta">↑ +1 vs juni</div></div>
+    <div class="scard"><div class="n">4.1</div><div class="l">gem energie</div><div class="delta">↑ +0.4 vs juni</div></div>
+    <div class="scard"><div class="n">12</div><div class="l">acties</div><div class="delta">↑ +3 vs juni</div></div>
+    <div class="scard"><div class="n">2</div><div class="l">doelen actief</div><div class="delta" style="color:var(--muted)">→ gelijk</div></div>
   </div>
-  <div class="summary-card grow">
-    <div class="sc-icon">🌱</div>
-    <div class="sc-label">what to grow</div>
-    <div class="sc-title">where feedback says you have room</div>
-    <div class="sc-themes" id="grow-themes">
-      <div class="sc-theme">back-stage process mapping — the operations side of blueprints</div>
-      <div class="sc-theme">facilitating workshops solo without senior backup</div>
-      <div class="sc-theme">articulating value to non-design stakeholders</div>
+  <div class="insight-grid">
+    <div class="icard">
+      <div class="i-label">Energie per week — juli</div>
+      <div class="ebar-wrap" style="margin-bottom:22px">
+        <div class="ebar" style="height:35px;background:var(--green)"><span class="el">wk1</span><span class="ev">3.5</span></div>
+        <div class="ebar" style="height:50px;background:var(--forest)"><span class="el">wk2</span><span class="ev">5.0</span></div>
+        <div class="ebar" style="height:42px;background:var(--green)"><span class="el">wk3</span><span class="ev">4.2</span></div>
+        <div class="ebar" style="height:38px;background:var(--green)"><span class="el">wk4</span><span class="ev">3.8</span></div>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted)">Beste week: week 2 na de blueprinting workshop</div>
     </div>
-    <div class="sc-count" id="grow-count">based on 2 constructive feedback items + 1 reflection marked "try differently"</div>
-  </div>
-</div>
-
-<div class="create-goal-strip">
-  <div class="cgs-text">
-    <div class="cgs-title">turn an insight into a goal</div>
-    <div class="cgs-sub">pick a growth theme above, or write your own, and the goal breakdown tool will shape it.</div>
-  </div>
-  <a class="btn-y" href="https://pdwessense.vercel.app/breakdown.html" target="_blank">create a goal from this ↗</a>
-</div>
-
-<div class="divider"></div>
-
-<div class="section-head">
-  <div class="section-title">💬 feedback received</div>
-  <span class="section-count" id="fb-count">3 items this month</span>
-</div>
-
-<div id="feedback-list">
-  <div class="feedback-card">
-    <div class="fb-meta">
-      <span class="fb-from">Coach</span>
-      <span class="fb-date">· 18 May</span>
-      <span class="fb-type-pill positive">positive</span>
-    </div>
-    <div class="fb-text">"your questioning in last week's client kickoff was sharp — the team noticed you spotted the gap before they did."</div>
-    <div class="fb-actions">
-      <button class="fb-act-btn" onclick="reflectOn(this)">reflect on this</button>
-      <button class="fb-act-btn yellow" onclick="createGoalFrom(this)">create goal from this →</button>
-    </div>
-  </div>
-  <div class="feedback-card">
-    <div class="fb-meta">
-      <span class="fb-from">Senior designer</span>
-      <span class="fb-date">· 14 May</span>
-      <span class="fb-type-pill constructive">constructive</span>
-    </div>
-    <div class="fb-text">"on the back-stage mapping, you stopped at the obvious processes. push past the first answer — ask 'and what makes that possible?' twice more."</div>
-    <div class="fb-actions">
-      <button class="fb-act-btn" onclick="reflectOn(this)">reflect on this</button>
-      <button class="fb-act-btn yellow" onclick="createGoalFrom(this)">create goal from this →</button>
-    </div>
-  </div>
-  <div class="feedback-card">
-    <div class="fb-meta">
-      <span class="fb-from">Client</span>
-      <span class="fb-date">· 8 May</span>
-      <span class="fb-type-pill positive">positive</span>
-    </div>
-    <div class="fb-text">"thanks for documenting our session so clearly — your notes saved us a meeting."</div>
-    <div class="fb-actions">
-      <button class="fb-act-btn" onclick="reflectOn(this)">reflect on this</button>
-      <button class="fb-act-btn yellow" onclick="createGoalFrom(this)">create goal from this →</button>
-    </div>
-  </div>
-</div>
-
-<div class="collapsible-toggle" onclick="toggleCol('add-fb-block',this)">+ log new feedback ▾</div>
-<div class="collapsible" id="add-fb-block">
-  <div class="add-feedback">
-    <div class="af-row">
-      <input class="af-input" id="fb-from" placeholder="from (e.g. coach, lead, client)"/>
-      <select class="af-select" id="fb-type">
-        <option>positive</option>
-        <option>constructive</option>
-        <option>critical</option>
-      </select>
-    </div>
-    <textarea class="af-text" id="fb-text" placeholder="what was said?" rows="2"></textarea>
-    <div style="margin-top:.6rem"><button class="btn-add" onclick="addFeedback()">add feedback</button></div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<div class="section-head">
-  <div class="section-title">🌀 recent reflections</div>
-  <span class="section-count" id="refl-count">2 reflections</span>
-</div>
-
-<div id="reflections-list">
-  <div class="refl-card" onclick="window.location.href='https://www.notion.so/8f659d396ea347109fba6c95213148b2'">
-    <div class="refl-head">
-      <span class="refl-title">first system walkthrough</span>
-      <div>
-        <span class="refl-fmt-pill">walk-and-talk</span>
-        <span class="refl-energy">🪫</span>
-        <span class="refl-date">· 25 May</span>
+    <div class="icard">
+      <div class="i-label">Formaten deze maand</div>
+      <div class="fmt-rows">
+        <div class="fmt-row"><div class="fmt-name">Gesprek</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:75%"></div></div><div class="fmt-pct">3×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Schrijven</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:25%"></div></div><div class="fmt-pct">1×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Tekenen</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:0%"></div></div><div class="fmt-pct">—</div></div>
+        <div class="fmt-row"><div class="fmt-name">Stilte</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:0%"></div></div><div class="fmt-pct">—</div></div>
       </div>
     </div>
-    <div class="refl-snippet">"working with claude — a marvellous program but time intensive… would like to have help"</div>
+    <div class="icard wide">
+      <div class="i-label">Thema's — juli</div>
+      <div class="theme-cloud">
+        <span class="theme-tag hi">blueprinting</span>
+        <span class="theme-tag hi">samenwerking</span>
+        <span class="theme-tag mid">feedback geven</span>
+        <span class="theme-tag mid">structuur</span>
+        <span class="theme-tag lo">planning</span>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:10px">Meest voorkomende thema dit maand: <strong>blueprinting</strong> — consistent met je actieve doel</div>
+    </div>
   </div>
-  <div class="refl-card" onclick="window.location.href='https://www.notion.so/8f659d396ea347109fba6c95213148b2'">
-    <div class="refl-head">
-      <span class="refl-title">project debrief — retail kickoff</span>
-      <div>
-        <span class="refl-fmt-pill">written</span>
-        <span class="refl-energy">🔋</span>
-        <span class="refl-date">· 12 May</span>
+  <div style="font-size:.78rem;color:var(--forest);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">Reflecties deze maand</div>
+  <div class="ref-list">
+    <div class="rcard"><div class="rd">24 jul 2025</div><div class="rt">Workshop begeleiden voelde voor het eerst echt goed</div><div class="re"><span class="energydot" style="background:var(--forest)"></span>Energie: 5.0 · Gesprek</div></div>
+    <div class="rcard"><div class="rd">17 jul 2025</div><div class="rt">Stakeholder gesprek liep stroef — wat had ik anders kunnen doen?</div><div class="re"><span class="energydot" style="background:var(--muted)"></span>Energie: 3.2 · Schrijven</div></div>
+    <div class="rcard"><div class="rd">10 jul 2025</div><div class="rt">Blueprint sessie met de klant: meer structuur nodig</div><div class="re"><span class="energydot" style="background:var(--green)"></span>Energie: 4.0 · Gesprek</div></div>
+    <div class="rcard"><div class="rd">3 jul 2025</div><div class="rt">Start nieuw kwartaal — wat wil ik dit kwartaal leren?</div><div class="re"><span class="energydot" style="background:var(--green)"></span>Energie: 3.8 · Gesprek</div></div>
+  </div>
+</div>
+
+<!-- KWARTAAL VIEW -->
+<div id="period-quarter" class="period-c">
+  <div class="period-label">Q3 2025 — jul t/m sep · 11 reflecties · 34 acties</div>
+  <div class="stat-row">
+    <div class="scard"><div class="n">11</div><div class="l">reflecties</div><div class="delta">↑ +3 vs Q2</div></div>
+    <div class="scard"><div class="n">3.9</div><div class="l">gem energie</div><div class="delta">↑ +0.6 vs Q2</div></div>
+    <div class="scard"><div class="n">34</div><div class="l">acties</div><div class="delta">↑ +8 vs Q2</div></div>
+    <div class="scard"><div class="n">3</div><div class="l">doelen actief</div><div class="delta">↑ +1 vs Q2</div></div>
+  </div>
+  <div class="insight-grid">
+    <div class="icard">
+      <div class="i-label">Energie per maand — Q3</div>
+      <div class="ebar-wrap" style="margin-bottom:22px">
+        <div class="ebar" style="height:42px;background:var(--green)"><span class="el">jul</span><span class="ev">4.1</span></div>
+        <div class="ebar" style="height:32px;background:var(--muted);opacity:.6"><span class="el">aug</span><span class="ev">3.2</span></div>
+        <div class="ebar" style="height:48px;background:var(--forest)"><span class="el">sep</span><span class="ev">4.8</span></div>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted)">Dip in augustus (zomer, minder structuur). Sterk herstel sept</div>
+    </div>
+    <div class="icard">
+      <div class="i-label">Formaten dit kwartaal</div>
+      <div class="fmt-rows">
+        <div class="fmt-row"><div class="fmt-name">Gesprek</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:64%"></div></div><div class="fmt-pct">7×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Schrijven</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:27%"></div></div><div class="fmt-pct">3×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Tekenen</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:9%"></div></div><div class="fmt-pct">1×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Stilte</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:0%"></div></div><div class="fmt-pct">—</div></div>
       </div>
     </div>
-    <div class="refl-snippet">"asked a question the senior designer said was exactly right — felt like I belonged in the room…"</div>
+    <div class="icard wide">
+      <div class="i-label">Thema's — Q3</div>
+      <div class="theme-cloud">
+        <span class="theme-tag hi">blueprinting</span>
+        <span class="theme-tag hi">faciliteren</span>
+        <span class="theme-tag hi">samenwerking</span>
+        <span class="theme-tag mid">feedback geven</span>
+        <span class="theme-tag mid">structuur</span>
+        <span class="theme-tag mid">stakeholders</span>
+        <span class="theme-tag lo">planning</span>
+        <span class="theme-tag lo">energie</span>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:10px">Kwartaalpatroon: <strong>blueprinting + faciliteren</strong> centraal — sluit aan bij je doelenset. Stakeholder-thema wint terrein naarmate Q3 vordert.</div>
+    </div>
+  </div>
+  <div style="font-size:.78rem;color:var(--forest);margin-bottom:6px"><strong>Coach inzicht Q3</strong></div>
+  <div style="background:#fffbef;border:1px solid var(--yellow);border-radius:8px;padding:14px;font-size:.8rem">Je laat zien dat je energie en reflectie-ritme samen omhoog gaan — dat is het patroon wat we willen zien. Augustus-dip is normaal; gebruik sept om die energie vast te houden in Q4.</div>
+</div>
+
+<!-- JAAR VIEW -->
+<div id="period-year" class="period-c">
+  <div class="period-label">2025 — jan t/m dec · 28 reflecties · 89 acties</div>
+  <div class="stat-row">
+    <div class="scard"><div class="n">28</div><div class="l">reflecties</div><div class="delta">Doel: 36 / jaar</div></div>
+    <div class="scard"><div class="n">3.7</div><div class="l">gem energie</div><div class="delta">↑ +0.8 vs 2024</div></div>
+    <div class="scard"><div class="n">89</div><div class="l">acties</div><div class="delta">Doel: 120 / jaar</div></div>
+    <div class="scard"><div class="n">4</div><div class="l">doelen dit jaar</div><div class="delta">3 actief · 1 ✓</div></div>
+  </div>
+  <div class="insight-grid">
+    <div class="icard wide">
+      <div class="i-label">Energie per kwartaal — 2025</div>
+      <div class="ebar-wrap" style="height:70px;margin-bottom:22px">
+        <div class="ebar" style="height:45px;background:var(--green)"><span class="el">Q1</span><span class="ev">3.3</span></div>
+        <div class="ebar" style="height:52px;background:var(--green)"><span class="el">Q2</span><span class="ev">3.8</span></div>
+        <div class="ebar" style="height:62px;background:var(--forest)"><span class="el">Q3</span><span class="ev">4.5</span></div>
+        <div class="ebar" style="height:28px;background:var(--muted);opacity:.4"><span class="el">Q4</span><span class="ev">—</span></div>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted)">Duidelijke groeilijn over het jaar · Q4 nog niet begonnen</div>
+    </div>
+    <div class="icard">
+      <div class="i-label">Formaten dit jaar</div>
+      <div class="fmt-rows">
+        <div class="fmt-row"><div class="fmt-name">Gesprek</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:61%"></div></div><div class="fmt-pct">17×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Schrijven</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:29%"></div></div><div class="fmt-pct">8×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Tekenen</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:11%"></div></div><div class="fmt-pct">3×</div></div>
+        <div class="fmt-row"><div class="fmt-name">Stilte</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:0%"></div></div><div class="fmt-pct">—</div></div>
+      </div>
+    </div>
+    <div class="icard">
+      <div class="i-label">Groei per competentie — 2025</div>
+      <div class="fmt-rows">
+        <div class="fmt-row"><div class="fmt-name" style="width:130px">Service Design</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:74%"></div></div><div class="fmt-pct">3.7→4.1</div></div>
+        <div class="fmt-row"><div class="fmt-name" style="width:130px">Communicatie</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:56%"></div></div><div class="fmt-pct">2.8→3.1</div></div>
+        <div class="fmt-row"><div class="fmt-name" style="width:130px">Projectleid.</div><div style="flex:1;background:var(--border);border-radius:4px;height:8px"><div class="fmt-bar" style="width:20%"></div></div><div class="fmt-pct">2.5→2.6</div></div>
+      </div>
+    </div>
+    <div class="icard wide">
+      <div class="i-label">Thema's — 2025</div>
+      <div class="theme-cloud">
+        <span class="theme-tag hi">blueprinting</span>
+        <span class="theme-tag hi">faciliteren</span>
+        <span class="theme-tag hi">samenwerking</span>
+        <span class="theme-tag mid">stakeholders</span>
+        <span class="theme-tag mid">feedback geven</span>
+        <span class="theme-tag mid">structuur</span>
+        <span class="theme-tag mid">klantcontact</span>
+        <span class="theme-tag lo">energie</span>
+        <span class="theme-tag lo">planning</span>
+        <span class="theme-tag lo">presenteren</span>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:10px">Jaarlijn: van uitvoerend (blueprinting, structuur) naar faciliterend (workshoppen, stakeholders) — precies de beweging van L1 naar L2.</div>
+    </div>
   </div>
 </div>
 
-<div class="insight">
-  <span class="arrow">→</span>your strongest pattern this month is asking precise questions. your most consistent growth area is back-stage process mapping — that's already your active goal. you're aligned.
-</div>
-
+</main>
 <script>
-function setPeriod(p,btn){
-  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+function showPeriod(p,btn){
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.period-c').forEach(c=>c.classList.remove('active'));
+  document.getElementById('period-'+p).classList.add('active');
   btn.classList.add('active');
-}
-function toggleCol(id,el){
-  const block=document.getElementById(id);
-  block.classList.toggle('open');
-  el.textContent=block.classList.contains('open')?el.textContent.replace('▾','▴'):el.textContent.replace('▴','▾');
-}
-function reflectOn(btn){
-  const card=btn.closest('.feedback-card');
-  const text=card.querySelector('.fb-text').textContent;
-  navigator.clipboard.writeText('reflect on this feedback:\n'+text).then(()=>{
-    window.open('https://pdwessense.vercel.app/reflection.html','_blank');
-  });
-}
-function createGoalFrom(btn){
-  const card=btn.closest('.feedback-card');
-  const text=card.querySelector('.fb-text').textContent;
-  navigator.clipboard.writeText('feedback that became a goal:\n'+text).then(()=>{
-    window.open('https://pdwessense.vercel.app/breakdown.html','_blank');
-  });
-}
-function addFeedback(){
-  const from=document.getElementById('fb-from').value.trim();
-  const type=document.getElementById('fb-type').value;
-  const text=document.getElementById('fb-text').value.trim();
-  if(!from||!text){alert('add a sender and the feedback text');return;}
-  const list=document.getElementById('feedback-list');
-  const card=document.createElement('div');
-  card.className='feedback-card';
-  const typeClass=type==='positive'?'positive':type==='constructive'?'constructive':'';
-  card.innerHTML=`<div class="fb-meta"><span class="fb-from">${from}</span><span class="fb-date">· today</span><span class="fb-type-pill ${typeClass}">${type}</span></div><div class="fb-text">"${text}"</div><div class="fb-actions"><button class="fb-act-btn" onclick="reflectOn(this)">reflect on this</button><button class="fb-act-btn yellow" onclick="createGoalFrom(this)">create goal from this →</button></div>`;
-  list.insertBefore(card,list.firstChild);
-  document.getElementById('fb-from').value='';
-  document.getElementById('fb-text').value='';
 }
 </script>
 </body>

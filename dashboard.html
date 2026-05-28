@@ -1,169 +1,243 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PD Dashboard — Essense</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Essense PD</title>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;
-  --yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;
-  --font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;
-}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:800px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.6rem;color:var(--forest);margin-bottom:.3rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:2rem 0}
-.meter-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-bottom:1.75rem}
-.mc{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
-.mc-label{font-size:12px;color:var(--muted);margin-bottom:.4rem;font-weight:500}
-.mc-val{font-size:1.85rem;font-weight:300;color:var(--forest);line-height:1}
-.mc-unit{font-size:.72rem;color:var(--muted);margin-top:.2rem}
-.track{background:var(--bright);border-radius:99px;height:7px;margin-top:.65rem;overflow:hidden}
-.fill{border-radius:99px;height:100%}
-.budget-row{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem}
-.b-big{font-family:var(--font-head);font-size:3.25rem;color:var(--forest);line-height:1}
-.b-right{flex:1}
-.b-bar-wrap{height:11px;background:var(--bright);border-radius:99px;overflow:hidden;margin-bottom:.5rem}
-.b-bar{height:100%;border-radius:99px;background:var(--forest)}
-.legend{display:flex;gap:1rem;flex-wrap:wrap}
-.ld{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
-.ll{font-size:12px;color:var(--muted)}
-.gantt-header{display:grid;grid-template-columns:160px 1fr;margin-bottom:.4rem}
-.qtr-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.qtr{font-size:11px;color:var(--muted);text-align:center;letter-spacing:.05em;font-weight:500}
-.gr{display:grid;grid-template-columns:160px 1fr;margin-bottom:5px;align-items:center}
-.gl{font-size:12px;color:var(--charcoal);padding-right:.875rem;line-height:1.3}
-.gd{font-size:10px;color:var(--muted);display:block}
-.gta{position:relative;height:26px}
-.gtbg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.gtq{background:var(--bright);border-radius:3px}
-.gbar{position:absolute;top:3px;bottom:3px;border-radius:5px;display:flex;align-items:center;padding:0 7px;gap:.4rem}
-.gbar-lbl{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.gpct{font-size:9px;font-weight:600;border-radius:99px;padding:1px 5px;flex-shrink:0}
-.cm{position:absolute;top:0;bottom:0;width:1.5px;background:var(--forest);opacity:.55}
-.cm-lbl{position:absolute;font-size:9px;color:var(--forest);font-weight:600;white-space:nowrap;transform:translateX(-50%);top:-14px}
-.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1.25rem}
-.rc{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
-.rc-label{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;font-weight:500;margin-bottom:.65rem}
-.eb-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.4rem}
-.eb-lbl{font-size:12px;color:var(--charcoal);width:65px;flex-shrink:0}
-.eb-track{flex:1;height:5px;background:var(--bright);border-radius:99px;overflow:hidden}
-.eb-fill{height:100%;border-radius:99px}
-.eb-n{font-size:11px;color:var(--muted);width:18px;text-align:right}
-.chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--bright);border-radius:99px;padding:.25rem .65rem;font-size:11px;color:var(--essense);margin:.2rem;font-weight:500}
-.chip-dot{width:6px;height:6px;border-radius:50%}
-.action-strip{background:var(--forest);border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.875rem;margin-top:1.5rem}
-.as-text{font-size:.875rem;color:#b7e4c7;font-style:italic;flex:1;line-height:1.5;font-family:var(--font-head)}
-.as-text span{color:var(--yellow)}
-.as-btns{display:flex;gap:.5rem;flex-wrap:wrap}
-.as-btn{background:rgba(255,255,255,.12);color:var(--white);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none;display:inline-block}
-.as-btn:hover{background:rgba(255,255,255,.22)}
-.as-btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:7px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:1.35rem;font-weight:normal}
+.meta{font-size:.8rem;opacity:.7;margin-top:2px}
+.period-badge{background:var(--yellow);color:var(--forest);font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:20px}
+main{padding:24px 28px;max-width:920px}
+.budget-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.bcard{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.bcard .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.bcard .val{font-size:1.5rem;color:var(--forest)}
+.bcard .sub{font-size:.75rem;color:var(--muted);margin-top:2px}
+.bar-w{margin-top:8px;height:6px;background:var(--border);border-radius:3px}
+.bar-f{height:6px;border-radius:3px;background:var(--green)}
+.bar-f.warn{background:var(--yellow)}
+.sec{font-size:.8rem;color:var(--forest);text-transform:uppercase;letter-spacing:.1em;margin:28px 0 14px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+.gantt-wrap{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:8px}
+.gantt-head{display:grid;grid-template-columns:180px repeat(12,1fr);background:var(--forest);color:var(--eggshell);font-size:.68rem;padding:8px 0}
+.gh-lbl{padding:0 12px;opacity:.8}
+.gh-m{text-align:center;opacity:.7;font-size:.65rem}
+.g-row{display:grid;grid-template-columns:180px repeat(12,1fr);border-bottom:1px solid var(--border);min-height:38px;align-items:center}
+.g-row:last-child{border-bottom:none}
+.g-row:hover{background:#f5faf6}
+.g-lbl{padding:8px 12px;font-size:.78rem}
+.g-lbl .trk{font-size:.65rem;color:var(--muted)}
+.gc{position:relative;height:38px}
+.bar{position:absolute;top:10px;height:18px;border-radius:9px;font-size:.62rem;color:#fff;display:flex;align-items:center;padding:0 7px;white-space:nowrap;overflow:hidden}
+.bar.a{background:var(--green)}
+.bar.p{background:var(--muted);opacity:.5}
+.bar.d{background:var(--forest)}
+.coach-row{display:grid;grid-template-columns:180px repeat(12,1fr);min-height:24px;align-items:center;background:#fffbef;border-bottom:1px solid var(--border)}
+.coach-row:last-child{border-bottom:none}
+.coach-lbl{font-size:.65rem;color:var(--muted);padding:0 12px;font-style:italic}
+.cp{position:relative}
+.cpin{position:absolute;top:3px;left:50%;transform:translateX(-50%);background:var(--yellow);color:var(--forest);width:18px;height:14px;border-radius:7px;font-size:.55rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.tab-bar{display:flex;gap:4px}
+.tab-btn{background:none;border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;padding:7px 16px;font-size:.78rem;color:var(--muted);cursor:pointer;font-family:Georgia,serif;transition:all .15s}
+.tab-btn.active{background:#fff;color:var(--forest);font-weight:600}
+.tab-c{display:none}
+.tab-c.active{display:block}
+.qpanel{background:#fff;border-radius:0 var(--radius) var(--radius) var(--radius);box-shadow:var(--shadow);padding:20px 24px}
+.qstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.qstat{text-align:center}
+.qstat .n{font-size:1.4rem;color:var(--forest)}
+.qstat .l{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.qgoal{border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.qg-name{font-size:.85rem;margin-bottom:6px}
+.qg-meta{font-size:.72rem;color:var(--muted);display:flex;gap:16px}
+.qprog{height:5px;background:var(--border);border-radius:3px;margin-top:8px}
+.qprog-f{height:5px;background:var(--green);border-radius:3px}
+.qact{font-size:.75rem;padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.qact:last-child{border-bottom:none}
+.qact.done{color:var(--muted);text-decoration:line-through}
+.q-coach{margin-top:14px;background:#fffbef;border:1px solid var(--yellow);border-radius:8px;padding:12px 14px;font-size:.78rem}
+.q-coach .qcl{font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.insight-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.icard{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.i-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.edots{display:flex;gap:5px;align-items:flex-end;height:36px}
+.edot{width:14px;border-radius:3px 3px 0 0}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:5px}
+.tag{background:#eef5f0;color:var(--forest);font-size:.7rem;padding:3px 9px;border-radius:20px}
+.tag.top{background:var(--green);color:#fff}
+.btn-row{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap}
+.btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:10px 18px;font-size:.82rem;font-family:Georgia,serif;cursor:pointer;font-weight:600;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn.out{background:none;border:1px solid var(--green);color:var(--forest);font-weight:normal}
 </style>
 </head>
 <body>
-<p class="label">your pd overview</p>
-<h1 class="heading">growth at a glance</h1>
-<p class="sub">week 21 · 2026 &nbsp;·&nbsp; junior service designer, L1 → L2</p>
-<div class="divider"></div>
-<p class="label">time budget — this week</p>
+<header>
+  <div><div class="meta">Essense PD · Rosie de Vries</div><h1>Dashboard</h1></div>
+  <span class="period-badge">Q3 2025</span>
+</header>
+<main>
+
 <div class="budget-row">
-  <div class="b-big">62%</div>
-  <div class="b-right">
-    <div style="font-size:.875rem;color:var(--charcoal);margin-bottom:.45rem"><strong>58 min</strong> used of <strong>96 min</strong> weekly budget</div>
-    <div class="b-bar-wrap"><div class="b-bar" style="width:60%"></div></div>
-    <div class="legend">
-      <span><span class="ld" style="background:var(--forest)"></span><span class="ll">coach · 30 min</span></span>
-      <span><span class="ld" style="background:var(--essense)"></span><span class="ll">blocks · 15 min</span></span>
-      <span><span class="ld" style="background:var(--yellow)"></span><span class="ll">actions · 13 min</span></span>
+  <div class="bcard"><div class="lbl">Coach sessies</div><div class="val">4 <span style="font-size:.85rem;color:var(--muted)">/&nbsp;6</span></div><div class="sub">2 resterend</div><div class="bar-w"><div class="bar-f" style="width:67%"></div></div></div>
+  <div class="bcard"><div class="lbl">PD blokken</div><div class="val">5 <span style="font-size:.85rem;color:var(--muted)">/&nbsp;8</span></div><div class="sub">3 resterend</div><div class="bar-w"><div class="bar-f" style="width:63%"></div></div></div>
+  <div class="bcard"><div class="lbl">Trainingen</div><div class="val">1 <span style="font-size:.85rem;color:var(--muted)">/&nbsp;2</span></div><div class="sub">1 gepland sept</div><div class="bar-w"><div class="bar-f warn" style="width:50%"></div></div></div>
+  <div class="bcard"><div class="lbl">Reflecties</div><div class="val">3 <span style="font-size:.85rem;color:var(--muted)">/&nbsp;4</span></div><div class="sub">Laatste: 3 wkn</div><div class="bar-w"><div class="bar-f" style="width:75%"></div></div></div>
+</div>
+
+<div class="sec">Jaarplanning</div>
+<div class="gantt-wrap">
+  <div class="gantt-head">
+    <div class="gh-lbl">Doel</div>
+    <div class="gh-m">Jan</div><div class="gh-m">Feb</div><div class="gh-m">Mrt</div><div class="gh-m">Apr</div><div class="gh-m">Mei</div><div class="gh-m">Jun</div><div class="gh-m">Jul</div><div class="gh-m">Aug</div><div class="gh-m">Sep</div><div class="gh-m">Okt</div><div class="gh-m">Nov</div><div class="gh-m">Dec</div>
+  </div>
+  <div class="g-row">
+    <div class="g-lbl">Journey &amp; Blueprinting<div class="trk">Service Design · L1→L2</div></div>
+    <div class="gc"><div class="bar d" style="left:4px;right:4px">Fase&nbsp;1</div></div>
+    <div class="gc"><div class="bar d" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar d" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px">Fase&nbsp;2</div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px">Fase&nbsp;3</div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"></div><div class="gc"></div><div class="gc"></div>
+  </div>
+  <div class="g-row">
+    <div class="g-lbl">Stakeholder Mgmt<div class="trk">Communicatie · L1→L2</div></div>
+    <div class="gc"></div><div class="gc"></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px">Start</div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar a" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"></div><div class="gc"></div><div class="gc"></div>
+  </div>
+  <div class="g-row">
+    <div class="g-lbl">Facilitation<div class="trk">Projectleiderschap · L2→L3</div></div>
+    <div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div><div class="gc"></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px">Start</div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"><div class="bar p" style="left:4px;right:4px"></div></div>
+    <div class="gc"></div>
+  </div>
+  <!-- consolidated coach marker — ONE row, all sessions -->
+  <div class="coach-row">
+    <div class="coach-lbl">coach sessies</div>
+    <div class="cp"></div>
+    <div class="cp"><div class="cpin">●</div></div>
+    <div class="cp"></div>
+    <div class="cp"><div class="cpin">●</div></div>
+    <div class="cp"></div>
+    <div class="cp"><div class="cpin">●</div></div>
+    <div class="cp"><div class="cpin">●</div></div>
+    <div class="cp"></div>
+    <div class="cp"><div class="cpin" style="opacity:.5">○</div></div>
+    <div class="cp"></div><div class="cp"></div><div class="cp"></div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:28px">In focus</div>
+<div class="tab-bar">
+  <button class="tab-btn" onclick="showTab('q1',this)">Q1</button>
+  <button class="tab-btn" onclick="showTab('q2',this)">Q2</button>
+  <button class="tab-btn active" onclick="showTab('q3',this)">Q3 ← nu</button>
+  <button class="tab-btn" onclick="showTab('q4',this)">Q4</button>
+</div>
+
+<div id="tab-q1" class="tab-c"><div class="qpanel">
+  <div class="qstat-row">
+    <div class="qstat"><div class="n">3</div><div class="l">doelen actief</div></div>
+    <div class="qstat"><div class="n">8</div><div class="l">acties gedaan</div></div>
+    <div class="qstat"><div class="n">2</div><div class="l">sessies</div></div>
+  </div>
+  <div class="qgoal"><div class="qg-name">Journey &amp; Blueprinting — Fase 1 ✓</div><div class="qg-meta"><span>Score: 3.2</span><span>3 reflecties</span></div><div class="qprog"><div class="qprog-f" style="width:100%"></div></div></div>
+  <div class="q-coach"><div class="qcl">Coach notitie</div>Sterke start. Focus op blueprinting tooling in Q2 verder verdiepen.</div>
+</div></div>
+
+<div id="tab-q2" class="tab-c"><div class="qpanel">
+  <div class="qstat-row">
+    <div class="qstat"><div class="n">2</div><div class="l">doelen actief</div></div>
+    <div class="qstat"><div class="n">6</div><div class="l">acties gedaan</div></div>
+    <div class="qstat"><div class="n">2</div><div class="l">sessies</div></div>
+  </div>
+  <div class="qgoal"><div class="qg-name">Journey &amp; Blueprinting — Fase 2</div><div class="qg-meta"><span>Score: 3.5</span><span>2 reflecties</span></div><div class="qprog"><div class="qprog-f" style="width:70%"></div></div></div>
+  <div class="qgoal"><div class="qg-name">Stakeholder Management — start</div><div class="qg-meta"><span>Score: 2.8</span><span>1 reflectie</span></div><div class="qprog"><div class="qprog-f" style="width:40%"></div></div></div>
+  <div class="q-coach"><div class="qcl">Coach sessie</div>18 juni · agenda: blueprinting voortgang + stakeholder aanpak</div>
+</div></div>
+
+<div id="tab-q3" class="tab-c active"><div class="qpanel">
+  <div class="qstat-row">
+    <div class="qstat"><div class="n">3</div><div class="l">doelen actief</div></div>
+    <div class="qstat"><div class="n">4</div><div class="l">acties gedaan</div></div>
+    <div class="qstat"><div class="n">1</div><div class="l">sessie gehad</div></div>
+  </div>
+  <div class="qgoal">
+    <div class="qg-name">Journey &amp; Blueprinting — Fase 3 afronden</div>
+    <div class="qg-meta"><span>Score: 3.7</span><span>1 reflectie</span></div>
+    <div class="qprog"><div class="qprog-f" style="width:55%"></div></div>
+    <div style="margin-top:8px">
+      <div class="qact done"><input type="checkbox" checked disabled>Blueprint review met team begeleiden</div>
+      <div class="qact done"><input type="checkbox" checked disabled>Persona-koppeling in blueprint verwerken</div>
+      <div class="qact"><input type="checkbox">Zelfstandig blueprinting workshop leiden</div>
     </div>
   </div>
-</div>
-<div class="meter-cards">
-  <div class="mc"><div class="mc-label">coach session</div><div class="mc-val">30</div><div class="mc-unit">min this week</div><div class="track"><div class="fill" style="width:31%;background:var(--forest)"></div></div></div>
-  <div class="mc"><div class="mc-label">calendar blocks</div><div class="mc-val">15</div><div class="mc-unit">min scheduled</div><div class="track"><div class="fill" style="width:16%;background:var(--essense)"></div></div></div>
-  <div class="mc"><div class="mc-label">actions done</div><div class="mc-val">13</div><div class="mc-unit">min · 3 actions</div><div class="track"><div class="fill" style="width:14%;background:var(--yellow)"></div></div></div>
-</div>
-<div class="divider"></div>
-<p class="label">goal roadmap — 2026</p>
-<div class="gantt-header"><div></div><div class="qtr-row"><div class="qtr">Q1</div><div class="qtr">Q2</div><div class="qtr">Q3</div><div class="qtr">Q4</div></div></div>
-<div id="gantt"></div>
-<div class="legend" style="margin-top:.875rem">
-  <span><span class="ld" style="background:#044524;border-radius:2px"></span><span class="ll">Delivery</span></span>
-  <span><span class="ld" style="background:#579B7A;border-radius:2px"></span><span class="ll">People</span></span>
-  <span><span class="ld" style="background:#b7994a;border-radius:2px"></span><span class="ll">Added value</span></span>
-  <span><span class="ld" style="background:var(--forest);opacity:.5;border-radius:0"></span><span class="ll">coach session</span></span>
-</div>
-<div class="divider"></div>
-<p class="label">reflection insights</p>
-<div class="ref-grid">
-  <div class="rc">
-    <div class="rc-label">energy after actions</div>
-    <div class="eb-row"><div class="eb-lbl">energised</div><div class="eb-track"><div class="eb-fill" style="width:67%;background:var(--essense)"></div></div><div class="eb-n">2</div></div>
-    <div class="eb-row"><div class="eb-lbl">neutral</div><div class="eb-track"><div class="eb-fill" style="width:33%;background:var(--bright)"></div></div><div class="eb-n">1</div></div>
-    <div class="eb-row"><div class="eb-lbl">drained</div><div class="eb-track"><div class="eb-fill" style="width:0%"></div></div><div class="eb-n">0</div></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:.65rem">3 actions · all within energy</div>
+  <div class="qgoal">
+    <div class="qg-name">Stakeholder Management — verdiepen</div>
+    <div class="qg-meta"><span>Score: 3.1</span><span>0 reflecties dit kwartaal</span></div>
+    <div class="qprog"><div class="qprog-f" style="width:30%"></div></div>
+    <div style="margin-top:8px">
+      <div class="qact"><input type="checkbox">Stakeholder map voor huidig project</div>
+      <div class="qact"><input type="checkbox">Update aan capability lead</div>
+    </div>
   </div>
-  <div class="rc">
-    <div class="rc-label">reflection formats</div>
-    <span class="chip"><span class="chip-dot" style="background:var(--forest)"></span>do again: walk-and-talk</span>
-    <span class="chip"><span class="chip-dot" style="background:var(--essense)"></span>fine: written</span>
-    <div style="font-size:11px;color:var(--muted);margin-top:.65rem">0 reflections logged yet</div>
+  <div class="qgoal">
+    <div class="qg-name">Facilitation — opstarten</div>
+    <div class="qg-meta"><span>Nieuw doel · start sept</span></div>
+    <div class="qprog"><div class="qprog-f" style="width:5%"></div></div>
   </div>
+  <div class="q-coach"><div class="qcl">Volgende coach sessie</div>15 september · <a href="coach.html" style="color:var(--forest)">Agenda samenstellen →</a></div>
+</div></div>
+
+<div id="tab-q4" class="tab-c"><div class="qpanel">
+  <div class="qstat-row">
+    <div class="qstat"><div class="n" style="color:var(--muted)">—</div><div class="l">doelen</div></div>
+    <div class="qstat"><div class="n" style="color:var(--muted)">—</div><div class="l">acties</div></div>
+    <div class="qstat"><div class="n" style="color:var(--muted)">—</div><div class="l">sessies</div></div>
+  </div>
+  <div style="padding:16px;background:#f5faf6;border-radius:8px;font-size:.82rem;color:var(--muted);text-align:center">Q4 is nog niet ingepland. Doelen worden na de september-sessie vastgesteld.</div>
+</div></div>
+
+<div class="sec">Inzichten</div>
+<div class="insight-row">
+  <div class="icard"><div class="i-lbl">Energie per reflectie</div><div class="edots"><div class="edot" style="height:18px;background:var(--muted);opacity:.5"></div><div class="edot" style="height:28px;background:var(--green)"></div><div class="edot" style="height:14px;background:var(--muted);opacity:.5"></div><div class="edot" style="height:32px;background:var(--green)"></div><div class="edot" style="height:36px;background:var(--forest)"></div></div><div style="font-size:.7rem;color:var(--muted);margin-top:6px">Trend: opwaarts ↑</div></div>
+  <div class="icard"><div class="i-lbl">Populaire formats</div><div class="tag-cloud"><span class="tag top">Gesprek</span><span class="tag top">Schrijven</span><span class="tag">Tekenen</span><span class="tag">Stilte</span></div><div style="font-size:.7rem;color:var(--muted);margin-top:8px">Voorkeur: actief verwerken</div></div>
 </div>
-<div class="ref-grid">
-  <div class="rc">
-    <div class="rc-label">goals progress</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:.4rem">Journey & Blueprinting L1→L2</div>
-    <div class="track" style="height:6px"><div class="fill" style="width:0%;background:var(--forest)"></div></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:.5rem">1 active · 3 actions ready · 0 done</div>
-  </div>
-  <div class="rc">
-    <div class="rc-label">feedback received</div>
-    <div style="font-size:13px;color:var(--charcoal);margin-bottom:.4rem">0 new this period</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">feedback from coach, lead, and clients will appear here</div>
-  </div>
+
+<div class="btn-row">
+  <button class="btn" onclick="location.href='reflection.html'">+ Reflectie schrijven</button>
+  <button class="btn out" onclick="location.href='tracker.html'">Acties bijhouden</button>
+  <button class="btn out" onclick="location.href='coach.html'">Coach prep →</button>
+  <button class="btn out" onclick="location.href='insights.html'">Alle inzichten →</button>
 </div>
-<div class="action-strip">
-  <div class="as-text"><span>38 min</span> left in your budget this week</div>
-  <div class="as-btns">
-    <a class="as-btn" href="./reflection.html" target="_blank">reflect now ↗</a>
-    <a class="as-btn" href="./tracker.html" target="_blank">do a micro-action ↗</a>
-    <a class="as-btn-y" href="./breakdown.html" target="_blank">break down a goal →</a>
-  </div>
-</div>
+</main>
 <script>
-const goals=[
-  {label:'Journey & Blueprinting',dim:'Delivery',color:'#044524',text:'#EAF5F2',start:1,end:3,pct:0},
-  {label:'Communication L1→L2',dim:'People',color:'#579B7A',text:'#EAF5F2',start:0,end:2,pct:0},
-  {label:'Knowledge Building',dim:'Added value',color:'#b7994a',text:'#FAF0DB',start:2,end:3,pct:0},
-];
-const coaches=[{q:1.5,label:'June'}];
-const gantt=document.getElementById('gantt');
-goals.forEach(g=>{
-  const row=document.createElement('div');row.className='gr';
-  const lbl=document.createElement('div');lbl.className='gl';
-  lbl.innerHTML=`<span class="gd">${g.dim}</span>${g.label}`;
-  const ta=document.createElement('div');ta.className='gta';
-  const bg=document.createElement('div');bg.className='gtbg';
-  for(let i=0;i<4;i++){const q=document.createElement('div');q.className='gtq';bg.appendChild(q);}
-  ta.appendChild(bg);
-  const bar=document.createElement('div');bar.className='gbar';
-  bar.style.cssText=`left:${g.start/4*100}%;width:${(g.end-g.start)/4*100}%;background:${g.color}`;
-  bar.innerHTML=`<span class="gbar-lbl" style="color:${g.text}">${g.label}</span><span class="gpct" style="color:${g.color};background:rgba(255,255,255,.6)">${g.pct}%</span>`;
-  ta.appendChild(bar);
-  coaches.forEach(c=>{
-    const cm=document.createElement('div');cm.className='cm';cm.style.left=`${c.q/4*100}%`;
-    const cl=document.createElement('div');cl.className='cm-lbl';cl.style.left=`${c.q/4*100}%`;cl.textContent=c.label;
-    ta.appendChild(cm);ta.appendChild(cl);
-  });
-  row.appendChild(lbl);row.appendChild(ta);gantt.appendChild(row);
-});
+function showTab(q,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-c').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+q).classList.add('active');
+  btn.classList.add('active');
+}
 </script>
 </body>
 </html>

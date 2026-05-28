@@ -1,92 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coach Prep — Essense PD</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:1.75rem 0}
-.session-banner{background:var(--forest);color:#b7e4c7;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-.session-date{font-family:var(--font-head);font-size:1.4rem;color:var(--white)}
-.session-meta{font-size:.8rem;color:#b7e4c7;margin-top:.2rem}
-.countdown-num{font-family:var(--font-head);font-size:2rem;color:var(--yellow);line-height:1}
-.countdown-label{font-size:.75rem;color:#b7e4c7}
-.prep-section{margin-bottom:1.5rem}
-.prep-section-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem}
-.prep-section-title{font-size:.9rem;font-weight:500;color:var(--charcoal)}
-.prep-badge{font-size:.7rem;background:var(--bright);color:var(--forest);border-radius:99px;padding:.2rem .6rem;font-weight:600}
-.prep-item{background:var(--egg);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.5rem;font-size:.85rem;line-height:1.5}
-.prep-item-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem;font-weight:500}
-.prep-item-sub{font-size:.75rem;color:var(--muted);margin-top:.25rem;font-style:italic}
-.discuss-item{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1rem;margin-bottom:.5rem;display:flex;gap:.75rem;align-items:flex-start;cursor:pointer;transition:all .2s}
-.discuss-item:hover{border-color:var(--essense)}
-.discuss-item.checked{border-color:var(--forest);background:var(--bright)}
-.discuss-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:transparent;transition:all .2s}
-.discuss-item.checked .discuss-check{background:var(--forest);border-color:var(--forest);color:var(--white)}
-.discuss-text{font-size:.85rem;color:var(--charcoal);line-height:1.4}
-.discuss-sub{font-size:.75rem;color:var(--muted);margin-top:.2rem}
-.my-thoughts{width:100%;border:1px solid var(--border);border-radius:8px;padding:.75rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:70px;outline:none;transition:border .2s;line-height:1.6}
-.my-thoughts:focus{border-color:var(--essense)}
-.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem}
-.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
-.btn-p:hover{background:var(--essense)}
-.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
-.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.2rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:1rem 1.25rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
-.tag{display:inline-block;background:var(--forest);color:var(--bright);border-radius:99px;padding:.15rem .65rem;font-size:.7rem;font-weight:500;margin:.15rem}
-.back-link{display:inline-block;font-size:.8rem;color:var(--essense);text-decoration:none;margin-bottom:1.5rem}
-.back-link:hover{color:var(--forest)}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+h1{font-size:1.35rem;font-weight:normal}
+.meta{font-size:.8rem;opacity:.7;margin-top:2px}
+.notion-link-btn{background:rgba(255,255,255,.15);color:var(--eggshell);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:6px 12px;font-size:.72rem;font-family:Georgia,serif;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px}
+.notion-link-btn:hover{background:rgba(255,255,255,.25)}
+main{padding:24px 28px;max-width:720px}
+/* Expectations banner */
+.expect-banner{background:var(--eggshell);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px}
+.eb-head{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.eb-head a{color:var(--green);font-size:.68rem;text-decoration:underline;cursor:pointer;text-transform:none;letter-spacing:0}
+.expect-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.expect-list li{font-size:.78rem;color:var(--text);display:flex;gap:8px;align-items:flex-start}
+.expect-list li::before{content:'→';color:var(--green);flex-shrink:0}
+/* session info */
+.session-card{background:var(--forest);color:var(--eggshell);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.sc-date{font-size:1rem}
+.sc-meta{font-size:.75rem;opacity:.75;margin-top:3px}
+.sc-days{background:var(--yellow);color:var(--forest);font-size:.75rem;font-weight:700;padding:5px 12px;border-radius:20px}
+/* steps */
+.prep-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.pc-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.pc-title{font-size:.9rem;color:var(--text);margin-bottom:10px;line-height:1.4}
+textarea{width:100%;font-family:Georgia,serif;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;min-height:70px;outline:none}
+textarea:focus{border-color:var(--green)}
+/* generated agenda */
+.agenda-section{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
+.agenda-item{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border)}
+.agenda-item:last-child{border-bottom:none}
+.ai-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;margin-top:1px}
+.ai-check.sel{background:var(--green);border-color:var(--green)}
+.ai-text{font-size:.82rem;flex:1;line-height:1.4}
+.ai-text .ai-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+.ai-tag{font-size:.62rem;background:#eef5f0;color:var(--forest);padding:1px 7px;border-radius:20px;display:inline-block}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:10px 18px;font-size:.82rem;font-family:Georgia,serif;cursor:pointer;font-weight:600}
+.btn:hover{opacity:.85}
+.btn.sec{background:none;border:1px solid var(--border);color:var(--muted);font-weight:normal}
+.print-note{font-size:.7rem;color:var(--muted);margin-top:8px}
 </style>
 </head>
 <body>
-<a class="back-link" href="./dashboard.html">← back to dashboard</a>
-<p class="label">coach corner</p>
-<h1 class="heading">prep for your next session</h1>
-<p class="sub">generated from your goals, reflections, and actions since your last session. edit freely before you meet.</p>
-<div class="session-banner">
-  <div><div class="session-date">Tuesday, 3 June</div><div class="session-meta">with your coach · 30 min · Google Meet</div></div>
-  <div style="text-align:right"><div class="countdown-num">9</div><div class="countdown-label">days away</div></div>
+<header>
+  <div><div class="meta">Essense PD · Rosie de Vries</div><h1>Coach Prep</h1></div>
+  <a href="https://www.notion.so" target="_blank" class="notion-link-btn">📋 Coaching pagina Notion ↗</a>
+</header>
+<main>
+
+<!-- Expectations from coaching page -->
+<div class="expect-banner">
+  <div class="eb-head">
+    Op basis van je coaching-afspraken
+    <a href="https://www.notion.so" target="_blank">→ Bewerk in Notion</a>
+  </div>
+  <ul class="expect-list">
+    <li>Elke sessie: reflecteren op voortgang van actieve doelen</li>
+    <li>Q3-focus: Journey &amp; Blueprinting afronden richting L2</li>
+    <li>Signaleren als energieniveau structureel laag is</li>
+    <li>Einde jaar: zelfevaluatie klaarhebben voor calibratiegesprek</li>
+  </ul>
 </div>
-<div class="prep-section">
-  <div class="prep-section-head"><span class="prep-section-title">since last session</span><span class="prep-badge">auto-generated</span></div>
-  <div class="prep-item"><div class="prep-item-label">goal status</div>1 active goal: <strong>Journey & Blueprinting L1→L2</strong> · status: To define · progress: 0%<div class="prep-item-sub">→ good one to discuss — it's set but not yet moving</div></div>
-  <div class="prep-item"><div class="prep-item-label">micro-actions</div>3 actions ready, 0 completed<div class="prep-item-sub">→ worth discussing what's in the way of starting</div></div>
-  <div class="prep-item"><div class="prep-item-label">reflections</div>0 reflections logged since last session<div class="prep-item-sub">→ a good opener: "what stood out for you since we last spoke?"</div></div>
-  <div class="prep-item"><div class="prep-item-label">feedback received</div>0 new feedback items</div>
+
+<!-- Session info -->
+<div class="session-card">
+  <div>
+    <div class="sc-date">Coach sessie — 15 september 2025</div>
+    <div class="sc-meta">Volgende sessie · duur: 60 min · Coach: wordt ingesteld</div>
+  </div>
+  <div class="sc-days">Over 21 dagen</div>
 </div>
-<div class="divider"></div>
-<div class="prep-section">
-  <div class="prep-section-head"><span class="prep-section-title">suggested topics</span><span style="font-size:.75rem;color:var(--muted)">tap to tick off as you go through the session</span></div>
-  <div class="discuss-item" onclick="toggleCheck(this)"><div class="discuss-check">✓</div><div><div class="discuss-text">activating the first goal: what's the first concrete step toward Journey & Blueprinting L2?</div><div class="discuss-sub">goal is set but not yet moving — get specific on the first action</div></div></div>
-  <div class="discuss-item" onclick="toggleCheck(this)"><div class="discuss-check">✓</div><div><div class="discuss-text">are the micro-actions realistic given current project load?</div><div class="discuss-sub">3 actions ready, none started — might need adjusting</div></div></div>
-  <div class="discuss-item" onclick="toggleCheck(this)"><div class="discuss-check">✓</div><div><div class="discuss-text">what's working and what's giving energy right now?</div><div class="discuss-sub">positive opener — sets a constructive tone</div></div></div>
-  <div class="discuss-item" onclick="toggleCheck(this)"><div class="discuss-check">✓</div><div><div class="discuss-text">are there goals from the Miro session still to add?</div><div class="discuss-sub">only 1 goal currently defined</div></div></div>
+
+<!-- Step 1: What do you want to bring? -->
+<div class="prep-card">
+  <div class="pc-label">Stap 1 — Jouw input eerst</div>
+  <div class="pc-title">Wat wil jij zeker bespreken in deze sessie? Wat zit je bezig, waar wil je op gereflecteerd worden?</div>
+  <textarea id="own-input" placeholder="bijv. Ik wil het hebben over de blueprinting workshop die ik zou leiden — dat spannend vond en of ik klaar ben voor de volgende stap..."></textarea>
 </div>
-<div class="divider"></div>
-<div class="prep-section">
-  <div class="prep-section-head"><span class="prep-section-title">my thoughts before the session</span></div>
-  <textarea class="my-thoughts" placeholder="anything you want to bring, ask, or raise. this is just for you…" rows="4"></textarea>
+
+<!-- Generated agenda -->
+<div class="agenda-section">
+  <div class="pc-label">Gegenereerde agenda — op basis van jouw periode</div>
+  <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Op basis van je reflecties, acties en doelen van de afgelopen 6 weken. Vink aan wat je wil bespreken.</div>
+  
+  <div class="agenda-item">
+    <div class="ai-check sel" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Voortgang Journey &amp; Blueprinting — Fase 3<div class="ai-sub">68% klaar · Werkpunt: zelfstandig workshop leiden is nog niet gedaan <span class="ai-tag">Hoog</span></div></div>
+  </div>
+  <div class="agenda-item">
+    <div class="ai-check sel" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Energie na de blueprint workshop (jul 24) — momentum vasthouden<div class="ai-sub">Hoogste energie-score van de maand: 5.0 <span class="ai-tag">Inzicht</span></div></div>
+  </div>
+  <div class="agenda-item">
+    <div class="ai-check" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Stakeholder Management — traagheid opvangen<div class="ai-sub">0 reflecties en 0 acties gedaan in juli <span class="ai-tag">Aandacht</span></div></div>
+  </div>
+  <div class="agenda-item">
+    <div class="ai-check" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Nieuw doel Facilitation opstarten in Q3<div class="ai-sub">Gepland maar nog geen acties <span class="ai-tag">Nieuw</span></div></div>
+  </div>
+  <div class="agenda-item">
+    <div class="ai-check" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Training: Facilitation Masterclass — goedkeuring bespreken<div class="ai-sub">2-daagse betaalde training · nog niet aangevraagd <span class="ai-tag">Actie nodig</span></div></div>
+  </div>
+  <div class="agenda-item">
+    <div class="ai-check" onclick="toggleCheck(this)"></div>
+    <div class="ai-text">Q4 doelen — vooruitkijken en prioriteren<div class="ai-sub">Kwartaal nadert · Q4 is nog niet ingepland <span class="ai-tag">Planning</span></div></div>
+  </div>
 </div>
-<div class="prep-section">
-  <div class="prep-section-head"><span class="prep-section-title">decisions to bring</span></div>
-  <div class="prep-item"><div class="prep-item-label">goal framing</div>Journey & Blueprinting goal is status <span class="tag">To define</span> — is the SMART framing ready to validate with your coach, or do you want GROW support first?</div>
+
+<!-- Open notes -->
+<div class="prep-card">
+  <div class="pc-label">Aanvullende notities (optioneel)</div>
+  <textarea placeholder="Iets wat je niet kwijt kan in bovenstaande punten..."></textarea>
 </div>
-<div class="insight"><span class="arrow">→</span>this session is a good moment to activate. you have a goal set and 3 actions ready — your coach can help make the first one feel real and doable.</div>
+
 <div class="btn-row">
-  <button class="btn-y" onclick="window.print()">save as PDF</button>
-  <a class="btn-s" href="./dashboard.html" style="text-decoration:none">← dashboard</a>
+  <button class="btn" onclick="window.print()">⬇ Opslaan als PDF</button>
+  <button class="btn sec" onclick="copyOverview()">📋 Kopieer overzicht</button>
+  <button class="btn sec" onclick="mailto()">✉ Stuur naar coach</button>
 </div>
+<div class="print-note">Tip: gebruik Ctrl+P / Cmd+P en kies 'opslaan als PDF' om dit te bewaren voor je sessie.</div>
+
+</main>
 <script>
-function toggleCheck(el){el.classList.toggle('checked');}
+function toggleCheck(el){el.classList.toggle('sel')}
+function copyOverview(){
+  const items=[];
+  document.querySelectorAll('.agenda-item').forEach(item=>{
+    if(item.querySelector('.ai-check.sel')){items.push('• '+item.querySelector('.ai-text').innerText.split('\n')[0])}
+  });
+  const own=document.getElementById('own-input').value;
+  let txt='COACH PREP — 15 september 2025\n\n';
+  if(own)txt+='Mijn input:\n'+own+'\n\n';
+  txt+='Agendapunten:\n'+items.join('\n');
+  navigator.clipboard.writeText(txt).then(()=>alert('Gekopieerd naar klembord!')).catch(()=>alert('Kopieer handmatig'));
+}
+function mailto(){
+  const items=[];
+  document.querySelectorAll('.agenda-item').forEach(item=>{
+    if(item.querySelector('.ai-check.sel')){items.push('• '+item.querySelector('.ai-text').innerText.split('\n')[0])}
+  });
+  const body=encodeURIComponent('Hoi,\n\nHierbij mijn voorbereiding voor onze sessie op 15 september.\n\nAgendapunten:\n'+items.join('\n')+'\n\nGroeten,\nRosie');
+  window.location.href='mailto:?subject=Coach+sessie+voorbereiding+15+september&body='+body;
+}
 </script>
 </body>
 </html>

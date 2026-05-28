@@ -1,67 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Essense PD System</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Essense PD — Overzicht</title>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);min-height:100vh;padding:3rem 1.5rem}
-.wrap{max-width:760px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.75rem;font-weight:500;text-align:center}
-.heading{font-family:var(--font-head);font-size:2.2rem;color:var(--forest);margin-bottom:.5rem;text-align:center}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:2.5rem;line-height:1.6;text-align:center;max-width:480px;margin-left:auto;margin-right:auto}
-.section-label{font-size:.75rem;color:var(--essense);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin:1.75rem 0 .65rem;padding-left:.3rem}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.25rem;text-decoration:none;color:var(--charcoal);transition:all .2s;text-align:left;display:block}
-.card:hover{border-color:var(--essense);box-shadow:0 4px 16px rgba(4,69,36,.08);transform:translateY(-1px)}
-.card-icon{font-size:1.5rem;margin-bottom:.5rem}
-.card-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.25rem}
-.card-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
-.footer{font-size:.75rem;color:var(--muted);margin-top:2rem;text-align:center}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:28px 36px}
+header h1{font-size:1.6rem;font-weight:normal;letter-spacing:.02em}
+header p{font-size:.82rem;opacity:.7;margin-top:4px}
+main{padding:32px 36px;max-width:960px}
+.sec-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin:28px 0 12px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px}
+.card{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);cursor:pointer;text-decoration:none;display:block;transition:all .2s;border:1.5px solid transparent}
+.card:hover{border-color:var(--green);transform:translateY(-1px)}
+.card .icon{font-size:1.6rem;margin-bottom:10px}
+.card .name{font-size:.88rem;color:var(--text);margin-bottom:3px}
+.card .desc{font-size:.7rem;color:var(--muted);line-height:1.4}
+.card.coach-only{border-left:3px solid var(--yellow)}
+.card.coach-only .co-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:6px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <p class="label">essense pd system</p>
-  <h1 class="heading">the invisible agent</h1>
-  <p class="sub">personal development that feels like a byproduct of your work, not extra to it.</p>
+<header>
+  <h1>Essense PD</h1>
+  <p>Prototype v4 · Rosie de Vries · 12 modules</p>
+</header>
+<main>
 
-  <div class="section-label">overview</div>
-  <div class="grid">
-    <a class="card" href="./profile.html"><div class="card-icon">🎯</div><div class="card-title">profile</div><div class="card-desc">your role, level, coach, and focus — the foundation everything builds from</div></a>
-    <a class="card" href="./dashboard.html"><div class="card-icon">📊</div><div class="card-title">dashboard</div><div class="card-desc">time budget, goal roadmap, and reflection insights at a glance</div></a>
-  </div>
-
-  <div class="section-label">goals</div>
-  <div class="grid">
-    <a class="card" href="./goals.html"><div class="card-icon">🎯</div><div class="card-title">goals overview</div><div class="card-desc">your year's goals, sub-goals, progress and framework anchors</div></a>
-    <a class="card" href="./breakdown.html"><div class="card-icon">🗺</div><div class="card-title">goal breakdown</div><div class="card-desc">turn a big yearly goal into approved, doable sub-goals</div></a>
-  </div>
-
-  <div class="section-label">action and reflection</div>
-  <div class="grid">
-    <a class="card" href="./tracker.html"><div class="card-icon">🧱</div><div class="card-title">action tracker</div><div class="card-desc">mark today's micro-actions done and log energy and time</div></a>
-    <a class="card" href="./reflection.html"><div class="card-icon">🌀</div><div class="card-title">reflect now</div><div class="card-desc">choose your format — written, walk, quick check-in, or free-form</div></a>
-  </div>
-
-  <div class="section-label">insights and progress</div>
-  <div class="grid">
-    <a class="card" href="./insights.html"><div class="card-icon">✨</div><div class="card-title">feedback + insights</div><div class="card-desc">what you're good at, where to grow, turn insights into goals</div></a>
-    <a class="card" href="./budget.html"><div class="card-icon">⏱</div><div class="card-title">time budget</div><div class="card-desc">visualise where your 4% goes — by week, quarter, and year</div></a>
-    <a class="card" href="./growth.html"><div class="card-icon">🌱</div><div class="card-title">growth over time</div><div class="card-desc">your development trajectory across the career framework, year by year</div></a>
-    <a class="card" href="./training.html"><div class="card-icon">🎓</div><div class="card-title">training menu</div><div class="card-desc">curated resources matched to your goals — podcasts, courses, books</div></a>
-  </div>
-
-  <div class="section-label">coaching</div>
-  <div class="grid">
-    <a class="card" href="./coach.html"><div class="card-icon">🤝</div><div class="card-title">coach prep</div><div class="card-desc">auto-generated prep for your next coaching session</div></a>
-    <a class="card" href="./coach-overview.html"><div class="card-icon">👥</div><div class="card-title">coach overview</div><div class="card-desc">for coaches — see all your coachees and their state</div></a>
-  </div>
-
-  <div class="footer">essense · prototype · all data is private unless you choose to share</div>
+<div class="sec-title">Overzicht &amp; profiel</div>
+<div class="grid">
+  <a class="card" href="dashboard.html"><div class="icon">📊</div><div class="name">Dashboard</div><div class="desc">Tijdsbudget, jaarplanning en kwartaaloverzicht</div></a>
+  <a class="card" href="profile.html"><div class="icon">👤</div><div class="name">Profiel</div><div class="desc">Jouw instellingen, voorkeuren en Time Sanctity</div></a>
+  <a class="card" href="budget.html"><div class="icon">📅</div><div class="name">Tijdsbudget</div><div class="desc">PD-uren en kalenderbeveiliging</div></a>
 </div>
+
+<div class="sec-title">Doelen &amp; acties</div>
+<div class="grid">
+  <a class="card" href="goals.html"><div class="icon">🎯</div><div class="name">Doelen</div><div class="desc">Alle actieve en afgeronde doelen</div></a>
+  <a class="card" href="breakdown.html"><div class="icon">✂️</div><div class="name">Doel verkleinen</div><div class="desc">Groot doel opsplitsen in behapbare stappen</div></a>
+  <a class="card" href="tracker.html"><div class="icon">✅</div><div class="name">Actietracker</div><div class="desc">Acties afvinken met energie-score</div></a>
+</div>
+
+<div class="sec-title">Reflectie &amp; inzichten</div>
+<div class="grid">
+  <a class="card" href="reflection.html"><div class="icon">💬</div><div class="name">Reflectie</div><div class="desc">Reflecteren via gesprek, schrijven of audio</div></a>
+  <a class="card" href="insights.html"><div class="icon">📈</div><div class="name">Inzichten</div><div class="desc">Energie, thema's en formats per periode</div></a>
+  <a class="card" href="growth.html"><div class="icon">🌱</div><div class="name">Groeikaart</div><div class="desc">Competentie-groei per jaar en track</div></a>
+</div>
+
+<div class="sec-title">Coaching &amp; leren</div>
+<div class="grid">
+  <a class="card" href="coach.html"><div class="icon">🤝</div><div class="name">Coach Prep</div><div class="desc">Sessie voorbereiden op basis van je periode</div></a>
+  <a class="card" href="training.html"><div class="icon">📚</div><div class="name">Trainingsmenu</div><div class="desc">Curated aanbod — gratis en betaald</div></a>
+  <a class="card coach-only" href="coach-overview.html"><div class="icon">🔒</div><div class="name">Coach Overzicht</div><div class="desc">Team-overzicht voor coaches</div><div class="co-label">Coaches only</div></a>
+</div>
+
+</main>
 </body>
 </html>

@@ -1,249 +1,363 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Training Menu — Essense PD</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trainingsmenu — Essense PD</title>
 <style>
+:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:780px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.55rem;color:var(--forest);margin-bottom:.4rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:1.75rem 0}
-.suggest-strip{background:var(--forest);color:var(--bright);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
-.ss-label{font-size:11px;color:var(--yellow);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-bottom:.4rem}
-.ss-title{font-family:var(--font-head);font-size:1.15rem;color:var(--white);margin-bottom:.6rem;line-height:1.3}
-.ss-controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.875rem}
-.ss-select{flex:1;min-width:200px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);border-radius:8px;padding:.55rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--white);outline:none;cursor:pointer}
-.ss-select option{background:var(--forest);color:var(--white)}
-.ss-select:focus{border-color:var(--yellow)}
-.ss-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;white-space:nowrap}
-.ss-btn:hover{filter:brightness(.95)}
-.ss-results{display:none}
-.ss-results.open{display:block}
-.ss-rec{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;padding:.7rem .9rem;margin-bottom:.4rem;font-size:.85rem;color:var(--white);line-height:1.5}
-.ss-rec-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
-.ss-rec-pill{background:rgba(255,255,255,.12);color:var(--bright);border-radius:99px;padding:.1rem .55rem;font-size:.65rem;font-weight:500}
-.ss-rec-actions{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
-.ss-rec-btn{background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.25rem .65rem;font-family:var(--font-body);font-size:.7rem;cursor:pointer;color:var(--white)}
-.ss-rec-btn:hover{background:rgba(255,255,255,.12)}
-.ss-rec-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
-.filter-row{display:flex;gap:.6rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
-.search-input{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .85rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);outline:none;transition:border .2s}
-.search-input:focus{border-color:var(--essense)}
-.filter-select{border:1.5px solid var(--border);border-radius:8px;padding:.6rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);outline:none;cursor:pointer;transition:border .2s}
-.filter-select:focus{border-color:var(--essense)}
-.results-info{font-size:.78rem;color:var(--muted);margin-bottom:.875rem}
-.training-card{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.15rem;margin-bottom:.65rem;transition:all .2s}
-.training-card:hover{border-color:var(--essense);box-shadow:0 3px 12px rgba(4,69,36,.06)}
-.tc-head{display:flex;align-items:flex-start;gap:.65rem;margin-bottom:.4rem}
-.tc-icon{font-size:1.25rem;flex-shrink:0;margin-top:.15rem}
-.tc-info{flex:1;min-width:0}
-.tc-title{font-size:.92rem;font-weight:500;color:var(--charcoal);line-height:1.3;margin-bottom:.2rem}
-.tc-provider{font-size:.72rem;color:var(--muted);font-style:italic}
-.tc-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem}
-.tc-pill{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.15rem .55rem;font-size:.68rem;color:var(--muted)}
-.tc-pill.free{background:var(--bright);color:var(--essense);border-color:var(--essense)}
-.tc-pill.paid{background:#fdf3e7;color:#b7994a;border-color:#d4b884}
-.tc-pill.competence{background:var(--bright);color:var(--forest);border-color:var(--essense);font-weight:500}
-.tc-note{font-size:.76rem;color:var(--charcoal);margin-top:.5rem;line-height:1.5;padding:.5rem .7rem;background:var(--white);border-radius:8px;border-left:3px solid var(--essense)}
-.tc-actions{display:flex;gap:.4rem;margin-top:.55rem;flex-wrap:wrap}
-.tc-btn{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:.35rem .75rem;font-family:var(--font-body);font-size:.7rem;cursor:pointer;color:var(--charcoal);text-decoration:none;display:inline-block;transition:all .2s}
-.tc-btn:hover{border-color:var(--essense);background:var(--bright);color:var(--forest)}
-.tc-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
-.tc-endorsements{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;color:var(--essense);margin-left:.4rem}
-.empty{background:var(--egg);border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;color:var(--muted);font-size:.85rem;line-height:1.5}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
-.web-search-note{font-size:.75rem;color:var(--muted);font-style:italic;margin-top:.65rem;text-align:center}
+body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
+header{background:var(--forest);color:var(--eggshell);padding:20px 28px}
+h1{font-size:1.35rem;font-weight:normal}
+.meta{font-size:.8rem;opacity:.7;margin-top:2px}
+main{padding:24px 28px;max-width:880px}
+/* approval info banner */
+.approval-banner{background:#fffbef;border:1px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;font-size:.78rem;display:flex;gap:10px;align-items:flex-start}
+.ab-icon{font-size:1.1rem;flex-shrink:0}
+.ab-body strong{display:block;color:var(--forest);margin-bottom:3px}
+.ab-link{color:var(--forest);font-size:.72rem;text-decoration:underline;cursor:pointer;margin-top:3px;display:inline-block}
+/* filters */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-row span{font-size:.75rem;color:var(--muted);margin-right:2px}
+.fchip{background:none;border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.73rem;color:var(--muted);cursor:pointer;font-family:Georgia,serif;transition:all .15s}
+.fchip.active{background:var(--forest);color:var(--eggshell);border-color:var(--forest)}
+/* cards */
+.t-grid{display:flex;flex-direction:column;gap:10px}
+.tcard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.tc-top{padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.tc-icon{width:38px;height:38px;border-radius:8px;background:var(--eggshell);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.tc-body{flex:1}
+.tc-name{font-size:.9rem;margin-bottom:3px}
+.tc-sub{font-size:.7rem;color:var(--muted);margin-bottom:7px}
+.tc-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ttag{font-size:.63rem;background:#eef5f0;color:var(--forest);padding:2px 8px;border-radius:20px}
+.ttag.type{background:var(--eggshell)}
+.ttag.paid{background:#fff3cd;color:#7a5c00}
+.ttag.days{background:#e8f0fe;color:#1a3a6e}
+.tc-actions{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.tbtn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:.7rem;color:var(--muted);cursor:pointer;font-family:Georgia,serif;transition:all .15s;white-space:nowrap}
+.tbtn:hover{border-color:var(--green);color:var(--forest)}
+.tbtn.cta{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
+.tbtn.approve{background:#fff3cd;color:#7a5c00;border-color:#f0d060}
+.endorse{font-size:.68rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+.endorse span{color:var(--forest);font-weight:600}
+.done-badge{display:inline-block;background:var(--green);color:#fff;font-size:.58rem;border-radius:20px;padding:1px 7px;margin-left:6px}
+/* share panel */
+.share-panel{display:none;border-top:1px solid var(--border);background:#f9fdf9;padding:16px}
+.share-panel.open{display:block}
+.sp-title{font-size:.78rem;color:var(--forest);font-weight:600;margin-bottom:6px}
+.sp-prompt{font-size:.72rem;color:var(--muted);margin-bottom:8px}
+.sp-input{width:100%;font-family:Georgia,serif;font-size:.78rem;border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;min-height:65px;outline:none;background:#fff}
+.sp-input:focus{border-color:var(--green)}
+.sp-footer{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.sp-footer select{font-family:Georgia,serif;font-size:.72rem;border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text)}
+.sp-send{background:var(--forest);color:var(--eggshell);border:none;border-radius:6px;padding:7px 14px;font-size:.72rem;font-family:Georgia,serif;cursor:pointer}
+.sp-cancel{background:none;border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:.72rem;font-family:Georgia,serif;cursor:pointer;color:var(--muted)}
+.shared-by{margin-top:10px;border-top:1px solid var(--border);padding-top:8px}
+.sb-lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.sb-item{font-size:.72rem;padding:4px 0;display:flex;gap:6px}
+.sb-name{color:var(--forest);font-weight:600}
 </style>
 </head>
 <body>
-<p class="label">training menu</p>
-<h1 class="heading">find the right resource</h1>
-<p class="sub">curated trainings, podcasts, articles, books — tagged to career framework competences. pick a goal and get personalised suggestions, or search the full menu.</p>
+<header><div class="meta">Essense PD · Rosie de Vries</div><h1>Trainingsmenu</h1></header>
+<main>
 
-<div class="suggest-strip">
-  <div class="ss-label">smart suggestions</div>
-  <div class="ss-title">for this goal, I suggest…</div>
-  <div class="ss-controls">
-    <select class="ss-select" id="goal-select">
-      <option value="">— pick a goal —</option>
-      <option value="journey">Grow Journey & Blueprinting from L1 to L2</option>
-      <option value="comm">Improve Communication & Collaboration</option>
-      <option value="knowledge">Build Service Design knowledge</option>
-    </select>
-    <button class="ss-btn" onclick="suggest()">suggest →</button>
+<div class="approval-banner">
+  <div class="ab-icon">ℹ️</div>
+  <div class="ab-body">
+    <strong>Trainingsvergoeding &amp; goedkeuring</strong>
+    Gratis trainingen start je direct. Voor betaalde trainingen is vooraf goedkeuring nodig via de Essense training-aanvraagpagina. Klik op "Goedkeuring aanvragen" bij een betaalde optie.
+    <a class="ab-link" href="https://www.notion.so" target="_blank">→ Bekijk Essense training &amp; ontwikkelingsbeleid in Notion</a>
   </div>
-  <div class="ss-results" id="ss-results"></div>
-  <div class="web-search-note" id="web-note" style="display:none;color:var(--bright)">🌐 also searching the web for new podcasts, webinars, and articles matching this goal…</div>
 </div>
-
-<div class="divider"></div>
-
-<h2 style="font-family:var(--font-head);font-size:1.05rem;color:var(--forest);margin-bottom:.875rem">browse the full menu</h2>
 
 <div class="filter-row">
-  <input class="search-input" id="search" placeholder="search by topic, provider, or competence…" oninput="filter()"/>
-  <select class="filter-select" id="type-filter" onchange="filter()">
-    <option value="">all types</option>
-    <option value="Article">articles</option>
-    <option value="Podcast">podcasts</option>
-    <option value="Video">videos</option>
-    <option value="Course">courses</option>
-    <option value="Book">books</option>
-    <option value="Tool / template">tools</option>
-    <option value="Webinar">webinars</option>
-  </select>
-  <select class="filter-select" id="time-filter" onchange="filter()">
-    <option value="">any length</option>
-    <option value="short">under 30 min</option>
-    <option value="medium">30–60 min</option>
-    <option value="long">1+ hours</option>
-  </select>
+  <span>Type:</span>
+  <button class="fchip active" onclick="filter('all',this)">Alles</button>
+  <button class="fchip" onclick="filter('online',this)">Online cursus</button>
+  <button class="fchip" onclick="filter('elearning',this)">E-learning</button>
+  <button class="fchip" onclick="filter('workshop',this)">Workshop</button>
+  <button class="fchip" onclick="filter('boek',this)">Boek</button>
+  <button class="fchip" onclick="filter('webinar',this)">Webinar</button>
+  <button class="fchip" onclick="filter('podcast',this)">Podcast</button>
+  <span style="margin-left:8px">Kosten:</span>
+  <button class="fchip" onclick="filter('gratis',this)">Gratis</button>
+  <button class="fchip" onclick="filter('betaald',this)">Betaald</button>
 </div>
 
-<div class="results-info" id="results-info">showing 30 resources · 6 free · 24 endorsed by colleagues</div>
+<div class="t-grid" id="trainingList">
 
-<div id="training-list"></div>
-
-<div class="insight">
-  <span class="arrow">→</span>find something useful? add it to your roadmap as a micro-action, or share it with a colleague. when colleagues endorse, the system surfaces it higher for everyone.
-</div>
-
-<script>
-const trainings=[
-  {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. Essential for L1 → L2.',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
-  {icon:'🛠',title:'Service Blueprinting: A Digital Template',provider:'Nielsen Norman Group',type:'Tool / template',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Free downloadable template — use in your next project.',endorsements:3,url:'https://www.nngroup.com/articles/service-blueprinting-template/'},
-  {icon:'▶️',title:'Overcoming Service Blueprinting Frustrations',provider:'Nielsen Norman Group',type:'Video',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Good for L2 practitioners after their first blueprint.',endorsements:2,url:'https://www.nngroup.com/videos/service-blueprinting-frustrations/'},
-  {icon:'🎙',title:'This is HCD',provider:'Gerry Scullion',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Most downloaded SD podcast globally. Great for commutes.',endorsements:6,url:'https://www.thisishcd.com/'},
-  {icon:'🎙',title:'The Service Design Show',provider:'Marc Fonteijn',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Long-form interviews with practitioners. 4.7/5 on Apple.',endorsements:5,url:'https://www.servicedesignshow.com/'},
-  {icon:'📰',title:'Design Thinking 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Foundational 6-stage model. Read before facilitating discovery.',endorsements:5,url:'https://www.nngroup.com/articles/design-thinking/'},
-  {icon:'📰',title:'User Interviews: How, When, and Why',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Comprehensive guide. L1 essential for research work.',endorsements:4,url:'https://www.nngroup.com/articles/user-interviews/'},
-  {icon:'📰',title:'Common Journey Mapping Mistakes',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX & Journey Thinking',note:'After your first map, helps you evaluate your own work.',endorsements:3,url:'https://www.nngroup.com/articles/journey-mapping-pitfalls/'},
-  {icon:'📰',title:'AI Is Reshaping Service Design',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Innovation & Orchestration',note:'2025 article on AI shifting the discipline.',endorsements:2,url:'https://www.nngroup.com/articles/ai-service-design/'},
-  {icon:'📰',title:'Usability Testing 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Experience Design',note:'Standard reference. L1 essential for testing work.',endorsements:3,url:'https://www.nngroup.com/articles/usability-testing-101/'},
-  {icon:'📰',title:'Stakeholder Management for UX',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Stakeholder Engagement',note:'Navigating stakeholders in design projects.',endorsements:4,url:'https://www.nngroup.com/articles/ux-stakeholder-management/'},
-  {icon:'🎤',title:'Service Design Network Global Conference',provider:'Service Design Network',type:'Webinar',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Service Design — general',note:'Annual conference recordings. Case studies + strategic talks.',endorsements:3,url:'https://www.service-design-network.org/'},
-  {icon:'📰',title:'How to Facilitate Workshops',provider:'Service Design Network',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'L2 core skill. Practical facilitation guide.',endorsements:5,url:'https://www.service-design-network.org/'},
-  {icon:'📚',title:'This is Service Design Doing',provider:'Marc Stickdorn et al.',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'Service Design — general',note:'Field standard. Start with the methods section.',endorsements:7,url:'https://www.thisisservicedesigndoing.com/'},
-  {icon:'📚',title:'Practical Empathy',provider:'Indi Young',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Design Thinking & Discovery',note:'Changes how you conduct interviews. High impact for L1.',endorsements:4,url:'https://rosenfeldmedia.com/books/practical-empathy/'},
-  {icon:'🎓',title:'Design Thinking Bootcamp',provider:'Stanford d.school',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Free Stanford resources with method cards.',endorsements:6,url:'https://dschool.stanford.edu/resources'},
-  {icon:'📰',title:'Facilitating Co-Design Sessions',provider:'IDEO',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'IDEO\'s open-source HCD toolkit. Free and practical.',endorsements:3,url:'https://www.designkit.org/'},
-  {icon:'🎓',title:'Introduction to Qualitative Research',provider:'University of Amsterdam',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Structured intro to qualitative methods.',endorsements:2,url:'https://www.coursera.org/'},
-  {icon:'🎓',title:'Customer Journey Mapping',provider:'Nielsen Norman Group',type:'Course',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'CX & Journey Thinking',note:'Gold-standard journey mapping course. Worth the budget.',endorsements:5,url:'https://www.nngroup.com/courses/customer-journey-maps/'},
-  {icon:'📰',title:'Measuring User Experience',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Data Strategy & KPIs',note:'How to quantify UX with KPIs.',endorsements:3,url:'https://www.nngroup.com/articles/measuring-user-experience/'},
-  {icon:'📚',title:'Value Proposition Design',provider:'Strategyzer',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Business Impact & Growth',note:'Service design meets business value.',endorsements:4,url:'https://www.strategyzer.com/'},
-  {icon:'📰',title:'Communicating Research Findings',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Communication & Collaboration',note:'Present findings to stakeholders effectively.',endorsements:4,url:'https://www.nngroup.com/articles/reporting-findings/'},
-  {icon:'📰',title:'Feedback and Feedforward',provider:'MindTools',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Feedback & Coaching',note:'SBI model — Situation, Behaviour, Impact.',endorsements:5,url:'https://www.mindtools.com/'},
-  {icon:'🎙',title:'The Art of Facilitation',provider:'Voltage Control',type:'Podcast',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'Practical facilitation skills for designers.',endorsements:2,url:'https://voltagecontrol.com/podcast/'},
-  {icon:'📰',title:'Introduction to OKRs',provider:'Atlassian',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Planning & Management',note:'Clear intro to Objectives & Key Results.',endorsements:3,url:'https://www.atlassian.com/agile/agile-at-scale/okr'},
-  {icon:'🎓',title:'Service Design Foundations',provider:'LinkedIn Learning',type:'Course',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'Service Design — general',note:'Structured intro covering touchpoints + blueprinting basics.',endorsements:3,url:'https://www.linkedin.com/learning/'},
-  {icon:'📰',title:'Change Management Fundamentals',provider:'Prosci',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX Consulting',note:'ADKAR model explained — change management for CX.',endorsements:2,url:'https://www.prosci.com/resources/articles/change-management-fundamentals'},
-  {icon:'🎓',title:'Google Analytics 4 for Beginners',provider:'Google',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Analytics & Governance',note:'Free GA4 course. Relevant to Data Consulting track.',endorsements:2,url:'https://skillshop.google.com/'},
-  {icon:'📰',title:'GROW Model Coaching Guide',provider:'MindTools',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Feedback & Coaching',note:'The GROW model used in Eidra coaching, explained clearly.',endorsements:5,url:'https://www.mindtools.com/an0ykcs/the-grow-model'},
-  {icon:'🎓',title:'Figma for Beginners',provider:'Figma',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Experience Design',note:'Official beginner tutorials. L0–L1 starting point.',endorsements:4,url:'https://www.figma.com/resources/learn-design/'},
-];
-
-let filtered=[...trainings];
-
-function render(){
-  const list=document.getElementById('training-list');
-  list.innerHTML='';
-  if(filtered.length===0){list.innerHTML='<div class="empty">no resources match your filters. try clearing search or broadening the type filter.</div>';return;}
-  filtered.forEach(t=>{
-    const card=document.createElement('div');
-    card.className='training-card';
-    const costClass=t.cost.toLowerCase().includes('free')?'free':'paid';
-    card.innerHTML=`
-      <div class="tc-head">
-        <div class="tc-icon">${t.icon}</div>
-        <div class="tc-info">
-          <div class="tc-title">${t.title}</div>
-          <div class="tc-provider">${t.provider} ${t.endorsements>=4?'<span class="tc-endorsements">★ '+t.endorsements+' endorsed</span>':''}</div>
+  <div class="tcard" data-types="online gratis">
+    <div class="tc-top">
+      <div class="tc-icon">🗺️</div>
+      <div class="tc-body">
+        <div class="tc-name">Service Blueprint Masterclass <span class="done-badge">gedaan ✓</span></div>
+        <div class="tc-sub">NN Group · Online cursus · 3 uur · Gratis</div>
+        <div class="tc-tags">
+          <span class="ttag type">Online cursus</span>
+          <span class="ttag">Service Design</span>
+          <span class="ttag">L1→L2</span>
+          <span class="ttag days">⏱ 3 uur</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn cta" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <button class="tbtn">↗ Open</button>
+          <div class="endorse">★ <span>4</span> endorsed</div>
         </div>
       </div>
-      <div class="tc-meta">
-        <span class="tc-pill">${t.type}</span>
-        <span class="tc-pill">${t.time}</span>
-        <span class="tc-pill ${costClass}">${t.cost}</span>
-        <span class="tc-pill competence">${t.competence}</span>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Wat was je belangrijkste inzicht of take-away?</div>
+      <textarea class="sp-input" placeholder="bijv. De koppeling tussen persona's en swimlanes was een eyeopener..."></textarea>
+      <div class="shared-by">
+        <div class="sb-lbl">Wat collega's leerden</div>
+        <div class="sb-item"><span class="sb-name">Sara</span> — "De frontstage/backstage grens is veel bepalender dan ik dacht."</div>
+        <div class="sb-item"><span class="sb-name">Thomas</span> — "Tips voor faciliteren van blueprint-sessie met klant zijn goud."</div>
       </div>
-      <div class="tc-note">${t.note}</div>
-      <div class="tc-actions">
-        <a class="tc-btn yellow" href="${t.url}" target="_blank">open ↗</a>
-        <button class="tc-btn" onclick="addToRoadmap('${t.title.replace(/'/g,'\\\'')}')">+ add to roadmap</button>
-        <button class="tc-btn" onclick="shareIt('${t.title.replace(/'/g,'\\\'')}')">share with colleague</button>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
       </div>
-    `;
-    list.appendChild(card);
-  });
-  document.getElementById('results-info').textContent=`showing ${filtered.length} resources · ${filtered.filter(t=>t.cost.toLowerCase().includes('free')).length} free · ${filtered.filter(t=>t.endorsements>=4).length} highly endorsed`;
-}
+    </div>
+  </div>
 
-function filter(){
-  const q=document.getElementById('search').value.toLowerCase().trim();
-  const type=document.getElementById('type-filter').value;
-  const time=document.getElementById('time-filter').value;
-  filtered=trainings.filter(t=>{
-    if(q&&!`${t.title} ${t.provider} ${t.competence} ${t.note}`.toLowerCase().includes(q))return false;
-    if(type&&t.type!==type)return false;
-    if(time&&t.timeCat!==time)return false;
-    return true;
-  });
-  render();
-}
-
-function suggest(){
-  const goal=document.getElementById('goal-select').value;
-  if(!goal){alert('pick a goal first');return;}
-  const goalCompetences={
-    journey:['Journey & Blueprinting','CX & Journey Thinking','Service Design — general'],
-    comm:['Communication & Collaboration','Workshop Facilitation','Feedback & Coaching'],
-    knowledge:['Service Design — general','Design Thinking & Discovery']
-  };
-  const comps=goalCompetences[goal]||[];
-  const relevant=trainings.filter(t=>comps.includes(t.competence)).sort((a,b)=>b.endorsements-a.endorsements).slice(0,4);
-  const res=document.getElementById('ss-results');
-  res.innerHTML='';
-  relevant.forEach(t=>{
-    const div=document.createElement('div');
-    div.className='ss-rec';
-    div.innerHTML=`
-      <div><strong>${t.title}</strong> · ${t.provider}</div>
-      <div class="ss-rec-meta">
-        <span class="ss-rec-pill">${t.type}</span>
-        <span class="ss-rec-pill">${t.time}</span>
-        <span class="ss-rec-pill">${t.cost}</span>
-        ${t.endorsements>=4?`<span class="ss-rec-pill" style="background:var(--yellow);color:var(--forest);font-weight:600">★ ${t.endorsements} endorsed</span>`:''}
+  <div class="tcard" data-types="elearning gratis">
+    <div class="tc-top">
+      <div class="tc-icon">💻</div>
+      <div class="tc-body">
+        <div class="tc-name">Design Thinking Foundations — Coursera</div>
+        <div class="tc-sub">IDEO · E-learning · Eigen tempo · Gratis (audit)</div>
+        <div class="tc-tags">
+          <span class="ttag type">E-learning</span>
+          <span class="ttag">Design Thinking</span>
+          <span class="ttag">L1→L2</span>
+          <span class="ttag days">⏱ 4 weken, 3u/wk</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <button class="tbtn">↗ Open</button>
+          <div class="endorse">★ <span>6</span> endorsed</div>
+        </div>
       </div>
-      <div style="font-size:.78rem;color:var(--bright);margin-top:.4rem">${t.note}</div>
-      <div class="ss-rec-actions">
-        <a class="ss-rec-btn yellow" href="${t.url}" target="_blank">open ↗</a>
-        <button class="ss-rec-btn" onclick="addToRoadmap('${t.title.replace(/'/g,'\\\'')}')">+ add to roadmap</button>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Wat nam je mee uit deze e-learning?</div>
+      <textarea class="sp-input" placeholder="bijv. Module 3 over needfinding is de meest praktische..."></textarea>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
       </div>
-    `;
-    res.appendChild(div);
+    </div>
+  </div>
+
+  <div class="tcard" data-types="workshop betaald">
+    <div class="tc-top">
+      <div class="tc-icon">🎤</div>
+      <div class="tc-body">
+        <div class="tc-name">Facilitation Masterclass</div>
+        <div class="tc-sub">Essense intern · Workshop · 2 dagen · Intern tarief</div>
+        <div class="tc-tags">
+          <span class="ttag type">Workshop</span>
+          <span class="ttag paid">Betaald</span>
+          <span class="ttag">Facilitation</span>
+          <span class="ttag">L2→L3</span>
+          <span class="ttag days">⏱ 2 dagen</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn approve" onclick="openApproval()">📋 Goedkeuring aanvragen</button>
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <div class="endorse">★ <span>9</span> endorsed</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Welke techniek neem je mee naar je werk?</div>
+      <textarea class="sp-input" placeholder="..."></textarea>
+      <div class="shared-by">
+        <div class="sb-lbl">Wat collega's leerden</div>
+        <div class="sb-item"><span class="sb-name">Lena</span> — "Stakeholder belangen vs invloed mappen is nu mijn standaard start."</div>
+      </div>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tcard" data-types="boek gratis">
+    <div class="tc-top">
+      <div class="tc-icon">📖</div>
+      <div class="tc-body">
+        <div class="tc-name">This is Service Design Doing</div>
+        <div class="tc-sub">Marc Stickdorn e.a. · Boek · Eigen tempo · Gratis (bibliotheek)</div>
+        <div class="tc-tags">
+          <span class="ttag type">Boek</span>
+          <span class="ttag">Service Design</span>
+          <span class="ttag">L1→L3</span>
+          <span class="ttag days">⏱ ~6 weken</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <button class="tbtn">↗ Open</button>
+          <div class="endorse">★ <span>12</span> endorsed</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Welk hoofdstuk of concept raad je anderen aan?</div>
+      <textarea class="sp-input" placeholder="..."></textarea>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tcard" data-types="webinar gratis">
+    <div class="tc-top">
+      <div class="tc-icon">🎥</div>
+      <div class="tc-body">
+        <div class="tc-name">UX Research Synthesis — Live Webinar</div>
+        <div class="tc-sub">Rosenfeld Media · Webinar · 90 min · Gratis</div>
+        <div class="tc-tags">
+          <span class="ttag type">Webinar</span>
+          <span class="ttag">Onderzoek</span>
+          <span class="ttag">L1→L2</span>
+          <span class="ttag days">⏱ 90 min</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <button class="tbtn">↗ Open</button>
+          <div class="endorse">★ <span>3</span> endorsed</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Wat nam je mee?</div>
+      <textarea class="sp-input" placeholder="..."></textarea>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tcard" data-types="podcast gratis">
+    <div class="tc-top">
+      <div class="tc-icon">🎙️</div>
+      <div class="tc-body">
+        <div class="tc-name">The Design Better Podcast</div>
+        <div class="tc-sub">Invision · Podcast · Lopend · Gratis</div>
+        <div class="tc-tags">
+          <span class="ttag type">Podcast</span>
+          <span class="ttag">Leiderschap</span>
+          <span class="ttag">L2→L3</span>
+          <span class="ttag days">⏱ 45 min / afl.</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <button class="tbtn">↗ Open</button>
+          <div class="endorse">★ <span>5</span> endorsed</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Welke aflevering raad je aan en waarom?</div>
+      <textarea class="sp-input" placeholder="..."></textarea>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tcard" data-types="elearning betaald">
+    <div class="tc-top">
+      <div class="tc-icon">🏅</div>
+      <div class="tc-body">
+        <div class="tc-name">Service Design Certified Professional — SDN</div>
+        <div class="tc-sub">Service Design Network · E-learning + examen · Betaald</div>
+        <div class="tc-tags">
+          <span class="ttag type">E-learning</span>
+          <span class="ttag paid">Betaald</span>
+          <span class="ttag">Service Design</span>
+          <span class="ttag">L2→L3</span>
+          <span class="ttag days">⏱ 3 maanden</span>
+        </div>
+        <div class="tc-actions">
+          <button class="tbtn approve" onclick="openApproval()">📋 Goedkeuring aanvragen</button>
+          <button class="tbtn" onclick="openShare(this)">💬 Deel wat je leerde</button>
+          <button class="tbtn">📌 Aan roadmap</button>
+          <div class="endorse">★ <span>2</span> endorsed</div>
+        </div>
+      </div>
+    </div>
+    <div class="share-panel">
+      <div class="sp-title">Deel je ervaring</div>
+      <div class="sp-prompt">Wat is je aanbeveling voor collega's die dit overwegen?</div>
+      <textarea class="sp-input" placeholder="..."></textarea>
+      <div class="sp-footer">
+        <select><option>Alleen mijn coach</option><option>Mijn team</option><option>Hele Essense</option></select>
+        <button class="sp-send" onclick="submitShare(this)">Delen →</button>
+        <button class="sp-cancel" onclick="closeShare(this)">Annuleer</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Approval modal -->
+<div id="approvalModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:999;display:none;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:var(--radius);padding:24px;max-width:440px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.2)">
+    <h3 style="font-size:.95rem;color:var(--forest);margin-bottom:8px">Trainingsvergoeding aanvragen</h3>
+    <p style="font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:16px">Betaalde trainingen en webinars kunnen vergoed worden via het Essense ontwikkelingsbudget. De aanvraag loopt via de Notion-pagina van je team.<br><br>Je coach of capability lead moet de aanvraag goedkeuren. Houd rekening met 3–5 werkdagen doorlooptijd.</p>
+    <a href="https://www.notion.so" target="_blank" style="display:block;background:var(--yellow);color:var(--forest);border-radius:8px;padding:10px 16px;text-align:center;font-size:.82rem;font-weight:600;text-decoration:none;margin-bottom:8px">→ Open aanvraagpagina in Notion</a>
+    <button onclick="closeApproval()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:8px 16px;width:100%;font-family:Georgia,serif;font-size:.78rem;color:var(--muted);cursor:pointer">Sluiten</button>
+  </div>
+</div>
+
+</main>
+<script>
+function filter(type,btn){
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tcard').forEach(card=>{
+    if(type==='all'){card.style.display='';return}
+    const t=card.dataset.types||'';
+    card.style.display=t.includes(type)?'':'none';
   });
-  res.classList.add('open');
-  document.getElementById('web-note').style.display='block';
 }
-
-function addToRoadmap(title){
-  navigator.clipboard.writeText('add this training to my roadmap as a micro-action:\n'+title).then(()=>{
-    alert('Action prompt copied. Paste into Claude to add to your roadmap, or open the Action tracker.');
-  });
+function openShare(btn){btn.closest('.tcard').querySelector('.share-panel').classList.add('open')}
+function closeShare(btn){btn.closest('.share-panel').classList.remove('open')}
+function submitShare(btn){
+  const p=btn.closest('.share-panel');
+  const t=p.querySelector('.sp-input').value.trim();
+  if(!t){p.querySelector('.sp-input').style.borderColor='var(--yellow)';return}
+  p.innerHTML='<div style="color:var(--green);font-size:.82rem;padding:4px 0">✓ Gedeeld! Je inzicht is zichtbaar voor je collega\'s.</div>';
+  setTimeout(()=>p.classList.remove('open'),2500);
 }
-
-function shareIt(title){
-  const url='mailto:?subject='+encodeURIComponent('Recommended training: '+title)+'&body='+encodeURIComponent('Hi,\n\nI thought you might find this useful for your development:\n\n'+title+'\n\nFound via the Essense PD training menu.\n');
-  window.open(url,'_blank');
-}
-
-render();
+function openApproval(){document.getElementById('approvalModal').style.display='flex'}
+function closeApproval(){document.getElementById('approvalModal').style.display='none'}
 </script>
 </body>
 </html>

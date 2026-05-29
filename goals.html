@@ -1,125 +1,236 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doelen — Essense PD</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Goals — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
-header{background:var(--forest);color:var(--eggshell);padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
-h1{font-size:1.35rem;font-weight:normal}
-.meta{font-size:.8rem;opacity:.7;margin-top:2px}
-.add-btn-hdr{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:8px 16px;font-size:.78rem;font-family:Georgia,serif;cursor:pointer;font-weight:600}
-main{padding:24px 28px;max-width:800px}
-.goal-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px}
-.gc-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px}
-.gc-icon{width:42px;height:42px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.gc-body{flex:1}
-.gc-name{font-size:.92rem;color:var(--text);margin-bottom:3px}
-.gc-meta{font-size:.7rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
-.gc-tag{font-size:.65rem;background:#eef5f0;color:var(--forest);padding:2px 8px;border-radius:20px}
-.gc-status{font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:20px}
-.gc-status.active{background:var(--green);color:#fff}
-.gc-status.done{background:var(--forest);color:var(--eggshell)}
-.prog-wrap{margin-bottom:10px}
-.prog-label{font-size:.72rem;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between}
-.prog-bar{height:7px;background:var(--border);border-radius:4px}
-.prog-fill{height:7px;border-radius:4px;background:var(--green)}
-.gc-actions{display:flex;gap:6px;flex-wrap:wrap}
-.gc-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 11px;font-size:.72rem;color:var(--muted);cursor:pointer;font-family:Georgia,serif;transition:all .15s}
-.gc-btn:hover{border-color:var(--green);color:var(--forest)}
-.sec{font-size:.8rem;color:var(--forest);text-transform:uppercase;letter-spacing:.1em;margin:24px 0 12px;display:flex;align-items:center;gap:10px}
-.sec::after{content:'';flex:1;height:1px;background:var(--border)}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:720px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:1.55rem;color:var(--forest);margin-bottom:.4rem}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.divider{height:1px;background:var(--border);margin:1.5rem 0}
+.year-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap}
+.year-title{font-family:var(--font-head);font-size:1.85rem;color:var(--forest);line-height:1}
+.year-meta{font-size:.8rem;color:var(--muted)}
+.year-stats{display:flex;gap:1.25rem;flex-wrap:wrap}
+.stat{display:flex;align-items:baseline;gap:.35rem}
+.stat-num{font-family:var(--font-head);font-size:1.2rem;color:var(--forest);line-height:1}
+.stat-lbl{font-size:.72rem;color:var(--muted)}
+.goal-card{background:var(--egg);border:1.5px solid var(--border);border-radius:14px;padding:1.1rem 1.25rem;margin-bottom:.875rem;transition:all .2s}
+.goal-card:hover{border-color:var(--essense);box-shadow:0 4px 14px rgba(4,69,36,.06)}
+.goal-card.complete{background:var(--bright);border-color:var(--essense)}
+.goal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.65rem;flex-wrap:wrap}
+.goal-title-wrap{flex:1;min-width:200px}
+.goal-title{font-size:1rem;font-weight:500;color:var(--charcoal);line-height:1.3;margin-bottom:.3rem}
+.goal-meta-row{display:flex;gap:.4rem;flex-wrap:wrap}
+.meta-pill{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.15rem .55rem;font-size:.7rem;color:var(--muted)}
+.meta-pill.dim-delivery{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.meta-pill.dim-people{background:var(--essense);color:var(--white);border-color:var(--essense)}
+.meta-pill.dim-added{background:#b7994a;color:var(--white);border-color:#b7994a}
+.meta-pill.level{background:var(--bright);color:var(--forest);border-color:var(--essense);font-weight:600}
+.progress-block{flex-shrink:0;text-align:right;min-width:60px}
+.progress-num{font-family:var(--font-head);font-size:1.3rem;color:var(--forest);line-height:1}
+.progress-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem}
+.progress-track{height:6px;background:var(--white);border-radius:99px;overflow:hidden;margin-top:.75rem;margin-bottom:.75rem}
+.progress-fill{height:100%;border-radius:99px;background:var(--essense);transition:width .4s ease}
+.goal-card.complete .progress-fill{background:var(--forest)}
+.subgoals-section{margin-top:.875rem}
+.subgoals-toggle{display:flex;align-items:center;gap:.4rem;font-size:.78rem;color:var(--essense);cursor:pointer;font-weight:500;margin-bottom:.5rem}
+.subgoals-toggle:hover{color:var(--forest)}
+.subgoals-arrow{transition:transform .2s;display:inline-block}
+.subgoals-toggle.open .subgoals-arrow{transform:rotate(90deg)}
+.subgoals-list{display:none;padding-left:1.25rem;border-left:2px solid var(--essense);margin-left:.4rem}
+.subgoals-list.open{display:block}
+.subgoal{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:.65rem .875rem;margin-bottom:.4rem;font-size:.825rem;display:flex;align-items:center;gap:.65rem}
+.subgoal-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;transition:all .2s}
+.subgoal.done .subgoal-check{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.subgoal-text{flex:1;color:var(--charcoal);line-height:1.3}
+.subgoal.done .subgoal-text{text-decoration:line-through;color:var(--muted)}
+.subgoal-q{font-size:.65rem;color:var(--essense);font-weight:500;text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.goal-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem;align-items:center}
+.goal-act-btn{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:.35rem .7rem;font-family:var(--font-body);font-size:.72rem;cursor:pointer;color:var(--charcoal);transition:all .2s;text-decoration:none;display:inline-block}
+.goal-act-btn:hover{border-color:var(--essense);background:var(--bright);color:var(--forest)}
+.goal-act-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
+.framework-anchor{font-size:.7rem;color:var(--essense);font-style:italic;margin-top:.3rem;line-height:1.3}
+.empty-state{background:var(--egg);border:2px dashed var(--border);border-radius:14px;padding:2rem 1.5rem;text-align:center;margin-bottom:.875rem}
+.empty-icon{font-size:1.5rem;margin-bottom:.5rem}
+.empty-title{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.3rem}
+.empty-sub{font-size:.8rem;color:var(--muted);margin-bottom:1rem;line-height:1.5}
+.empty-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.add-row{display:flex;gap:.6rem;margin-top:1rem;align-items:center;flex-wrap:wrap}
+.add-input{flex:1;min-width:200px;border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
+.add-input:focus{border-color:var(--essense);background:var(--white)}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:500;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.8rem;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
+.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.fw-strip{background:var(--bright);border-radius:10px;padding:.65rem .9rem;margin-bottom:1.5rem;display:flex;gap:.85rem;flex-wrap:wrap;align-items:center;font-size:.75rem}
+.fw-strip a{color:var(--forest);text-decoration:underline;font-weight:500}
+.fw-strip a:hover{color:var(--essense)}
 </style>
 </head>
 <body>
-<header>
-  <div><div class="meta">Essense PD · Rosie de Vries</div><h1>Doelen</h1></div>
-  <button class="add-btn-hdr" onclick="location.href='breakdown.html'">+ Nieuw doel</button>
-</header>
-<main>
-<div class="sec">Actief</div>
+<p class="label">your goals</p>
+<h1 class="heading">this year</h1>
+<p class="sub">your year goals from Miro, each broken down into sub-goals and connected to the career framework. tap any goal to see sub-goals and actions.</p>
 
-<div class="goal-card">
-  <div class="gc-top">
-    <div class="gc-icon">🗺️</div>
-    <div class="gc-body">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-        <div class="gc-name">Journey &amp; Blueprinting — van L1 naar L2</div>
-        <span class="gc-status active">Actief</span>
-      </div>
-      <div class="gc-meta">
-        <span>Service Design</span><span>Deadline: dec 2025</span><span>Q3: Fase 3 afronden</span>
-      </div>
-    </div>
+<div class="fw-strip">
+  <span>📘</span>
+  <a href="https://www.notion.so/eidra/3281f15509d881cc8331d89d7edff5e0" target="_blank">GROW</a>
+  ·
+  <a href="https://www.notion.so/eidra/3281f15509d881cc8331d89d7edff5e0" target="_blank">SMART</a>
+  ·
+  <a href="https://www.notion.so/eidra/Essense-Career-Framework-3611f15509d880738b78ffc6740a7f49" target="_blank">career framework</a>
+  ·
+  <a href="https://pdwessense.vercel.app/breakdown.html" target="_blank">make a goal smaller →</a>
+</div>
+
+<div class="year-header">
+  <div>
+    <div class="year-title">2026</div>
+    <div class="year-meta">junior service designer · L1 → L2</div>
   </div>
-  <div class="prog-wrap">
-    <div class="prog-label"><span>Voortgang</span><span>68%</span></div>
-    <div class="prog-bar"><div class="prog-fill" style="width:68%"></div></div>
-  </div>
-  <div class="gc-actions">
-    <button class="gc-btn" onclick="location.href='tracker.html'">📋 Acties</button>
-    <button class="gc-btn" onclick="location.href='breakdown.html'">✂️ Doel verkleinen</button>
-    <button class="gc-btn" onclick="location.href='reflection.html'">💬 Reflectie schrijven</button>
+  <div class="year-stats">
+    <div class="stat"><div class="stat-num">1</div><div class="stat-lbl">goal</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">sub-goals</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">actions</div></div>
+    <div class="stat"><div class="stat-num">0%</div><div class="stat-lbl">complete</div></div>
   </div>
 </div>
 
-<div class="goal-card">
-  <div class="gc-top">
-    <div class="gc-icon">🤝</div>
-    <div class="gc-body">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-        <div class="gc-name">Stakeholder Management — L1 naar L2</div>
-        <span class="gc-status active">Actief</span>
-      </div>
-      <div class="gc-meta"><span>Communicatie</span><span>Deadline: dec 2025</span></div>
-    </div>
-  </div>
-  <div class="prog-wrap">
-    <div class="prog-label"><span>Voortgang</span><span>30%</span></div>
-    <div class="prog-bar"><div class="prog-fill" style="width:30%"></div></div>
-  </div>
-  <div class="gc-actions">
-    <button class="gc-btn" onclick="location.href='tracker.html'">📋 Acties</button>
-    <button class="gc-btn" onclick="location.href='breakdown.html'">✂️ Doel verkleinen</button>
+<div id="goals-list"></div>
+
+<div class="empty-state" id="empty-block" style="display:none">
+  <div class="empty-icon">🎯</div>
+  <div class="empty-title">no goals yet</div>
+  <div class="empty-sub">add a goal from your Miro session, or break a big one down.</div>
+  <div class="empty-actions">
+    <a class="btn-y" href="https://pdwessense.vercel.app/breakdown.html" target="_blank">break down a big goal →</a>
+    <a class="btn-s" href="https://www.notion.so/cd570cd58b3443dfb1bb526d74576182" target="_blank">open goals database ↗</a>
   </div>
 </div>
 
-<div class="goal-card">
-  <div class="gc-top">
-    <div class="gc-icon">🎤</div>
-    <div class="gc-body">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-        <div class="gc-name">Facilitation skills — L2 naar L3</div>
-        <span class="gc-status active">Actief</span>
-      </div>
-      <div class="gc-meta"><span>Projectleiderschap</span><span>Start: sept 2025</span></div>
-    </div>
-  </div>
-  <div class="prog-wrap">
-    <div class="prog-label"><span>Voortgang</span><span>5%</span></div>
-    <div class="prog-bar"><div class="prog-fill" style="width:5%"></div></div>
-  </div>
-  <div class="gc-actions">
-    <button class="gc-btn" onclick="location.href='breakdown.html'">✂️ Doel verkleinen</button>
-  </div>
+<div class="add-row">
+  <input class="add-input" id="new-goal" placeholder="add a new yearly goal…" onkeydown="if(event.key==='Enter')addGoal()"/>
+  <button class="btn-y" onclick="addGoal()">+ add goal</button>
+  <a class="btn-s" href="https://pdwessense.vercel.app/breakdown.html" target="_blank">break it down →</a>
 </div>
 
-<div class="sec">Afgerond</div>
-<div class="goal-card" style="opacity:.7">
-  <div class="gc-top">
-    <div class="gc-icon" style="background:var(--forest)">✓</div>
-    <div class="gc-body">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-        <div class="gc-name">Journey mapping basis</div>
-        <span class="gc-status done">Afgerond</span>
-      </div>
-      <div class="gc-meta"><span>Service Design</span><span>Afgerond: dec 2024</span></div>
-    </div>
-  </div>
+<div class="insight" id="page-insight">
+  <span class="arrow">→</span>your Journey & Blueprinting goal has 5 sub-goals ready. start with sub-goal 1 — it's the foundation for everything else.
 </div>
-</main>
+
+<script>
+// safe storage — never throws inside an embed; persistence is best-effort in the prototype.
+// in production the Claude integration token reads/writes these values to Notion instead.
+const SS={get(k){try{return SS.get(k)}catch(e){return null}},set(k,v){try{SS.set(k,v)}catch(e){}}};
+
+const goals=[
+  {
+    id:1,
+    title:'Grow Journey & Blueprinting from L1 to L2',
+    dim:'Delivery',
+    currentLevel:'L1',
+    targetLevel:'L2',
+    competence:'Journey & Blueprinting',
+    framework:'L2: you create draft journey maps and service blueprints connecting customer actions to front-stage interactions, beginning to map back-stage processes too.',
+    progress:0,
+    quarter:'Q2 + Q3',
+    subgoals:[
+      {id:1,title:'Understand the full service blueprint structure (front-stage, back-stage, support processes)',quarter:'Q2',done:false,type:'Learning'},
+      {id:2,title:'Map the back-stage of one interaction from your current project',quarter:'Q2',done:false,type:'Practice'},
+      {id:3,title:'Co-create a draft blueprint with a senior service designer',quarter:'Q3',done:false,type:'Collaboration'},
+      {id:4,title:'Produce and deliver a client-ready blueprint for a real project workstream',quarter:'Q3',done:false,type:'Delivery'},
+      {id:5,title:'Reflect on and document what you learned across the goal',quarter:'Q3',done:false,type:'Reflection'},
+    ]
+  }
+];
+
+function render(){
+  const list=document.getElementById('goals-list');
+  list.innerHTML='';
+  const empty=document.getElementById('empty-block');
+  if(goals.length===0){empty.style.display='block';return;}
+  empty.style.display='none';
+  goals.forEach(g=>{
+    const totalSub=g.subgoals.length;
+    const doneSub=g.subgoals.filter(s=>s.done).length;
+    const computedProgress=totalSub>0?Math.round(doneSub/totalSub*100):0;
+    const card=document.createElement('div');
+    card.className='goal-card'+(computedProgress===100?' complete':'');
+    const dimClass=g.dim==='Delivery'?'dim-delivery':g.dim==='People'?'dim-people':'dim-added';
+    card.innerHTML=`
+      <div class="goal-head">
+        <div class="goal-title-wrap">
+          <div class="goal-title">${g.title}</div>
+          <div class="goal-meta-row">
+            <span class="meta-pill ${dimClass}">${g.dim}</span>
+            <span class="meta-pill">${g.competence}</span>
+            <span class="meta-pill level">${g.currentLevel} → ${g.targetLevel}</span>
+            <span class="meta-pill">${g.quarter}</span>
+          </div>
+          <div class="framework-anchor">→ ${g.framework}</div>
+        </div>
+        <div class="progress-block">
+          <div class="progress-num">${computedProgress}%</div>
+          <div class="progress-lbl">complete</div>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${computedProgress}%"></div></div>
+      <div class="subgoals-section">
+        <div class="subgoals-toggle" onclick="toggleSubs(${g.id},this)">
+          <span class="subgoals-arrow">▸</span>
+          <span>${totalSub} sub-goals · ${doneSub} done</span>
+        </div>
+        <div class="subgoals-list" id="subs-${g.id}">
+          ${g.subgoals.map(s=>`
+            <div class="subgoal${s.done?' done':''}" onclick="toggleSub(${g.id},${s.id})">
+              <div class="subgoal-check">${s.done?'✓':''}</div>
+              <div class="subgoal-text">${s.title}</div>
+              <span class="subgoal-q">${s.quarter}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="goal-actions">
+        <a class="goal-act-btn yellow" href="https://pdwessense.vercel.app/breakdown.html" target="_blank">break down further</a>
+        <a class="goal-act-btn" href="https://pdwessense.vercel.app/tracker.html" target="_blank">view actions</a>
+        <a class="goal-act-btn" href="https://www.notion.so/cd570cd58b3443dfb1bb526d74576182" target="_blank">open in Notion ↗</a>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleSubs(goalId,el){
+  el.classList.toggle('open');
+  document.getElementById('subs-'+goalId).classList.toggle('open');
+}
+function toggleSub(goalId,subId){
+  const g=goals.find(x=>x.id===goalId);
+  const s=g.subgoals.find(x=>x.id===subId);
+  s.done=!s.done;
+  saveState();render();
+  // Keep the sub-goals open after re-render
+  document.getElementById('subs-'+goalId)?.classList.add('open');
+  document.querySelector(`.subgoals-toggle[onclick*="${goalId}"]`)?.classList.add('open');
+}
+function addGoal(){
+  const input=document.getElementById('new-goal');
+  const val=input.value.trim();if(!val)return;
+  goals.push({id:Date.now(),title:val,dim:'Delivery',currentLevel:'L1',targetLevel:'L2',competence:'(set anchor in Notion)',framework:'(anchor to a career framework row in Notion to see the L+ gap)',progress:0,quarter:'Q2',subgoals:[]});
+  input.value='';saveState();render();
+}
+function saveState(){try{SS.set('essense-goals',JSON.stringify(goals));}catch(e){}}
+function loadState(){try{const s=SS.get('essense-goals');if(s){const d=JSON.parse(s);if(Array.isArray(d)&&d.length){goals.length=0;d.forEach(g=>goals.push(g));}}}catch(e){}}
+
+loadState();render();
+</script>
 </body>
 </html>

@@ -33,11 +33,9 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
 .dim-chip{padding:.2rem .6rem;border-radius:99px;font-size:.7rem;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.45);background:transparent}
 .dim-chip.active{background:var(--yellow);color:var(--forest);border-color:var(--yellow)}
 .fw-link{color:var(--yellow);text-decoration:none;font-size:.8rem;display:inline-block;margin-top:.2rem}
-.fw-link:hover{opacity:.8}
-/* Calendar Sanctity — prominent block */
 .sanctity-block{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,197,2,.4);border-radius:16px;padding:1.5rem;margin:1.5rem 2rem}
 .sanctity-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem}
-.sanctity-icon{font-size:2rem;flex-shrink:0;margin-top:.1rem}
+.sanctity-icon{font-size:2rem;flex-shrink:0}
 .sanctity-text{flex:1}
 .sanctity-title{font-family:var(--font-head);font-size:1.2rem;color:var(--white);margin-bottom:.3rem}
 .sanctity-desc{font-size:.82rem;color:#b7e4c7;line-height:1.6}
@@ -45,7 +43,6 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
 .sc-field{display:flex;flex-direction:column;gap:.3rem}
 .sc-label{font-size:.7rem;color:#b7e4c7;text-transform:uppercase;letter-spacing:.08em;font-weight:500}
 .sc-select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:.45rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--white);outline:none;width:100%}
-.sc-select option{background:var(--forest);color:var(--white)}
 .toggle-wrap{display:flex;align-items:center;gap:.65rem;justify-content:flex-end}
 .toggle{width:44px;height:24px;border-radius:99px;background:rgba(255,255,255,.15);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
 .toggle.on{background:var(--yellow)}
@@ -66,28 +63,27 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
   <div class="header-top">
     <div>
       <div class="label">your pd profile</div>
-      <div class="name" id="disp-name">Rosie</div>
+      <div class="name" id="disp-name">Rosanne</div>
       <div class="role-line" id="disp-role">Junior Service Designer · Service Design track</div>
     </div>
     <div class="level-badge">
-      <div class="level-num" id="disp-clevel">L1</div>
-      <div class="level-lbl" id="disp-clevel-name">The Learner</div>
-      <div class="level-arr" id="disp-tlevel">→ L2</div>
+      <div class="level-num" id="disp-clevel">L0</div>
+      <div class="level-lbl" id="disp-clevel-name">The Apprentice</div>
+      <div class="level-arr" id="disp-tlevel">→ L1</div>
     </div>
   </div>
   <div class="progress-section">
     <div class="progress-label">progress toward target level this year</div>
-    <div class="progress-track"><div class="progress-fill" style="width:5%"></div></div>
-    <div class="progress-pct">5% · 1 goal active · 0 actions done · 0 reflections logged</div>
+    <div class="progress-track"><div class="progress-fill" style="width:2%"></div></div>
+    <div class="progress-pct">2% · 0 goals active yet · just getting started</div>
   </div>
 </div>
-
 <div class="grid">
-  <div class="cell"><div class="cell-label">name</div><input id="f-name" value="Rosie" placeholder="your name" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">name</div><input id="f-name" value="Rosanne Bloemraad" placeholder="your name" oninput="upd()"/></div>
   <div class="cell"><div class="cell-label">role</div><input id="f-role" value="Junior Service Designer" placeholder="your role" oninput="upd()"/></div>
   <div class="cell"><div class="cell-label">track</div><input id="f-track" value="Service Design" placeholder="your track" oninput="upd()"/></div>
-  <div class="cell"><div class="cell-label">current level</div><input id="f-clevel" value="L1 — The Learner" placeholder="L0–L6" oninput="upd()"/></div>
-  <div class="cell"><div class="cell-label">target level this year</div><input id="f-tlevel" value="L2 — The Practitioner" placeholder="L0–L6" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">current level</div><input id="f-clevel" value="L0 — The Apprentice" placeholder="L0–L6" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">target level this year</div><input id="f-tlevel" value="L1 — The Learner" placeholder="L0–L6" oninput="upd()"/></div>
   <div class="cell"><div class="cell-label">coach</div><input id="f-coach" value="" placeholder="fill in"/></div>
   <div class="cell"><div class="cell-label">joined essense</div><input id="f-joined" value="" placeholder="month + year"/></div>
   <div class="cell">
@@ -100,13 +96,12 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
   </div>
   <div class="cell"><div class="cell-label">career framework</div><a class="fw-link" href="https://www.notion.so/eidra/Essense-Career-Framework-3611f15509d880738b78ffc6740a7f49" target="_blank">→ open framework ↗</a></div>
 </div>
-
 <div class="sanctity-block">
   <div class="sanctity-top">
     <div class="sanctity-icon">📅</div>
     <div class="sanctity-text">
       <div class="sanctity-title">Calendar Sanctity</div>
-      <div class="sanctity-desc">Protect your PD time by letting the system automatically block recurring slots in your Google Calendar. Set your preferred day and duration below, then switch it on. The system reserves the time — you decide what you do with it.</div>
+      <div class="sanctity-desc">Protect your PD time by letting the system automatically block recurring slots in your Google Calendar. Set your preferred day and duration, then switch it on.</div>
     </div>
     <div class="toggle-wrap">
       <span class="toggle-state" id="cal-state">off</span>
@@ -114,24 +109,14 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
     </div>
   </div>
   <div class="sanctity-controls">
-    <div class="sc-field">
-      <span class="sc-label">preferred day</span>
-      <select class="sc-select" id="cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
-    </div>
-    <div class="sc-field">
-      <span class="sc-label">time</span>
-      <select class="sc-select" id="cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select>
-    </div>
-    <div class="sc-field">
-      <span class="sc-label">duration</span>
-      <select class="sc-select" id="cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select>
-    </div>
+    <div class="sc-field"><span class="sc-label">preferred day</span><select class="sc-select" id="cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+    <div class="sc-field"><span class="sc-label">time</span><select class="sc-select" id="cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option></select></div>
+    <div class="sc-field"><span class="sc-label">duration</span><select class="sc-select" id="cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
     <div></div>
   </div>
   <div class="calendar-preview" id="cal-preview"></div>
-  <div class="sanctity-note">📌 PD time registration stays in Teamleader (later Float). Calendar Sanctity is about your <em>intention</em> — reserving the slot. What you do with it is tracked here through your actions, reflections and sessions. No double admin.</div>
+  <div class="sanctity-note">📌 Project hours stay in Teamleader (later Float). Calendar Sanctity tracks your PD intention — no double admin.</div>
 </div>
-
 <div class="footer">
   <div class="footer-hint">fill in once · everything in your Hub personalises from here</div>
   <div style="display:flex;align-items:center">
@@ -139,20 +124,15 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
     <button class="save-btn" onclick="save()">save profile</button>
   </div>
 </div>
-
 <script>
 const SS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const levelNames={0:'The Apprentice',1:'The Learner',2:'The Practitioner',3:'The Solver',4:'The Scaler',5:'The Shaper',6:'The Architect'};
 function upd(){
-  const n=document.getElementById('f-name').value||'your name';
-  const r=document.getElementById('f-role').value||'your role';
-  const t=document.getElementById('f-track').value||'your track';
-  document.getElementById('disp-name').textContent=n;
-  document.getElementById('disp-role').textContent=r+' · '+t+' track';
-  const cl=document.getElementById('f-clevel').value||'';
-  const tl=document.getElementById('f-tlevel').value||'';
-  const clNum=cl.match(/L(\d)/)?parseInt(cl.match(/L(\d)/)[1]):1;
-  const tlNum=tl.match(/L(\d)/)?parseInt(tl.match(/L(\d)/)[1]):2;
+  document.getElementById('disp-name').textContent=document.getElementById('f-name').value||'your name';
+  document.getElementById('disp-role').textContent=(document.getElementById('f-role').value||'your role')+' · '+(document.getElementById('f-track').value||'your track')+' track';
+  const cl=document.getElementById('f-clevel').value||'';const tl=document.getElementById('f-tlevel').value||'';
+  const clNum=cl.match(/L(\d)/)?parseInt(cl.match(/L(\d)/)[1]):0;
+  const tlNum=tl.match(/L(\d)/)?parseInt(tl.match(/L(\d)/)[1]):1;
   document.getElementById('disp-clevel').textContent='L'+clNum;
   document.getElementById('disp-clevel-name').textContent=levelNames[clNum]||'';
   document.getElementById('disp-tlevel').textContent='→ L'+tlNum;
@@ -163,25 +143,15 @@ function togCal(){
   const on=t.classList.contains('on');
   document.getElementById('cal-state').textContent=on?'on':'off';
   const preview=document.getElementById('cal-preview');
-  if(on){
-    const day=document.getElementById('cal-day').value;
-    const time=document.getElementById('cal-time').value;
-    const dur=document.getElementById('cal-dur').value;
-    preview.classList.add('visible');
-    preview.innerHTML='📆 <strong style="color:var(--white)">Next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly<br><span style="opacity:.7">The system will find the next available '+day+' slot and create a recurring calendar event called "PD time" in your Google Calendar.</span>';
-  } else {
-    preview.classList.remove('visible');
-  }
+  if(on){const day=document.getElementById('cal-day').value;const time=document.getElementById('cal-time').value;const dur=document.getElementById('cal-dur').value;preview.classList.add('visible');preview.innerHTML='📆 <strong style="color:var(--white)">Next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly';}
+  else{preview.classList.remove('visible');}
 }
 function save(){
   const d={name:document.getElementById('f-name').value,role:document.getElementById('f-role').value,track:document.getElementById('f-track').value,clevel:document.getElementById('f-clevel').value,tlevel:document.getElementById('f-tlevel').value,coach:document.getElementById('f-coach').value,joined:document.getElementById('f-joined').value};
-  SS.set('essense-profile',JSON.stringify(d));
+  SS.set('essense-profile-rosanne',JSON.stringify(d));
   const m=document.getElementById('saved-msg');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);
 }
-function load(){
-  try{const s=SS.get('essense-profile');if(s){const d=JSON.parse(s);['name','role','track','clevel','tlevel','coach','joined'].forEach(k=>{if(d[k])document.getElementById('f-'+k).value=d[k];});upd();}}catch(e){}
-}
-load();
+upd();
 </script>
 </body>
 </html>

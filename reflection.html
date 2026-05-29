@@ -1,201 +1,371 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reflectie — Essense PD</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reflection — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--forest:#044524;--green:#579B7A;--eggshell:#FAF0DB;--yellow:#FFC502;--text:#1a2e1e;--muted:#6b8c74;--border:#d4e4d8;--radius:12px;--shadow:0 2px 16px rgba(4,69,36,.09)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Georgia,serif;background:var(--eggshell);color:var(--text);min-height:100vh}
-header{background:var(--forest);color:var(--eggshell);padding:20px 28px}
-h1{font-size:1.35rem;font-weight:normal}
-.meta{font-size:.8rem;opacity:.7;margin-top:2px}
-main{padding:24px 28px;max-width:680px}
-/* insight hint from Feedback/Insights section */
-.insight-hint{background:var(--eggshell);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
-.ih-icon{font-size:1.2rem;flex-shrink:0}
-.ih-body{font-size:.78rem;color:var(--text);line-height:1.5}
-.ih-body strong{color:var(--forest)}
-.ih-link{font-size:.72rem;color:var(--green);cursor:pointer;text-decoration:underline;margin-top:4px;display:block}
-.step{display:none}.step.active{display:block}
-.step-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px;display:flex;align-items:center;gap:8px}
-.step-dots{display:flex;gap:5px}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--border)}
-.sdot.active{background:var(--forest)}
-.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.fmt-card{background:#fff;border-radius:var(--radius);padding:16px 12px;box-shadow:var(--shadow);cursor:pointer;text-align:center;transition:all .2s;border:2px solid transparent}
-.fmt-card:hover,.fmt-card.sel{border-color:var(--green)}
-.fmt-card .ico{font-size:1.8rem;margin-bottom:6px}
-.fmt-card .name{font-size:.82rem;color:var(--text)}
-.fmt-card .desc{font-size:.68rem;color:var(--muted);margin-top:2px;line-height:1.3}
-/* audio recording UI */
-.audio-ui{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center}
-.rec-btn{width:72px;height:72px;border-radius:50%;background:var(--forest);border:none;cursor:pointer;font-size:1.8rem;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.rec-btn:hover{background:var(--green)}
-.rec-btn.recording{background:#b33;animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(180,50,50,.4)}50%{box-shadow:0 0 0 12px rgba(180,50,50,0)}}
-.rec-status{font-size:.8rem;color:var(--muted);margin-bottom:10px}
-.audio-waveform{height:36px;background:var(--eggshell);border-radius:8px;display:flex;align-items:center;justify-content:center;gap:2px;margin-bottom:12px;overflow:hidden}
-.wbar{width:3px;border-radius:2px;background:var(--border);animation:wave 1s infinite}
-.wbar:nth-child(2n){animation-delay:.1s}
-.wbar:nth-child(3n){animation-delay:.2s}
-@keyframes wave{0%,100%{height:6px}50%{height:22px}}
-.audio-note{font-size:.72rem;color:var(--muted);line-height:1.4;background:var(--eggshell);border-radius:8px;padding:8px 10px}
-.q-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:12px}
-.q-text{font-size:.88rem;line-height:1.5;margin-bottom:10px}
-textarea{width:100%;font-family:Georgia,serif;font-size:.8rem;border:1px solid var(--border);border-radius:8px;padding:10px;resize:vertical;min-height:75px;outline:none}
-textarea:focus{border-color:var(--green)}
-.energy-row{display:flex;gap:6px;flex-wrap:wrap}
-.en-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:.8rem;cursor:pointer;font-family:Georgia,serif;transition:all .15s}
-.en-btn:hover,.en-btn.sel{background:var(--green);color:#fff;border-color:var(--green)}
-.btn-row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
-.btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:10px 20px;font-size:.82rem;font-family:Georgia,serif;cursor:pointer;font-weight:600}
-.btn:hover{opacity:.85}
-.btn.sec{background:none;border:1px solid var(--border);color:var(--muted);font-weight:normal}
-.saved-box{background:#eef5f0;border:1px solid var(--green);border-radius:var(--radius);padding:24px;text-align:center}
-.saved-box h3{color:var(--forest);font-size:1rem;margin-bottom:8px}
-.saved-box p{font-size:.8rem;color:var(--muted);margin-bottom:16px;line-height:1.5}
-.next-step-card{background:#fff;border-radius:8px;padding:12px 14px;box-shadow:var(--shadow);font-size:.78rem;text-align:left;margin-bottom:8px;border-left:3px solid var(--green)}
-.nsc-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
+.step{display:none}.step.active{display:block;animation:up .3s ease}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.dots{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
+.dot.done{background:var(--essense)}.dot.cur{background:var(--forest)}
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.75rem}
+.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s}
+.fmt-btn:hover{border-color:var(--essense);background:var(--bright)}
+.fmt-btn.sel{border-color:var(--forest);background:var(--bright)}
+.fmt-icon{font-size:1.3rem;margin-bottom:.4rem}
+.fmt-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
+.fmt-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.fmt-time{font-size:.7rem;color:var(--essense);font-weight:500;margin-top:.3rem}
+.fmt-tag{font-size:.65rem;background:var(--forest);color:var(--bright);border-radius:99px;padding:.1rem .45rem;margin-top:.35rem;display:inline-block}
+.card{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.875rem}
+.card-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
+.card-q{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
+textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:72px;line-height:1.6;outline:none;transition:border .2s}
+textarea:focus{border-color:var(--essense)}
+.energy-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .5rem}
+.energy-row{display:flex;gap:.5rem}
+.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted)}
+.e-btn:hover{border-color:var(--essense);background:var(--bright)}
+.e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
+.e-emoji{font-size:.95rem;display:block;margin-bottom:.2rem}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
+.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.4;cursor:not-allowed}
+.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.output-box{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;font-size:.8rem;color:var(--forest);line-height:1.75;white-space:pre-wrap;margin-bottom:1rem}
+.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin:.875rem 0;line-height:1.6}
+.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.tag{display:inline-block;background:var(--forest);color:var(--bright);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;font-weight:500;margin:.15rem}
+.fmt-feedback{display:flex;gap:.5rem;flex-wrap:wrap}
+.fmt-fb-btn{background:var(--egg);border:1px solid var(--border);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;color:var(--charcoal);transition:all .2s}
+.fmt-fb-btn:hover{border-color:var(--essense);background:var(--bright)}
+.fmt-fb-btn.sel{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.walk-banner{background:var(--forest);color:var(--bright);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:.85rem;line-height:1.5}
+.walk-banner strong{color:var(--white);display:block;margin-bottom:.3rem;font-family:var(--font-head);font-size:.95rem}
+/* audio */
+.audio-controls{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:.875rem;text-align:center}
+.rec-btn{background:var(--forest);color:var(--white);border:none;border-radius:99px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem}
+.rec-btn.recording{background:#c0392b;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.rec-status{font-size:.8rem;color:var(--muted);margin-top:.65rem}
+.rec-transcript{margin-top:.75rem;font-size:.82rem;color:var(--charcoal);background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;min-height:48px;text-align:left;line-height:1.6;display:none}
+/* chat / AI */
+.chat-area{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.875rem}
+.chat-messages{padding:1rem;max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;background:var(--white)}
+.msg{max-width:88%;font-size:.85rem;line-height:1.55;border-radius:10px;padding:.6rem .9rem}
+.msg.bot{background:var(--bright);color:var(--forest);align-self:flex-start;border-bottom-left-radius:2px}
+.msg.user{background:var(--forest);color:var(--white);align-self:flex-end;border-bottom-right-radius:2px}
+.chat-input-row{display:flex;gap:.4rem;padding:.65rem;border-top:1px solid var(--border);background:var(--egg)}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);outline:none}
+.chat-input:focus{border-color:var(--essense)}
+.chat-send{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.5rem .9rem;font-family:var(--font-body);font-size:.82rem;font-weight:500;cursor:pointer}
+.ai-note{font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.4rem;line-height:1.5}
 </style>
 </head>
 <body>
-<header><div class="meta">Essense PD · Rosie de Vries</div><h1>Reflectie</h1></header>
-<main>
+<div class="dots" id="dots-bar"></div>
 
-<!-- Insight hint from insights/feedback -->
-<div class="insight-hint">
-  <div class="ih-icon">💡</div>
-  <div class="ih-body">
-    <strong>Vanuit je inzichten:</strong> Je energie was vorige week hoog na de blueprint workshop. Gebruik dit moment om te verankeren wat werkte.
-    <span class="ih-link" onclick="location.href='insights.html'">→ Bekijk je inzichten</span>
+<div class="step active" id="s0">
+  <p class="label">reflection</p>
+  <h1 class="heading">how do you want to reflect today?</h1>
+  <p class="sub">pick a format. the questions adapt to what you choose. you can always change later.</p>
+  <div class="fmt-grid">
+    <button class="fmt-btn" onclick="pickFmt('written',this)">
+      <div class="fmt-icon">✍️</div><div class="fmt-title">written</div>
+      <div class="fmt-desc">structured questions, write at your own pace</div>
+      <div class="fmt-time">5 questions · ~8 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('walk',this)">
+      <div class="fmt-icon">🚶</div><div class="fmt-title">walk-and-talk</div>
+      <div class="fmt-desc">2 prompts to think about on a walk — type back when you return</div>
+      <div class="fmt-time">2 prompts · ~15 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('quick',this)">
+      <div class="fmt-icon">⚡</div><div class="fmt-title">quick check-in</div>
+      <div class="fmt-desc">two questions, three minutes</div>
+      <div class="fmt-time">2 questions · ~3 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('audio',this)">
+      <div class="fmt-icon">🎙️</div><div class="fmt-title">audio reflection</div>
+      <div class="fmt-desc">speak your thoughts — transcribed automatically</div>
+      <div class="fmt-time">open · ~5 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('talk',this)" style="grid-column:span 2">
+      <div class="fmt-icon">🤖</div><div class="fmt-title">talk it through — guided</div>
+      <div class="fmt-desc">a conversational agent asks you one question at a time, adapts to your answers, and helps you reach an insight you might not have found alone</div>
+      <div class="fmt-time">adaptive · ~10 min</div>
+      <div class="fmt-tag">AI-guided</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('free',this)">
+      <div class="fmt-icon">🌊</div><div class="fmt-title">free-form</div>
+      <div class="fmt-desc">one open prompt — write what comes</div>
+      <div class="fmt-time">1 prompt · open</div>
+    </button>
   </div>
+  <div class="btn-row"><button class="btn-p" id="btn-start" disabled onclick="goTo(1)">continue →</button></div>
 </div>
 
-<div class="step active" id="s1">
-  <div class="step-label">Stap 1 van 3 — Kies een format<div class="step-dots"><div class="sdot active"></div><div class="sdot"></div><div class="sdot"></div></div></div>
-  <div class="format-grid">
-    <div class="fmt-card" onclick="pickFormat('gesprek')"><div class="ico">💬</div><div class="name">Gesprek</div><div class="desc">Vrij schrijven, alsof je het uitlegt</div></div>
-    <div class="fmt-card" onclick="pickFormat('schrijven')"><div class="ico">✍️</div><div class="name">Schrijven</div><div class="desc">Gestructureerde tekst</div></div>
-    <div class="fmt-card" onclick="pickFormat('audio')"><div class="ico">🎙️</div><div class="name">Audio</div><div class="desc">Inspreken, systeem transcribeert</div></div>
-    <div class="fmt-card" onclick="pickFormat('tekenen')"><div class="ico">✏️</div><div class="name">Tekenen</div><div class="desc">Schets of mindmap beschrijven</div></div>
-    <div class="fmt-card" onclick="pickFormat('stilte')"><div class="ico">🌿</div><div class="name">Stilte</div><div class="desc">Korte vragen, ruimte om te denken</div></div>
-    <div class="fmt-card" onclick="pickFormat('gesprek')"><div class="ico">⚡</div><div class="name">Snel (2 min)</div><div class="desc">Eén vraag, één antwoord</div></div>
+<!-- step 1: context / walk / quick / free / audio start -->
+<div class="step" id="s1">
+  <div id="walk-banner-slot"></div>
+  <p class="label">reflection · <span id="fmt-name">written</span></p>
+  <h2 class="heading" id="s1-head">what happened recently?</h2>
+  <p class="sub" id="s1-sub">just one or two sentences — what's the moment you want to reflect on?</p>
+  <div id="audio-block" style="display:none">
+    <div class="audio-controls">
+      <button class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️ start recording</button>
+      <div class="rec-status" id="rec-status">tap to record your reflection out loud</div>
+      <div class="rec-transcript" id="rec-transcript"></div>
+    </div>
+    <p class="ai-note">In the final version this connects to a speech-to-text service. For the prototype: record your thoughts, then type a summary below.</p>
   </div>
+  <div class="card" id="card-q1"><div class="card-tag">context</div><div class="card-q" id="q1">what's been going on recently that you want to reflect on?</div><textarea id="a1" placeholder="e.g. I tried mapping a back-stage layer for my project for the first time…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="advance(1)">continue →</button><button class="btn-s" onclick="goTo(0)">back</button></div>
 </div>
 
+<!-- step 2: what worked -->
 <div class="step" id="s2">
-  <div class="step-label">Stap 2 van 3 — Reflecteer<div class="step-dots"><div class="sdot"></div><div class="sdot active"></div><div class="sdot"></div></div></div>
-  
-  <!-- Audio mode -->
-  <div id="audioMode" style="display:none">
-    <div class="audio-ui">
-      <div class="rec-btn" id="recBtn" onclick="toggleRec()">🎙️</div>
-      <div class="rec-status" id="recStatus">Druk om op te nemen</div>
-      <div class="audio-waveform" id="waveform" style="display:none">
-        <div class="wbar" style="height:8px"></div><div class="wbar" style="height:14px"></div><div class="wbar" style="height:20px"></div><div class="wbar" style="height:12px"></div><div class="wbar" style="height:24px"></div><div class="wbar" style="height:10px"></div><div class="wbar" style="height:18px"></div><div class="wbar" style="height:8px"></div><div class="wbar" style="height:16px"></div>
-      </div>
-      <div class="audio-note">🤖 In de productieversie wordt je audio automatisch getranscribeerd en gekoppeld aan je doelen via de AI-agent. Nu kun je je aantekeningen hieronder typen.</div>
-    </div>
-    <div style="margin-top:14px">
-      <div class="q-card">
-        <div class="q-text">Transcriptie / aantekeningen (optioneel)</div>
-        <textarea placeholder="Of typ hier een samenvatting van wat je insprak..."></textarea>
-      </div>
-    </div>
-  </div>
-
-  <!-- Text mode -->
-  <div id="textMode">
-    <div class="q-card">
-      <div class="q-text">Wat heb je de afgelopen periode gedaan dat je goed is afgegaan?</div>
-      <textarea id="q1" placeholder="Vertel..."></textarea>
-    </div>
-    <div class="q-card">
-      <div class="q-text">Waar liep je tegenaan? Wat was lastig of onverwacht?</div>
-      <textarea id="q2" placeholder="Vertel..."></textarea>
-    </div>
-    <div class="q-card">
-      <div class="q-text">Wat wil je de volgende periode anders of meer doen?</div>
-      <textarea id="q3" placeholder="Vertel..."></textarea>
-    </div>
-  </div>
-
-  <div class="btn-row">
-    <button class="btn" onclick="goStep('s3')">Volgende →</button>
-    <button class="btn sec" onclick="goStep('s1')">← Terug</button>
-  </div>
+  <p class="label">reflection · what worked</p>
+  <h2 class="heading">what went well, and what gave you energy?</h2>
+  <p class="sub">successes and energy first — they're the signal, not the afterthought.</p>
+  <div class="card"><div class="card-tag">what went well</div><div class="card-q">what are you proud of, however small?</div><textarea id="a2" placeholder="e.g. I asked a question the senior designer said was exactly right…" rows="3"></textarea></div>
+  <div class="card"><div class="card-tag">energy</div><div class="card-q">when did you feel most like yourself recently?</div><textarea id="a3" placeholder="e.g. The moment the back-stage connection clicked…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="advance(2)">continue →</button><button class="btn-s" onclick="goTo(1)">back</button></div>
 </div>
 
+<!-- step 3: learned -->
 <div class="step" id="s3">
-  <div class="step-label">Stap 3 van 3 — Energie &amp; opslaan<div class="step-dots"><div class="sdot"></div><div class="sdot"></div><div class="sdot active"></div></div></div>
-  <div class="q-card">
-    <div class="q-text">Hoe voelde deze reflectie? Kies je energieniveau:</div>
-    <div class="energy-row">
-      <button class="en-btn" onclick="selE(this)">😴 1 — Leeg</button>
-      <button class="en-btn" onclick="selE(this)">😐 2 — Neutraal</button>
-      <button class="en-btn" onclick="selE(this)">🙂 3 — Oké</button>
-      <button class="en-btn" onclick="selE(this)">😊 4 — Goed</button>
-      <button class="en-btn" onclick="selE(this)">🌟 5 — Energiek</button>
+  <p class="label">reflection · what I learned</p>
+  <h2 class="heading">what did you learn?</h2>
+  <p class="sub">connect it to your goal if you can.</p>
+  <div class="card"><div class="card-tag">insight</div><div class="card-q">what do you know now that you didn't before?</div><textarea id="a4" placeholder="e.g. Back-stage mapping is about asking the right questions…" rows="3"></textarea></div>
+  <div class="btn-row"><button class="btn-p" onclick="advance(3)">continue →</button><button class="btn-s" onclick="goTo(2)">back</button></div>
+</div>
+
+<!-- step 4: next -->
+<div class="step" id="s4">
+  <p class="label">reflection · next step</p>
+  <h2 class="heading">what will you do differently or try next?</h2>
+  <p class="sub">one concrete thing. even if it's small.</p>
+  <div class="card"><div class="card-tag">next step</div><div class="card-q">if you could change or try one thing — what would it be?</div><textarea id="a5" placeholder="e.g. I'll ask to sit in on a blueprinting session before I try again alone…" rows="3"></textarea></div>
+  <div class="card"><div class="card-tag">action</div><div class="card-q">what's the first small thing you'll do in the next 48 hours?</div><textarea id="a6" placeholder="e.g. Send a Slack to ask Pieter if I can observe his next mapping session" rows="2"></textarea></div>
+  <div class="energy-label">how are you feeling right now?</div>
+  <div class="energy-row">
+    <button class="e-btn" onclick="pickEnergy('energised',this)"><span class="e-emoji">🔋</span>energised</button>
+    <button class="e-btn" onclick="pickEnergy('neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
+    <button class="e-btn" onclick="pickEnergy('drained',this)"><span class="e-emoji">🪫</span>drained</button>
+    <button class="e-btn" onclick="pickEnergy('surprised',this)"><span class="e-emoji">✨</span>surprised</button>
+  </div>
+  <div class="btn-row" style="margin-top:1.25rem"><button class="btn-y" onclick="buildOutput()">save reflection →</button><button class="btn-s" onclick="goTo(3)">back</button></div>
+</div>
+
+<!-- step: AI talk-it-through -->
+<div class="step" id="s-talk">
+  <p class="label">reflection · talk it through</p>
+  <h2 class="heading">let's think together</h2>
+  <p class="sub">answer each question honestly — the agent adapts to what you share and helps you reach an insight.</p>
+  <div class="chat-area">
+    <div class="chat-messages" id="chat-msgs"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-in" placeholder="type your answer…" onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send" onclick="sendChat()">→</button>
     </div>
   </div>
-  <div class="q-card">
-    <div class="q-text">Werkte dit format voor je?</div>
-    <div class="energy-row">
-      <button class="en-btn" onclick="selF(this)">✅ Ja, goed gewerkt</button>
-      <button class="en-btn" onclick="selF(this)">🔄 Volgende keer iets anders</button>
-      <button class="en-btn" onclick="selF(this)">🤷 Neutraal</button>
-    </div>
-  </div>
-  <div class="q-card">
-    <div class="q-text">Nog iets anders? (optioneel)</div>
-    <textarea placeholder="..."></textarea>
-  </div>
+  <p class="ai-note">🤖 In the final version this connects live to Claude. In this prototype the agent follows a guided script that adapts based on keywords in your answer.</p>
   <div class="btn-row">
-    <button class="btn" onclick="save()">Opslaan ✓</button>
-    <button class="btn sec" onclick="goStep('s2')">← Terug</button>
+    <button class="btn-y" id="btn-chat-save" onclick="saveChatReflection()" style="display:none">save reflection →</button>
+    <button class="btn-s" onclick="goTo(0)">← start over</button>
   </div>
 </div>
 
-<div class="step" id="s-done">
-  <div class="saved-box">
-    <h3>Reflectie opgeslagen ✓</h3>
-    <p>Je reflectie is bewaard en zichtbaar voor je coach voor jullie volgende sessie. Je inzichten zijn bijgewerkt.</p>
-    <div class="next-step-card"><div class="nsc-label">Volgende stap</div>Bekijk of je openstaande acties wil bijwerken op basis van deze reflectie.</div>
-    <div class="next-step-card"><div class="nsc-label">Op basis van je reflectie</div>Je energieniveau was hoog — goed moment om een nieuwe actie te zetten.</div>
-    <div class="btn-row" style="justify-content:center;margin-top:14px">
-      <button class="btn" onclick="location.href='tracker.html'">Acties bijhouden</button>
-      <button class="btn sec" onclick="location.href='insights.html'">Mijn inzichten →</button>
-    </div>
+<!-- step 5: output -->
+<div class="step" id="s5">
+  <p class="label">reflection saved</p>
+  <h2 class="heading">here's your reflection</h2>
+  <p class="sub">copy into Notion, or paste it into Claude with the save prompt from the Agent flows page.</p>
+  <div class="output-box" id="out-text"></div>
+  <div style="margin-bottom:1rem"><span style="font-size:.8rem;color:var(--muted);margin-right:.5rem">linked goal</span><span class="tag">Journey & Blueprinting L1→L2</span></div>
+  <div class="insight" id="out-insight"></div>
+  <div style="margin:1.1rem 0 .5rem;font-size:.8rem;color:var(--muted)">did this format work for you?</div>
+  <div class="fmt-feedback">
+    <button class="fmt-fb-btn" onclick="fbPick(this)">do this again</button>
+    <button class="fmt-fb-btn" onclick="fbPick(this)">it was fine</button>
+    <button class="fmt-fb-btn" onclick="fbPick(this)">try something else next time</button>
+  </div>
+  <div class="btn-row" style="margin-top:1.5rem">
+    <button class="btn-y" onclick="copyOutput()">copy to clipboard</button>
+    <button class="btn-s" onclick="resetAll()">new reflection</button>
   </div>
 </div>
 
-</main>
 <script>
-let audioMode = false;
-function goStep(id){document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function pickFormat(f){
-  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));
-  event.currentTarget.classList.add('sel');
-  audioMode = (f==='audio');
-  setTimeout(()=>{
-    goStep('s2');
-    document.getElementById('audioMode').style.display = audioMode ? 'block' : 'none';
-    document.getElementById('textMode').style.display = audioMode ? 'none' : 'block';
-  }, 250);
+let fmt='',energy='';
+const stepIds=['s0','s1','s2','s3','s4','s-talk','s5'];
+const flows={written:[1,2,3,4,5],walk:[1,2,5],quick:[1,4,5],free:[1,5],audio:[1,5],talk:['talk']};
+let currentFlow=[];let currentIdx=0;
+
+function dotCount(){return currentFlow.length;}
+function buildDots(){
+  const bar=document.getElementById('dots-bar');bar.innerHTML='';
+  const count=currentFlow.includes('talk')?3:currentFlow.length+1;
+  for(let i=0;i<count;i++){const d=document.createElement('div');d.className='dot';d.id='d'+i;bar.appendChild(d);}
 }
+function updateDots(cur){
+  for(let i=0;i<20;i++){const d=document.getElementById('d'+i);if(d)d.className='dot'+(i<cur?' done':i===cur?' cur':'');}
+}
+function goTo(stepId){
+  stepIds.forEach(id=>{const el=document.getElementById('s'+id);if(el)el.classList.remove('active');});
+  const t=document.getElementById('s'+stepId);if(t)t.classList.add('active');
+  if(stepId===0){currentIdx=0;}
+  else{const idx=currentFlow.indexOf(stepId);currentIdx=idx>=0?idx+1:1;}
+  updateDots(currentIdx);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function advance(fromStep){
+  const nextIdx=currentFlow.indexOf(fromStep)+1;
+  if(nextIdx<currentFlow.length){goTo(currentFlow[nextIdx]);}
+  else{buildOutput();}
+}
+function pickFmt(f,el){
+  fmt=f;
+  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('btn-start').disabled=false;
+  currentFlow=flows[f]||[1,2,3,4,5];
+  const names={written:'written',walk:'walk-and-talk',quick:'quick check-in',free:'free-form',audio:'audio',talk:'guided'};
+  document.getElementById('fmt-name').textContent=names[f]||f;
+  const banner=document.getElementById('walk-banner-slot');
+  const audioBlock=document.getElementById('audio-block');
+  const cardQ1=document.getElementById('card-q1');
+  audioBlock.style.display='none';cardQ1.style.display='block';
+  if(f==='walk'){
+    document.getElementById('s1-head').textContent='take your walk first';
+    document.getElementById('s1-sub').textContent='think about these questions while you walk. when you return, type what came up.';
+    document.getElementById('q1').textContent='what stood out recently? what would you do differently next time?';
+    banner.innerHTML='<div class="walk-banner"><strong>your walk prompt</strong>find a quiet route, read the questions, walk 10–15 min. type what came up when you return.</div>';
+  } else if(f==='quick'){
+    document.getElementById('s1-head').textContent='what stood out recently?';
+    document.getElementById('s1-sub').textContent='one sentence. that\'s it.';
+    document.getElementById('q1').textContent='what\'s the one thing from recently that stuck with you?';
+    banner.innerHTML='';
+  } else if(f==='free'){
+    document.getElementById('s1-head').textContent='write what comes';
+    document.getElementById('s1-sub').textContent='no structure needed. write whatever\'s on your mind for a few minutes.';
+    document.getElementById('q1').textContent='what\'s on your mind?';
+    banner.innerHTML='';
+  } else if(f==='audio'){
+    document.getElementById('s1-head').textContent='record your reflection';
+    document.getElementById('s1-sub').textContent='speak your thoughts out loud. the transcript will appear below. add any notes you want to keep.';
+    document.getElementById('q1').textContent='add any notes or context to go with your recording';
+    audioBlock.style.display='block';banner.innerHTML='';
+  } else {
+    document.getElementById('s1-head').textContent='what happened recently?';
+    document.getElementById('s1-sub').textContent='just one or two sentences — what\'s the moment you want to reflect on?';
+    document.getElementById('q1').textContent='what\'s been going on recently that you want to reflect on?';
+    banner.innerHTML='';
+  }
+  buildDots();updateDots(0);
+}
+
+// Audio recording (prototype)
+let isRecording=false,recTimer=null,recSec=0;
 function toggleRec(){
-  const btn=document.getElementById('recBtn');
-  const st=document.getElementById('recStatus');
-  const wf=document.getElementById('waveform');
-  const isRec=btn.classList.contains('recording');
-  if(isRec){btn.classList.remove('recording');btn.textContent='🎙️';st.textContent='Opname gestopt · Druk opnieuw om opnieuw te nemen';wf.style.display='none'}
-  else{btn.classList.add('recording');btn.textContent='⏹️';st.textContent='Opname loopt... Druk om te stoppen';wf.style.display='flex'}
+  const btn=document.getElementById('rec-btn');
+  const status=document.getElementById('rec-status');
+  const transcript=document.getElementById('rec-transcript');
+  if(!isRecording){
+    isRecording=true;recSec=0;
+    btn.textContent='⏹ stop recording';btn.classList.add('recording');
+    transcript.style.display='block';
+    transcript.textContent='Recording… speak your reflection.';
+    status.textContent='recording in progress';
+    recTimer=setInterval(()=>{recSec++;status.textContent='recording — '+recSec+'s';},1000);
+  } else {
+    isRecording=false;clearInterval(recTimer);
+    btn.textContent='🎙️ record again';btn.classList.remove('recording');
+    status.textContent='recording saved · '+recSec+'s';
+    transcript.textContent='[In the final version, your audio would be transcribed here automatically via Claude. For the prototype, type a summary of what you said in the notes area below.]';
+  }
 }
-function selE(btn){btn.closest('.energy-row').querySelectorAll('.en-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
-function selF(btn){btn.closest('.energy-row').querySelectorAll('.en-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
-function save(){goStep('s-done')}
+
+// AI chat flow
+const chatScript=[
+  {q:"Let's start simply — what's been on your mind lately when it comes to your development?",key:'open'},
+  {q:"That's useful context. What about that situation felt most challenging for you?",key:'challenge'},
+  {q:"And when you look back at it now — what do you think you actually learned from it, even if it was hard?",key:'learn'},
+  {q:"Good. If you could do one thing differently going forward, what would that be?",key:'next'},
+  {q:"Last one — how are you feeling right now, having reflected on this?",key:'feeling'},
+  {q:"Thank you. That's a solid reflection. Tap 'save reflection' to store this.",key:'done'},
+];
+let chatIdx=0;let chatLog=[];
+function initChat(){
+  chatIdx=0;chatLog=[];
+  const msgs=document.getElementById('chat-msgs');msgs.innerHTML='';
+  document.getElementById('btn-chat-save').style.display='none';
+  addMsg('bot',chatScript[0].q);
+}
+function addMsg(role,text){
+  const msgs=document.getElementById('chat-msgs');
+  const m=document.createElement('div');m.className='msg '+role;m.textContent=text;msgs.appendChild(m);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const val=inp.value.trim();if(!val)return;
+  addMsg('user',val);
+  chatLog.push({role:'user',text:val,key:chatScript[chatIdx]?.key});
+  inp.value='';chatIdx++;
+  if(chatIdx<chatScript.length){
+    setTimeout(()=>addMsg('bot',chatScript[chatIdx].q),600);
+  }
+  if(chatIdx>=chatScript.length-1){
+    setTimeout(()=>document.getElementById('btn-chat-save').style.display='inline-block',800);
+  }
+}
+function saveChatReflection(){
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const body='reflection · '+date+'\nformat: guided conversation · AI-assisted\n\n'+chatLog.map(e=>(e.key?e.key.toUpperCase()+'\n':'')+e.text).join('\n\n')+'\n\nlinked goal: Journey & Blueprinting L1→L2';
+  document.getElementById('out-text').textContent=body;
+  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. the guided format helped surface your thinking — this is stored and will feed into your insights.';
+  goTo(5);
+}
+
+function pickEnergy(e,el){energy=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function buildOutput(){
+  const emojiMap={energised:'🔋',neutral:'⚖️',drained:'🪫',surprised:'✨'};
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const get=id=>document.getElementById(id)?.value||'—';
+  let body='';
+  if(fmt==='free'){body=`reflection · ${date}\nformat: free-form · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat I wrote\n${get('a1')}`;}
+  else if(fmt==='quick'){body=`reflection · ${date}\nformat: quick check-in · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat stood out\n${get('a1')}\n\nwhat I'll do next\n${get('a6')}`;}
+  else if(fmt==='walk'){body=`reflection · ${date}\nformat: walk-and-talk · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat came up on the walk\n${get('a1')}\n\nnext step\n${get('a6')}`;}
+  else if(fmt==='audio'){body=`reflection · ${date}\nformat: audio · energy: ${emojiMap[energy]||'—'} ${energy}\n\nnotes\n${get('a1')}`;}
+  else{body=`reflection · ${date}\nformat: ${fmt} · energy: ${emojiMap[energy]||'—'} ${energy}\n\ncontext\n${get('a1')}\n\nwhat went well\n${get('a2')}\n\nwhat energised me\n${get('a3')}\n\nwhat I learned\n${get('a4')}\n\nwhat to try differently\n${get('a5')}\n\nnext step\n${get('a6')}`;}
+  body+='\n\nlinked goal: Journey & Blueprinting L1→L2';
+  document.getElementById('out-text').textContent=body;
+  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. copy and paste into your Reflections database in Notion, or tell Claude to save it.';
+  goTo(5);
+}
+function fbPick(el){document.querySelectorAll('.fmt-fb-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function copyOutput(){navigator.clipboard.writeText(document.getElementById('out-text').textContent).then(()=>alert('copied to clipboard'));}
+function resetAll(){fmt='';energy='';document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));document.querySelectorAll('textarea').forEach(t=>t.value='');document.getElementById('btn-start').disabled=true;document.getElementById('walk-banner-slot').innerHTML='';currentFlow=[];goTo(0);}
+
+// intercept "continue" for talk format
+document.getElementById('btn-start').addEventListener('click',function(e){
+  if(fmt==='talk'){e.preventDefault();goTo('-talk');initChat();}
+},true);
+
+buildDots();updateDots(0);
 </script>
 </body>
 </html>

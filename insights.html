@@ -67,7 +67,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 .empty-state strong{color:var(--forest);display:block;margin-bottom:.3rem;font-family:var(--font-head);font-size:1rem}
 .empty-state a{color:var(--essense);text-decoration:underline}
 .insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.arrow{color:var(--yellow);margin-right:.3rem;font-style:normal}
 .add-feedback{background:var(--egg);border:1.5px dashed var(--border);border-radius:12px;padding:1rem;margin-top:.875rem}
 .af-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
 .af-input,.af-select{border:1px solid var(--border);border-radius:7px;padding:.5rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--charcoal);background:var(--white);outline:none;width:100%}
@@ -282,18 +282,27 @@ function toggleCol(id,el){
 function reflectOn(btn){
   const card=btn.closest('.feedback-card');
   const text=card.querySelector('.fb-text').textContent;
-  navigator.clipboard.writeText('reflect on this feedback:\n'+text).then(()=>{
-    window.open('https://pdwessense.vercel.app/reflection.html','_blank');
-  });
+  // Show inline prompt then navigate — no clipboard dependency
+  if(card.querySelector('.reflect-strip'))return;
+  const strip=document.createElement('div');
+  strip.className='reflect-strip';
+  strip.style.cssText='margin-top:.6rem;background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.6rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.5;display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap';
+  strip.innerHTML='<span style="flex:1">→ open reflection with this as your starting point?</span>'
+    +'<a href="./reflection.html" target="_blank" style="background:var(--forest);color:var(--white);border-radius:6px;padding:.3rem .8rem;font-size:.73rem;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">open reflection →</a>';
+  card.appendChild(strip);
+  btn.disabled=true;btn.style.opacity='.4';
 }
 function createGoalFrom(btn){
   const card=btn.closest('.feedback-card');
   const text=card.querySelector('.fb-text').textContent;
+  if(card.querySelector('.goal-strip'))return;
   const suggestion='Based on this feedback: '+text.replace(/"/g,'')+' — consider a goal around the specific skill mentioned. Use the breakdown tool to shape it into sub-goals.';
   const strip=document.createElement('div');
-  strip.style.cssText='margin-top:.65rem;background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.65rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.5';
-  strip.innerHTML='<strong>suggested goal direction:</strong><br>'+suggestion+'<br><a href="./breakdown.html" target="_blank" style="color:var(--forest);font-weight:600;text-decoration:underline;margin-top:.4rem;display:inline-block">open breakdown tool →</a>';
-  btn.parentElement.appendChild(strip);
+  strip.className='goal-strip';
+  strip.style.cssText='margin-top:.6rem;background:var(--egg);border:1px solid var(--border);border-radius:8px;padding:.65rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.5';
+  strip.innerHTML='<strong>suggested goal direction:</strong><br>'+suggestion
+    +'<br><a href="./breakdown.html" target="_blank" style="color:var(--forest);font-weight:600;text-decoration:underline;margin-top:.4rem;display:inline-block">open breakdown tool →</a>';
+  card.appendChild(strip);
   btn.disabled=true;btn.style.opacity='.4';
 }
 function showGoalSuggestion(){

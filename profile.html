@@ -59,6 +59,17 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
 .footer-hint{font-size:.75rem;color:#b7e4c7;font-style:italic}
 .save-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer}
 .saved{font-size:.75rem;color:var(--yellow);margin-right:.75rem;display:none}
+.sanctity-mode-row{display:flex;gap:.4rem;margin-bottom:1.1rem}
+.smode-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:.35rem .9rem;font-family:var(--font-body);font-size:.78rem;color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s;font-weight:500}
+.smode-btn:hover{border-color:rgba(255,197,2,.5);color:var(--white)}
+.smode-btn.active{background:var(--yellow);border-color:var(--yellow);color:var(--forest);font-weight:600}
+.find-hint{font-size:.78rem;color:#b7e4c7;line-height:1.5;margin-bottom:.75rem;font-style:italic}
+.pod-row{display:flex;flex-direction:column;gap:.3rem;margin-top:.15rem}
+.pod-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:.3rem .65rem;font-family:var(--font-body);font-size:.72rem;color:rgba(255,255,255,.55);cursor:pointer;transition:all .2s;text-align:left;font-weight:500}
+.pod-btn:hover{border-color:rgba(255,197,2,.4);color:var(--white)}
+.pod-btn.active{background:rgba(255,197,2,.18);border-color:var(--yellow);color:var(--white)}
+.find-suggestion{margin-top:.875rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,197,2,.3);border-radius:10px;padding:.75rem 1rem;font-size:.78rem;color:#b7e4c7;line-height:1.6;display:none}
+.find-suggestion.show{display:block}
 </style>
 </head>
 <body>
@@ -113,21 +124,54 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest)
       <div class="toggle" id="cal-tog" onclick="togCal()"><div class="toggle-dot"></div></div>
     </div>
   </div>
-  <div class="sanctity-controls">
-    <div class="sc-field">
-      <span class="sc-label">preferred day</span>
-      <select class="sc-select" id="cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
-    </div>
-    <div class="sc-field">
-      <span class="sc-label">time</span>
-      <select class="sc-select" id="cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select>
-    </div>
-    <div class="sc-field">
-      <span class="sc-label">duration</span>
-      <select class="sc-select" id="cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select>
-    </div>
-    <div></div>
+  <!-- mode switcher -->
+  <div class="sanctity-mode-row">
+    <button class="smode-btn active" onclick="setCalMode('set',this)">set a time</button>
+    <button class="smode-btn" onclick="setCalMode('find',this)">find a space</button>
   </div>
+
+  <!-- set a time -->
+  <div id="cal-mode-set">
+    <div class="sanctity-controls">
+      <div class="sc-field">
+        <span class="sc-label">preferred day</span>
+        <select class="sc-select" id="cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+      </div>
+      <div class="sc-field">
+        <span class="sc-label">time</span>
+        <select class="sc-select" id="cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select>
+      </div>
+      <div class="sc-field">
+        <span class="sc-label">duration</span>
+        <select class="sc-select" id="cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select>
+      </div>
+    </div>
+  </div>
+
+  <!-- find a space -->
+  <div id="cal-mode-find" style="display:none">
+    <p class="find-hint">tell us when you're usually free — the system will find the first open recurring slot.</p>
+    <div class="sanctity-controls" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="sc-field">
+        <span class="sc-label">preferred day</span>
+        <select class="sc-select" id="find-day"><option value="any">any day</option><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select>
+      </div>
+      <div class="sc-field">
+        <span class="sc-label">part of day</span>
+        <div class="pod-row">
+          <button class="pod-btn active" onclick="pickPod('morning',this)">🌤 morning</button>
+          <button class="pod-btn" onclick="pickPod('middag',this)">☀️ midday</button>
+          <button class="pod-btn" onclick="pickPod('eod',this)">🌇 end of day</button>
+        </div>
+      </div>
+      <div class="sc-field">
+        <span class="sc-label">duration</span>
+        <select class="sc-select" id="find-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select>
+      </div>
+    </div>
+    <div class="find-suggestion" id="find-suggestion"></div>
+  </div>
+
   <div class="calendar-preview" id="cal-preview"></div>
   <div class="sanctity-note">📌 PD time registration stays in Teamleader (later Float). Calendar Sanctity is about your <em>intention</em> — reserving the slot. What you do with it is tracked here through your actions, reflections and sessions. No double admin.</div>
 </div>
@@ -158,17 +202,55 @@ function upd(){
   document.getElementById('disp-tlevel').textContent='→ L'+tlNum;
 }
 function pickDim(el){document.querySelectorAll('.dim-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+let calMode='set',podPref='morning';
+function setCalMode(mode,btn){
+  calMode=mode;
+  document.querySelectorAll('.smode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cal-mode-set').style.display=mode==='set'?'block':'none';
+  document.getElementById('cal-mode-find').style.display=mode==='find'?'block':'none';
+  document.getElementById('cal-preview').classList.remove('visible');
+  if(mode==='find')showFindSuggestion();
+}
+function pickPod(pod,btn){
+  podPref=pod;
+  document.querySelectorAll('.pod-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  showFindSuggestion();
+}
+function showFindSuggestion(){
+  const day=document.getElementById('find-day').value;
+  const dur=document.getElementById('find-dur').value;
+  const windows={morning:'09:00 – 11:30',middag:'12:00 – 14:00',eod:'15:30 – 17:30'};
+  const labels={morning:'morning',middag:'midday',eod:'end of day'};
+  const dayLabel=day==='any'?'any weekday':day;
+  const el=document.getElementById('find-suggestion');
+  el.classList.add('show');
+  el.innerHTML='🔍 <strong style="color:var(--white)">suggested slot:</strong> '+dayLabel+' · '+windows[podPref]+' window · '+dur
+    +'<br><span style="opacity:.75;font-size:.72rem">The system will scan your calendar for the first open recurring slot in your '+labels[podPref]+' window.</span>';
+}
 function togCal(){
   const t=document.getElementById('cal-tog');t.classList.toggle('on');
   const on=t.classList.contains('on');
   document.getElementById('cal-state').textContent=on?'on':'off';
   const preview=document.getElementById('cal-preview');
   if(on){
-    const day=document.getElementById('cal-day').value;
-    const time=document.getElementById('cal-time').value;
-    const dur=document.getElementById('cal-dur').value;
-    preview.classList.add('visible');
-    preview.innerHTML='📆 <strong style="color:var(--white)">Next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly<br><span style="opacity:.7">The system will find the next available '+day+' slot and create a recurring calendar event called "PD time" in your Google Calendar.</span>';
+    if(calMode==='set'){
+      const day=document.getElementById('cal-day').value;
+      const time=document.getElementById('cal-time').value;
+      const dur=document.getElementById('cal-dur').value;
+      preview.classList.add('visible');
+      preview.innerHTML='📆 <strong style="color:var(--white)">Next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly'
+        +'<br><span style="opacity:.7">The system will find the next available '+day+' slot and create a recurring calendar event called &quot;PD time&quot; in your Google Calendar.</span>';
+    } else {
+      const day=document.getElementById('find-day').value;
+      const dur=document.getElementById('find-dur').value;
+      const windows={morning:'09:00 – 11:30',middag:'12:00 – 14:00',eod:'15:30 – 17:30'};
+      const dayLabel=day==='any'?'any weekday':day;
+      preview.classList.add('visible');
+      preview.innerHTML='🔍 <strong style="color:var(--white)">Finding a space:</strong> scanning '+dayLabel+' · '+windows[podPref]+' · '+dur
+        +'<br><span style="opacity:.7">The system will find the first open recurring slot in your preference window and reserve it as &quot;PD time&quot;.</span>';
+    }
   } else {
     preview.classList.remove('visible');
   }

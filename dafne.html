@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Profile — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--forest);margin:0;padding:0;min-height:100vh;display:flex;flex-direction:column}
+.header{padding:2rem 2rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.1)}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b7e4c7;font-weight:500;margin-bottom:.35rem}
+.name{font-family:var(--font-head);font-size:2rem;color:var(--white);line-height:1.1}
+.role-line{font-size:.875rem;color:#b7e4c7;margin-top:.3rem}
+.level-badge{background:var(--yellow);color:var(--forest);border-radius:12px;padding:1rem 1.25rem;text-align:center;flex-shrink:0;min-width:90px}
+.level-num{font-family:var(--font-head);font-size:1.75rem;color:var(--forest);line-height:1}
+.level-lbl{font-size:.65rem;font-weight:600;color:var(--forest);margin-top:.15rem;text-transform:uppercase;letter-spacing:.06em}
+.level-arr{font-size:.75rem;color:var(--forest);margin-top:.1rem;font-weight:500}
+.progress-section{margin-top:1rem}
+.progress-label{font-size:.75rem;color:#b7e4c7;margin-bottom:.4rem}
+.progress-track{height:6px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:var(--yellow);transition:width .6s ease}
+.progress-pct{font-size:.7rem;color:#b7e4c7;margin-top:.3rem}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.08)}
+.cell{background:var(--forest);padding:1.1rem 1.5rem}
+.cell-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#b7e4c7;font-weight:500;margin-bottom:.45rem}
+.cell input{background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.15);color:var(--white);font-family:var(--font-body);font-size:.875rem;width:100%;outline:none;padding-bottom:.25rem;transition:border .2s}
+.cell input:focus{border-bottom-color:var(--yellow)}
+.cell input::placeholder{color:rgba(255,255,255,.25);font-style:italic}
+.dim-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.2rem}
+.dim-chip{padding:.2rem .6rem;border-radius:99px;font-size:.7rem;font-weight:500;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.45);background:transparent}
+.dim-chip.active{background:var(--yellow);color:var(--forest);border-color:var(--yellow)}
+.fw-link{color:var(--yellow);text-decoration:none;font-size:.8rem;display:inline-block;margin-top:.2rem}
+.sanctity-block{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,197,2,.4);border-radius:16px;padding:1.5rem;margin:1.5rem 2rem}
+.sanctity-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem}
+.sanctity-icon{font-size:2rem;flex-shrink:0}
+.sanctity-text{flex:1}
+.sanctity-title{font-family:var(--font-head);font-size:1.2rem;color:var(--white);margin-bottom:.3rem}
+.sanctity-desc{font-size:.82rem;color:#b7e4c7;line-height:1.6}
+.sanctity-controls{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.75rem;align-items:end}
+.sc-field{display:flex;flex-direction:column;gap:.3rem}
+.sc-label{font-size:.7rem;color:#b7e4c7;text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.sc-select{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:.45rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--white);outline:none;width:100%}
+.toggle-wrap{display:flex;align-items:center;gap:.65rem;justify-content:flex-end}
+.toggle{width:44px;height:24px;border-radius:99px;background:rgba(255,255,255,.15);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--yellow)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--white);transition:left .2s}
+.toggle.on .toggle-dot{left:23px}
+.toggle-state{font-size:.8rem;color:#b7e4c7;font-weight:500}
+.calendar-preview{margin-top:1rem;background:rgba(255,255,255,.06);border-radius:10px;padding:.875rem 1rem;font-size:.78rem;color:#b7e4c7;line-height:1.6;display:none}
+.calendar-preview.visible{display:block}
+.sanctity-note{font-size:.72rem;color:rgba(183,228,199,.6);margin-top:1rem;line-height:1.5;font-style:italic}
+.footer{padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.08);margin-top:auto}
+.footer-hint{font-size:.75rem;color:#b7e4c7;font-style:italic}
+.save-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.5rem 1.2rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer}
+.saved{font-size:.75rem;color:var(--yellow);margin-right:.75rem;display:none}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="label">your pd profile</div>
+      <div class="name" id="disp-name">Dafne</div>
+      <div class="role-line" id="disp-role">Service Designer · Service Design track</div>
+    </div>
+    <div class="level-badge">
+      <div class="level-num" id="disp-clevel">L0</div>
+      <div class="level-lbl" id="disp-clevel-name">The Apprentice</div>
+      <div class="level-arr" id="disp-tlevel">→ L1</div>
+    </div>
+  </div>
+  <div class="progress-section">
+    <div class="progress-label">progress toward target level this year</div>
+    <div class="progress-track"><div class="progress-fill" style="width:2%"></div></div>
+    <div class="progress-pct">2% · 0 goals active yet · just getting started</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="cell"><div class="cell-label">name</div><input id="f-name" value="Dafne" placeholder="your name" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">role</div><input id="f-role" value="Service Designer" placeholder="your role" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">track</div><input id="f-track" value="Service Design" placeholder="your track" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">current level</div><input id="f-clevel" value="L0 — The Apprentice" placeholder="L0–L6" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">target level this year</div><input id="f-tlevel" value="L1 — The Learner" placeholder="L0–L6" oninput="upd()"/></div>
+  <div class="cell"><div class="cell-label">coach</div><input id="f-coach" value="" placeholder="fill in"/></div>
+  <div class="cell"><div class="cell-label">joined essense</div><input id="f-joined" value="" placeholder="month + year"/></div>
+  <div class="cell">
+    <div class="cell-label">focus dimension</div>
+    <div class="dim-chips">
+      <div class="dim-chip active" onclick="pickDim(this)">Delivery</div>
+      <div class="dim-chip" onclick="pickDim(this)">People</div>
+      <div class="dim-chip" onclick="pickDim(this)">Added value</div>
+    </div>
+  </div>
+  <div class="cell"><div class="cell-label">career framework</div><a class="fw-link" href="https://www.notion.so/eidra/Essense-Career-Framework-3611f15509d880738b78ffc6740a7f49" target="_blank">→ open framework ↗</a></div>
+</div>
+<div class="sanctity-block">
+  <div class="sanctity-top">
+    <div class="sanctity-icon">📅</div>
+    <div class="sanctity-text">
+      <div class="sanctity-title">Calendar Sanctity</div>
+      <div class="sanctity-desc">Protect your PD time by letting the system automatically block recurring slots in your Google Calendar. Set your preferred day and duration, then switch it on.</div>
+    </div>
+    <div class="toggle-wrap">
+      <span class="toggle-state" id="cal-state">off</span>
+      <div class="toggle" id="cal-tog" onclick="togCal()"><div class="toggle-dot"></div></div>
+    </div>
+  </div>
+  <div class="sanctity-controls">
+    <div class="sc-field"><span class="sc-label">preferred day</span><select class="sc-select" id="cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+    <div class="sc-field"><span class="sc-label">time</span><select class="sc-select" id="cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option></select></div>
+    <div class="sc-field"><span class="sc-label">duration</span><select class="sc-select" id="cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
+    <div></div>
+  </div>
+  <div class="calendar-preview" id="cal-preview"></div>
+  <div class="sanctity-note">📌 Project hours stay in Teamleader (later Float). Calendar Sanctity tracks your PD intention — no double admin.</div>
+</div>
+<div class="footer">
+  <div class="footer-hint">fill in once · everything in your Hub personalises from here</div>
+  <div style="display:flex;align-items:center">
+    <span class="saved" id="saved-msg">saved ✓</span>
+    <button class="save-btn" onclick="save()">save profile</button>
+  </div>
+</div>
+<script>
+const SS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const levelNames={0:'The Apprentice',1:'The Learner',2:'The Practitioner',3:'The Solver',4:'The Scaler',5:'The Shaper',6:'The Architect'};
+function upd(){
+  document.getElementById('disp-name').textContent=document.getElementById('f-name').value||'your name';
+  document.getElementById('disp-role').textContent=(document.getElementById('f-role').value||'your role')+' · '+(document.getElementById('f-track').value||'your track')+' track';
+  const cl=document.getElementById('f-clevel').value||'';const tl=document.getElementById('f-tlevel').value||'';
+  const clNum=cl.match(/L(\d)/)?parseInt(cl.match(/L(\d)/)[1]):0;
+  const tlNum=tl.match(/L(\d)/)?parseInt(tl.match(/L(\d)/)[1]):1;
+  document.getElementById('disp-clevel').textContent='L'+clNum;
+  document.getElementById('disp-clevel-name').textContent=levelNames[clNum]||'';
+  document.getElementById('disp-tlevel').textContent='→ L'+tlNum;
+}
+function pickDim(el){document.querySelectorAll('.dim-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function togCal(){
+  const t=document.getElementById('cal-tog');t.classList.toggle('on');
+  const on=t.classList.contains('on');
+  document.getElementById('cal-state').textContent=on?'on':'off';
+  const preview=document.getElementById('cal-preview');
+  if(on){const day=document.getElementById('cal-day').value;const time=document.getElementById('cal-time').value;const dur=document.getElementById('cal-dur').value;preview.classList.add('visible');preview.innerHTML='📆 <strong style="color:var(--white)">Next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly';}
+  else{preview.classList.remove('visible');}
+}
+function save(){
+  const d={name:document.getElementById('f-name').value,role:document.getElementById('f-role').value,track:document.getElementById('f-track').value,clevel:document.getElementById('f-clevel').value,tlevel:document.getElementById('f-tlevel').value,coach:document.getElementById('f-coach').value,joined:document.getElementById('f-joined').value};
+  SS.set('essense-profile-dafne',JSON.stringify(d));
+  const m=document.getElementById('saved-msg');m.style.display='inline';setTimeout(()=>m.style.display='none',2000);
+}
+upd();
+</script>
+</body>
+</html>

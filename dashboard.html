@@ -154,16 +154,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 }
 
 /* ── Demo mode ── */
-/* ── Showcase strip ── */
-.showcase-strip{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:.65rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
-.sc-label{font-size:.72rem;color:var(--muted);font-weight:500;margin-right:.25rem;white-space:nowrap}
-.sc-btn{background:var(--white);border:1.5px solid var(--border);border-radius:99px;padding:.3rem .8rem;font-family:var(--font-body);font-size:.72rem;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
-.sc-btn:hover{border-color:var(--essense);color:var(--charcoal)}
-.sc-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest)}
-.demo-banner{background:var(--forest);color:var(--white);padding:.5rem 1rem;font-size:.78rem;font-weight:500;border-radius:9px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
-.demo-banner span{opacity:.75;font-weight:400}
-.demo-exit{background:rgba(255,255,255,.15);border:none;border-radius:99px;padding:.2rem .65rem;font-family:var(--font-body);font-size:.72rem;color:var(--white);cursor:pointer}
-.demo-exit:hover{background:rgba(255,255,255,.25)}
+
 .demo-overlay{display:none;position:fixed;inset:0;background:rgba(4,69,36,.5);z-index:200;align-items:center;justify-content:center}
 .demo-overlay.open{display:flex}
 .demo-panel{background:var(--white);border-radius:16px;padding:1.75rem;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
@@ -175,6 +166,8 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 .demo-option-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
 .demo-close{background:transparent;border:1.5px solid var(--border);border-radius:9px;padding:.5rem 1rem;font-family:var(--font-body);font-size:.825rem;color:var(--muted);cursor:pointer;margin-top:.25rem;width:100%}
 .demo-close:hover{border-color:var(--essense);color:var(--charcoal)}
+
+
 </style>
 </head>
 <body>
@@ -297,13 +290,6 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 ════════════════════════════════════════════════ -->
 <div id="view-dashboard" style="display:none">
 
-  <!-- Showcase strip — always visible at top -->
-  <div class="showcase-strip" id="showcase-strip">
-    <span class="sc-label">view:</span>
-    <button class="sc-btn active" id="sc-mydata" onclick="showMyData()">👤 my data</button>
-    <button class="sc-btn" id="sc-inuse" onclick="loadDemoInUse()">🌱 system in use</button>
-    <button class="sc-btn" id="sc-firstuse" onclick="loadDemoFirstUse()">👋 first usage</button>
-  </div>
   <!-- Demo mode banner (shown when in demo) -->
   <div class="demo-banner" id="demo-banner" style="display:none">
     🎬 <strong>Demo mode</strong> <span id="demo-mode-label"></span>
@@ -451,6 +437,23 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 </div><!-- /view-dashboard -->
 
 <script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:90,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:45,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:60,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:18,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    if (PD.isFirstRun()) PD.save(SC_DEMO);
+  } else if (p === 'first') {
+    PD.init('demo');
+    // keep empty so onboarding / empty states show
+  }
+  // no param = real data, default namespace
+})();
+
+
 
 
 // ── Onboarding ───────────────────────────────────────────────────
@@ -823,7 +826,7 @@ function exitDemo() {
 function initDemoUI() {
   var mode = sessionStorage.getItem('pdMode');
   // Update strip button highlight
-  document.querySelectorAll('.sc-btn').forEach(function(b){ b.classList.remove('active'); });
+
   if (mode === 'demo-inuse') {
     var btn = document.getElementById('sc-inuse');
     if (btn) btn.classList.add('active');

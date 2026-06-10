@@ -108,6 +108,8 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 .fb-saved{font-size:.78rem;color:var(--essense);margin-left:.5rem;opacity:0;transition:opacity .3s}
 
 @media(max-width:500px){.insight-grid{grid-template-columns:1fr}}
+
+
 </style>
 </head>
 <body>
@@ -214,8 +216,24 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 </div>
 
 <script>
-// Demo mode namespace check
-(function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:90,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:45,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:60,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:18,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    if (PD.isFirstRun()) PD.save(SC_DEMO);
+  } else if (p === 'first') {
+    PD.init('demo');
+    // keep empty so onboarding / empty states show
+  }
+  // no param = real data, default namespace
+})();
+
+
+
 
 
 // ── AI helper ─────────────────────────────────────────────────────
@@ -240,68 +258,94 @@ function show(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ── Insight generation ─────────────────────────────────────────────
-// Derive insight snippets from real reflection + feedback data
-function deriveInsights() {
-  const refls  = PD.reflections();
-  const feedbs = PD.feedback();
-
-  const goods   = [];
-  const improves= [];
-
-  // From feedback
-  feedbs.forEach(f=>{
-    if(!f.text) return;
-    const snippet = f.text.length>90 ? f.text.slice(0,90)+'…' : f.text;
-    if(f.type==='positive') goods.push({text:snippet,   src:f.from||'feedback'});
-    if(f.type==='improve')  improves.push({text:snippet,src:f.from||'feedback'});
-  });
-
-  // From reflections — pull "next" and "learned" fields as possible insights
-  refls.forEach(r=>{
-    const c = r.content||{};
-    const next    = c['wr-4']||c['wk-1']||c['qk-1']||'';
-    const learned = c['wr-3']||c['wk-0']||c['qk-0']||'';
-    if(next && next.length>10)    improves.push({text:next,    src:fmtDate(r.date)+' reflection'});
-    if(learned && learned.length>10) goods.push({text:learned, src:fmtDate(r.date)+' reflection'});
-  });
-
-  return { goods: goods.slice(0,3), improves: improves.slice(0,3) };
-}
-
-// ── Render main view ────────────────────────────────────────────────
+// ── AI-generated insights ──────────────────────────────────────────
 function renderMain() {
-  renderInsights();
+  generateAIInsights();
   renderReflections();
   renderFeedbackList();
 }
 
-function renderInsights() {
-  const {goods, improves} = deriveInsights();
-  const grid = document.getElementById('insight-cards');
-  const actionRow = document.getElementById('insight-action-row');
+async function generateAIInsights() {
+  var grid = document.getElementById('insight-cards');
+  var refls = PD.reflections();
+  var feedbs = PD.feedback();
 
-  const makeCard = (item, type) => {
-    if(!item) return `<div class="insight-card empty-card"><div class="ic-empty-msg">no ${type==='good'?'positive':'growth'} signals yet</div></div>`;
-    return `<div class="insight-card ${type}" onclick="openInsight(${JSON.stringify(item).replace(/"/g,'&quot;')}, '${type}')">
-      <div class="ic-tag ${type}-tag"><div class="ic-dot ${type}"></div>${type==='good'?'Good!':'Improve!'}</div>
-      <div class="ic-text">"${esc(item.text)}"</div>
-      <div class="ic-src">${esc(item.src)}</div>
-    </div>`;
-  };
-
-  const topGood    = goods[0]    || null;
-  const topImprove = improves[0] || null;
-  grid.innerHTML = makeCard(topGood,'good') + makeCard(topImprove,'improve');
-
-  // Action row: if there's an improve insight, prompt to turn it into a goal
-  if (topImprove) {
-    var igJson = JSON.stringify(topImprove).replace(/"/g,'&quot;');
-    actionRow.innerHTML = '<div class="insight-action-row"><div class="ia-text">This growth area looks like it could become a goal or sub-goal. Want to work with it?</div><button class="ia-btn" onclick="openInsightGoalPanel(' + igJson + ')">turn into goal →</button></div>';
-  } else {
-    actionRow.innerHTML = '';
+  if (!refls.length && !feedbs.length) {
+    grid.innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add reflections and feedback to see your insights here</div></div>';
+    document.getElementById('insight-action-row').innerHTML = '';
+    return;
   }
+
+  grid.innerHTML = '<div style="grid-column:span 2;padding:.75rem 0;color:var(--muted);font-style:italic;font-size:.825rem">analysing your reflections…</div>';
+
+  // Build data summary for Claude
+  var reflTexts = refls.slice(0, 10).map(function(r) {
+    var c = r.content || {};
+    var texts = Object.values(c).filter(function(v) { return typeof v === 'string' && v.length > 5; });
+    return { date: r.date, format: r.format, energy: r.energy, text: texts.join(' | ').slice(0, 250) };
+  });
+  var fbTexts = feedbs.slice(0, 8).map(function(f) {
+    return { from: f.from, type: f.type, text: (f.text || '').slice(0, 180) };
+  });
+
+  var sys = 'You are an experienced professional development coach. Analyze this service designer's reflections and feedback to find genuine patterns. Be specific — reference actual things you see in the data, not generic praise. Be honest about growth areas.';
+  var prompt = 'Reflections and feedback from a service designer at Essense:
+
+REFLECTIONS: ' + JSON.stringify(reflTexts) + '
+
+FEEDBACK: ' + JSON.stringify(fbTexts) + '
+
+Find 2 genuine strength patterns (Good!) and 2 specific growth areas (Improve!). Respond ONLY with valid JSON (no markdown):
+{"good":[{"insight":"specific strength in one sentence","source":"what it's based on"},{"insight":"...","source":"..."}],"improve":[{"insight":"specific growth area in one sentence","source":"what it's based on"},{"insight":"...","source":"..."}]}';
+
+  var result = await callAI([{ role: 'user', content: prompt }], sys, 600);
+
+  if (result) {
+    var parsed = parseJSON(result);
+    if (parsed && (parsed.good || parsed.improve)) {
+      renderInsightCards(parsed.good || [], parsed.improve || []);
+      var topImprove = parsed.improve && parsed.improve[0];
+      renderActionRow(topImprove || null);
+      return;
+    }
+  }
+
+  // Fallback: use raw text from reflections/feedback
+  var good = null, improve = null;
+  feedbs.forEach(function(f) { if (f.text && f.type === 'positive' && !good) good = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
+  feedbs.forEach(function(f) { if (f.text && f.type === 'improve' && !improve) improve = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
+  refls.forEach(function(r) {
+    var c = r.content || {};
+    var t = c['wr-3'] || c['wk-0'] || c['qk-0'] || '';
+    if (t.length > 10 && !good) good = { insight: t.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
+    var n = c['wr-4'] || c['wk-1'] || c['qk-1'] || '';
+    if (n.length > 10 && !improve) improve = { insight: n.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
+  });
+  renderInsightCards(good ? [good] : [], improve ? [improve] : []);
+  renderActionRow(improve);
 }
+
+function renderInsightCards(goods, improves) {
+  var grid = document.getElementById('insight-cards');
+  var makeCard = function(item, type) {
+    if (!item) return '<div class="insight-card empty-card"><div class="ic-empty-msg">not enough data yet</div></div>';
+    return '<div class="insight-card ' + type + '">'
+      + '<div class="ic-tag ' + type + '-tag"><div class="ic-dot ' + type + '"></div>' + (type === 'good' ? 'Good!' : 'Improve!') + '</div>'
+      + '<div class="ic-text">' + esc(item.insight) + '</div>'
+      + '<div class="ic-src">' + esc(item.source || '') + '</div>'
+      + '</div>';
+  };
+  grid.innerHTML = makeCard(goods[0] || null, 'good') + makeCard(improves[0] || null, 'improve');
+}
+
+function renderActionRow(topImprove) {
+  var actionRow = document.getElementById('insight-action-row');
+  if (!topImprove) { actionRow.innerHTML = ''; return; }
+  var igJson = JSON.stringify(topImprove).replace(/"/g, '&quot;');
+  actionRow.innerHTML = '<div class="insight-action-row"><div class="ia-text">This growth area could become a goal. Want to shape it into one?</div><button class="ia-btn" onclick="openInsightGoalPanel(' + igJson + ')">shape into goal →</button></div>';
+}
+
+function openInsight() {} // placeholder
 
 // Insight → goal panel
 var igItem = null, igMode = 'subgoal';

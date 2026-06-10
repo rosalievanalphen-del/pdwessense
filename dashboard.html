@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PD Dashboard — Essense</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<title>Dashboard — Essense PD</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -13,156 +13,829 @@
   --yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;
   --font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;
 }
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:800px;margin:0 auto}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.6rem;color:var(--forest);margin-bottom:.3rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:2rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:2rem 0}
-.meter-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-bottom:1.75rem}
-.mc{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
-.mc-label{font-size:12px;color:var(--muted);margin-bottom:.4rem;font-weight:500}
-.mc-val{font-size:1.85rem;font-weight:300;color:var(--forest);line-height:1}
-.mc-unit{font-size:.72rem;color:var(--muted);margin-top:.2rem}
-.track{background:var(--bright);border-radius:99px;height:7px;margin-top:.65rem;overflow:hidden}
-.fill{border-radius:99px;height:100%}
-.budget-row{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem}
-.b-big{font-family:var(--font-head);font-size:3.25rem;color:var(--forest);line-height:1}
-.b-right{flex:1}
-.b-bar-wrap{height:11px;background:var(--bright);border-radius:99px;overflow:hidden;margin-bottom:.5rem}
-.b-bar{height:100%;border-radius:99px;background:var(--forest)}
-.legend{display:flex;gap:1rem;flex-wrap:wrap}
-.ld{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
-.ll{font-size:12px;color:var(--muted)}
-.gantt-header{display:grid;grid-template-columns:160px 1fr;margin-bottom:.4rem}
-.qtr-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.qtr{font-size:11px;color:var(--muted);text-align:center;letter-spacing:.05em;font-weight:500}
-.gr{display:grid;grid-template-columns:160px 1fr;margin-bottom:5px;align-items:center}
-.gl{font-size:12px;color:var(--charcoal);padding-right:.875rem;line-height:1.3}
-.gd{font-size:10px;color:var(--muted);display:block}
-.gta{position:relative;height:26px}
-.gtbg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.gtq{background:var(--bright);border-radius:3px}
-.gbar{position:absolute;top:3px;bottom:3px;border-radius:5px;display:flex;align-items:center;padding:0 7px;gap:.4rem}
-.gbar-lbl{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
-.gpct{font-size:9px;font-weight:600;border-radius:99px;padding:1px 5px;flex-shrink:0}
-.cm{position:absolute;top:0;bottom:0;width:1.5px;background:var(--forest);opacity:.55}
-.cm-lbl{position:absolute;font-size:9px;color:var(--forest);font-weight:600;white-space:nowrap;transform:translateX(-50%);top:-14px}
-.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1.25rem}
-.rc{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
-.rc-label{font-size:11px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;font-weight:500;margin-bottom:.65rem}
-.eb-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.4rem}
-.eb-lbl{font-size:12px;color:var(--charcoal);width:65px;flex-shrink:0}
-.eb-track{flex:1;height:5px;background:var(--bright);border-radius:99px;overflow:hidden}
-.eb-fill{height:100%;border-radius:99px}
-.eb-n{font-size:11px;color:var(--muted);width:18px;text-align:right}
-.chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--bright);border-radius:99px;padding:.25rem .65rem;font-size:11px;color:var(--essense);margin:.2rem;font-weight:500}
-.chip-dot{width:6px;height:6px;border-radius:50%}
-.action-strip{background:var(--forest);border-radius:12px;padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.875rem;margin-top:1.5rem}
-.as-text{font-size:.875rem;color:#b7e4c7;font-style:italic;flex:1;line-height:1.5;font-family:var(--font-head)}
-.as-text span{color:var(--yellow)}
-.as-btns{display:flex;gap:.5rem;flex-wrap:wrap}
-.as-btn{background:rgba(255,255,255,.12);color:var(--white);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none;display:inline-block}
-.as-btn:hover{background:rgba(255,255,255,.22)}
-.as-btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:7px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);min-height:100vh;padding:2rem 1.5rem 4rem;max-width:720px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.75rem;color:var(--forest);margin-bottom:.3rem}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+
+/* ── Shared buttons ── */
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.65rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+
+/* ── Block card ── */
+.block{background:var(--white);border:1.5px solid var(--border);border-radius:14px;margin-bottom:.875rem;overflow:hidden}
+.block-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;gap:1rem;user-select:none;transition:background .15s}
+.block-header:hover{background:var(--bright)}
+.block-title{font-size:.875rem;font-weight:500;color:var(--charcoal);display:flex;align-items:center;gap:.5rem}
+.block-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.chevron{font-size:.7rem;color:var(--muted);transition:transform .25s;display:inline-block}
+.chevron.open{transform:rotate(90deg)}
+.block-body{border-top:1px solid var(--border);padding:1.1rem 1.25rem;animation:fadedn .2s ease}
+.block-body.hidden{display:none}
+@keyframes fadedn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Info icon ── */
+.info-wrap{position:relative;display:inline-flex;align-items:center}
+.info-icon{width:16px;height:16px;border-radius:50%;background:var(--bright);border:1px solid var(--border);color:var(--essense);font-size:.65rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-style:normal;line-height:1}
+.info-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--forest);color:#b7e4c7;font-size:.75rem;line-height:1.5;padding:.65rem .9rem;border-radius:9px;width:230px;z-index:20;pointer-events:none}
+.info-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--forest)}
+.info-icon:hover + .info-tip{display:block}
+
+/* ── Toggle ── */
+.toggle{width:44px;height:24px;border-radius:99px;background:var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--yellow)}
+.toggle-dot{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--white);transition:left .2s;pointer-events:none}
+.toggle.on .toggle-dot{left:23px}
+.toggle-label{font-size:.8rem;color:var(--muted);font-weight:500}
+
+/* ── Onboarding ── */
+.ob-wrap{max-width:460px;margin:0 auto;padding-top:1.5rem}
+.ob-dots{display:flex;gap:.5rem;justify-content:center;margin-bottom:2.25rem}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s}
+.ob-dot.done{background:var(--essense)}.ob-dot.cur{background:var(--forest)}
+.ob-step{display:none;animation:fadeup .3s ease}
+.ob-step.active{display:block}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ob-heading{font-family:var(--font-head);font-size:1.65rem;color:var(--forest);margin-bottom:.4rem;line-height:1.2}
+.ob-sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.ob-field{margin-bottom:.875rem}
+.ob-label{font-size:.72rem;font-weight:500;color:var(--charcoal);margin-bottom:.3rem;display:block;text-transform:uppercase;letter-spacing:.07em}
+.ob-input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:.6rem .875rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);outline:none;transition:border .2s}
+.ob-input:focus{border-color:var(--essense)}
+.ob-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.ob-row{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap;align-items:center}
+.ob-toggle-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem;margin-bottom:.875rem;transition:border .2s}
+.ob-toggle-card.on{border-color:var(--essense)}
+.ob-toggle-text{flex:1}
+.ob-toggle-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin-bottom:.15rem}
+.ob-toggle-sub{font-size:.75rem;color:var(--muted);line-height:1.4}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-top:.75rem}
+.sc-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:.3rem;display:block}
+.sc-select{width:100%;background:var(--egg);border:1px solid var(--border);border-radius:7px;padding:.45rem .6rem;font-family:var(--font-body);font-size:.8rem;color:var(--charcoal);outline:none;transition:border .2s}
+.sc-select:focus{border-color:var(--essense)}
+.photo-row{display:flex;align-items:center;gap:.75rem;margin-top:.75rem}
+.photo-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:9px;padding:.5rem .875rem;font-family:var(--font-body);font-size:.8rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s}
+.photo-btn:hover{border-color:var(--essense);color:var(--charcoal)}
+.photo-preview{width:40px;height:40px;border-radius:7px;object-fit:cover;display:none}
+
+/* ── Profile block ── */
+.profile-bar{display:flex;align-items:center;gap:.875rem;flex:1;min-width:0}
+.profile-name{font-family:var(--font-head);font-size:1.1rem;color:var(--forest);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-badge{background:var(--yellow);color:var(--forest);border-radius:7px;padding:.2rem .6rem;font-size:.72rem;font-weight:600;flex-shrink:0}
+.profile-role-line{font-size:.75rem;color:var(--muted);margin-top:.1rem}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+.pf-field{display:flex;flex-direction:column;gap:.25rem}
+.pf-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:500}
+.pf-input{border:1px solid var(--border);border-radius:7px;padding:.45rem .65rem;font-family:var(--font-body);font-size:.825rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
+.pf-input:focus{border-color:var(--essense);background:var(--white)}
+.pf-actions{display:flex;align-items:center;gap:.75rem;margin-top:.75rem}
+.pf-save{background:var(--yellow);color:var(--forest);border:none;border-radius:7px;padding:.45rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer}
+.pf-saved{font-size:.75rem;color:var(--essense);opacity:0;transition:opacity .3s}
+
+/* ── Tracking cards ── */
+.track-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.65rem}
+.track-card{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:.875rem 1rem;cursor:pointer;transition:all .2s;position:relative}
+.track-card:hover,.track-card.open{border-color:var(--essense);background:var(--bright)}
+.tc-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center}
+.tc-chev{font-size:.6rem;transition:transform .2s}
+.track-card.open .tc-chev{transform:rotate(90deg)}
+.tc-num{font-family:var(--font-head);font-size:1.85rem;color:var(--forest);line-height:1}
+.tc-sub{font-size:.72rem;color:var(--muted);margin-top:.25rem;line-height:1.3}
+.track-detail{display:none;margin-top:.875rem;border-top:1px solid var(--border);padding-top:.875rem}
+.track-detail.open{display:block}
+.t-item{font-size:.8rem;color:var(--charcoal);padding:.3rem 0;border-bottom:1px solid rgba(0,0,0,.04);line-height:1.4;display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.t-item:last-child{border-bottom:none;padding-bottom:0}
+.t-item-done .t-item-text{text-decoration:line-through;color:var(--muted)}
+.t-item-meta{font-size:.68rem;color:var(--muted);margin-top:.1rem}
+.t-pill{font-size:.65rem;background:var(--bright);border:1px solid var(--border);color:var(--essense);border-radius:99px;padding:.1rem .45rem;flex-shrink:0;font-weight:500}
+.t-done-pill{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.t-empty{font-size:.78rem;color:var(--muted);font-style:italic;padding:.25rem 0}
+
+/* ── Time spent ── */
+.time-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.time-big{font-family:var(--font-head);font-size:2.5rem;color:var(--forest);line-height:1}
+.time-right{flex:1;min-width:160px}
+.time-desc{font-size:.825rem;color:var(--charcoal);margin-bottom:.45rem}
+.time-bar-wrap{height:7px;background:var(--bright);border-radius:99px;overflow:hidden;margin-bottom:.35rem}
+.time-bar-fill{height:100%;border-radius:99px;background:var(--forest);transition:width .5s ease}
+.time-remaining{font-size:.72rem;color:var(--muted)}
+.time-adjust-row{display:flex;align-items:center;gap:.5rem;margin-top:.875rem;flex-wrap:wrap}
+.time-adj-label{font-size:.78rem;color:var(--muted)}
+.time-adj-input{width:60px;border:1px solid var(--border);border-radius:7px;padding:.35rem .5rem;font-family:var(--font-body);font-size:.825rem;text-align:center;outline:none;background:var(--egg);color:var(--charcoal)}
+.time-adj-input:focus{border-color:var(--essense);background:var(--white)}
+.time-adj-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:.3rem .7rem;font-family:var(--font-body);font-size:.78rem;cursor:pointer;color:var(--muted);transition:all .2s}
+.time-adj-btn:hover{border-color:var(--essense);color:var(--charcoal)}
+
+/* ── Time Sanctity ── */
+.sanc-top{display:flex;align-items:flex-start;gap:.875rem;margin-bottom:1rem}
+.sanc-icon{font-size:1.4rem;flex-shrink:0}
+.sanc-title{font-family:var(--font-head);font-size:.95rem;color:var(--forest);margin-bottom:.2rem}
+.sanc-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+.sanc-preview{margin-top:.875rem;background:var(--bright);border-radius:9px;padding:.65rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.6;display:none}
+.sanc-preview.visible{display:block}
+.sanc-note{font-size:.7rem;color:var(--muted);font-style:italic;margin-top:.875rem;line-height:1.5;border-top:1px solid var(--border);padding-top:.75rem}
+
+/* ── Over time ── */
+.ot-dim{margin-bottom:.875rem}
+.ot-dim-head{display:flex;justify-content:space-between;margin-bottom:.35rem}
+.ot-dim-label{font-size:.78rem;font-weight:500;color:var(--charcoal)}
+.ot-dim-pct{font-size:.72rem;color:var(--muted)}
+.ot-bar{height:8px;background:var(--bright);border-radius:99px;overflow:hidden}
+.ot-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.ot-empty{font-size:.8rem;color:var(--muted);font-style:italic;line-height:1.6}
+
+
+
+@media(max-width:520px){
+  .track-grid,.pf-grid,.ob-grid-2,.sc-grid{grid-template-columns:1fr}
+}
+
+/* ── Demo mode ── */
+.demo-btn{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--egg);border:1.5px solid var(--border);border-radius:99px;padding:.35rem .875rem;font-family:var(--font-body);font-size:.72rem;font-weight:500;color:var(--muted);cursor:pointer;z-index:100;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.demo-btn:hover{border-color:var(--essense);color:var(--charcoal)}
+.demo-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.demo-banner{background:var(--forest);color:var(--white);text-align:center;padding:.5rem 1rem;font-size:.78rem;font-weight:500;border-radius:9px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
+.demo-banner span{opacity:.75;font-weight:400}
+.demo-exit{background:rgba(255,255,255,.15);border:none;border-radius:99px;padding:.2rem .65rem;font-family:var(--font-body);font-size:.72rem;color:var(--white);cursor:pointer;transition:background .2s}
+.demo-exit:hover{background:rgba(255,255,255,.25)}
+.demo-overlay{display:none;position:fixed;inset:0;background:rgba(4,69,36,.5);z-index:200;align-items:center;justify-content:center}
+.demo-overlay.open{display:flex}
+.demo-panel{background:var(--white);border-radius:16px;padding:1.75rem;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.demo-panel-title{font-family:var(--font-head);font-size:1.25rem;color:var(--forest);margin-bottom:.35rem}
+.demo-panel-sub{font-size:.825rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.5}
+.demo-option{border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.6rem;cursor:pointer;transition:all .2s;text-align:left;width:100%;background:var(--white);font-family:var(--font-body)}
+.demo-option:hover{border-color:var(--essense);background:var(--bright)}
+.demo-option-title{font-size:.875rem;font-weight:500;color:var(--charcoal);margin-bottom:.2rem;display:flex;align-items:center;gap:.5rem}
+.demo-option-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.demo-close{background:transparent;border:1.5px solid var(--border);border-radius:9px;padding:.5rem 1rem;font-family:var(--font-body);font-size:.825rem;color:var(--muted);cursor:pointer;margin-top:.25rem;width:100%}
+.demo-close:hover{border-color:var(--essense);color:var(--charcoal)}
 </style>
 </head>
 <body>
-<p class="label">your pd overview</p>
-<h1 class="heading">growth at a glance</h1>
-<p class="sub">week 21 · 2026 &nbsp;·&nbsp; junior service designer, L1 → L2</p>
-<div class="divider"></div>
-<p class="label">time budget — this week</p>
-<div class="budget-row">
-  <div class="b-big">62%</div>
-  <div class="b-right">
-    <div style="font-size:.875rem;color:var(--charcoal);margin-bottom:.45rem"><strong>58 min</strong> used of <strong>96 min</strong> weekly budget</div>
-    <div class="b-bar-wrap"><div class="b-bar" style="width:60%"></div></div>
-    <div class="legend">
-      <span><span class="ld" style="background:var(--forest)"></span><span class="ll">coach · 30 min</span></span>
-      <span><span class="ld" style="background:var(--essense)"></span><span class="ll">blocks · 15 min</span></span>
-      <span><span class="ld" style="background:var(--yellow)"></span><span class="ll">actions · 13 min</span></span>
+
+<!-- ═══════════════════════════════════════════════
+     ONBOARDING (first run)
+════════════════════════════════════════════════ -->
+<div id="view-onboarding" style="display:none">
+  <div class="ob-wrap">
+    <div class="ob-dots" id="ob-dots"></div>
+
+    <!-- Step 1 -->
+    <div class="ob-step active" id="ob-s1">
+      <p class="label">welcome</p>
+      <h1 class="ob-heading">let's get you set up</h1>
+      <p class="ob-sub">two minutes, then you're in. you can edit everything later.</p>
+      <div class="ob-grid-2">
+        <div class="ob-field" style="grid-column:span 2">
+          <label class="ob-label">your name</label>
+          <input class="ob-input" id="ob-name" placeholder="e.g. Rosie" autocomplete="given-name"/>
+        </div>
+        <div class="ob-field">
+          <label class="ob-label">role</label>
+          <input class="ob-input" id="ob-role" placeholder="e.g. Junior Service Designer"/>
+        </div>
+        <div class="ob-field">
+          <label class="ob-label">track</label>
+          <input class="ob-input" id="ob-track" placeholder="e.g. Service Design"/>
+        </div>
+        <div class="ob-field">
+          <label class="ob-label">current level <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></label>
+          <input class="ob-input" id="ob-level" placeholder="e.g. L1 — The Learner"/>
+        </div>
+        <div class="ob-field">
+          <label class="ob-label">target this year <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></label>
+          <a href="https://www.notion.so/eidra/Career-Framework" target="_blank" style="font-size:.72rem;color:var(--essense);text-decoration:none;margin-bottom:.25rem;display:inline-block">view career framework ↗</a>
+          <input class="ob-input" id="ob-target" placeholder="e.g. L2 — The Practitioner"/>
+        </div>
+        <div class="ob-field" style="grid-column:span 2">
+          <label class="ob-label">coach</label>
+          <input class="ob-input" id="ob-coach" placeholder="your coach's name"/>
+        </div>
+      </div>
+      <div class="ob-row">
+        <button class="btn-p" onclick="obNext(1)">next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="ob-step" id="ob-s2">
+      <p class="label">step 2 of 3</p>
+      <h1 class="ob-heading">how do you want to handle PD time?</h1>
+      <p class="ob-sub">both of these are optional. you can change them any time from the dashboard.</p>
+
+      <div class="ob-toggle-card" id="ob-time-card">
+        <div class="ob-toggle-text">
+          <div class="ob-toggle-label">track time spent on PD</div>
+          <div class="ob-toggle-sub">shows how much time you've spent this week vs your target — calculated automatically from actions, reflections and coaching</div>
+        </div>
+        <div class="toggle" id="ob-time-tog" onclick="obTimeToggle()"><div class="toggle-dot"></div></div>
+      </div>
+      <div id="ob-time-fields" style="display:none;margin-bottom:.875rem">
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <span style="font-size:.78rem;color:var(--muted)">weekly target</span>
+          <input class="ob-input" id="ob-minutes" type="number" min="30" max="480" value="96" style="width:72px;text-align:center"/>
+          <span style="font-size:.78rem;color:var(--muted)">minutes</span>
+          <div class="info-wrap">
+            <span class="info-icon" tabindex="0">i</span>
+            <div class="info-tip">Essense recommends spending 4% of your working week on PD — about 1.6 hours. Adjust this to what works for you.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ob-toggle-card" id="ob-cal-card">
+        <div class="ob-toggle-text">
+          <div class="ob-toggle-label">calendar sanctity</div>
+          <div class="ob-toggle-sub">reserve a recurring slot in your calendar so PD time doesn't get crowded out</div>
+        </div>
+        <div class="toggle" id="ob-cal-tog" onclick="obCalToggle()"><div class="toggle-dot"></div></div>
+      </div>
+      <div id="ob-cal-fields" style="display:none">
+        <div class="sc-grid">
+          <div><span class="sc-label">day</span><select class="sc-select" id="ob-cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+          <div><span class="sc-label">time</span><select class="sc-select" id="ob-cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select></div>
+          <div><span class="sc-label">duration</span><select class="sc-select" id="ob-cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
+        </div>
+      </div>
+
+      <div class="ob-row">
+        <button class="btn-s" onclick="obGo(1)">← back</button>
+        <button class="btn-p" onclick="obNext(2)">next →</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="ob-step" id="ob-s3">
+      <p class="label">step 3 of 3</p>
+      <h1 class="ob-heading">what's one thing you want to grow in this year?</h1>
+      <p class="ob-sub">add one goal to get started. you can set more, break them down into sub-goals, and link them to the career framework later.</p>
+      <div class="ob-field">
+        <label class="ob-label">your first goal</label>
+        <input class="ob-input" id="ob-goal" placeholder="e.g. get better at running stakeholder workshops"/>
+      </div>
+      <div class="photo-row">
+        <button class="photo-btn" onclick="document.getElementById('ob-photo-inp').click()">📷 add a photo</button>
+        <input type="file" id="ob-photo-inp" accept="image/*" style="display:none" onchange="previewPhoto(this)"/>
+        <img class="photo-preview" id="ob-photo-prev"/>
+      </div>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.875rem;font-style:italic">skip this if you're not ready — you can always add goals from the goals page.</p>
+      <div class="ob-row">
+        <button class="btn-s" onclick="obGo(2)">← back</button>
+        <button class="btn-y" onclick="obComplete()">let's go →</button>
+      </div>
     </div>
   </div>
 </div>
-<div class="meter-cards">
-  <div class="mc"><div class="mc-label">coach session</div><div class="mc-val">30</div><div class="mc-unit">min this week</div><div class="track"><div class="fill" style="width:31%;background:var(--forest)"></div></div></div>
-  <div class="mc"><div class="mc-label">calendar blocks</div><div class="mc-val">15</div><div class="mc-unit">min scheduled</div><div class="track"><div class="fill" style="width:16%;background:var(--essense)"></div></div></div>
-  <div class="mc"><div class="mc-label">actions done</div><div class="mc-val">13</div><div class="mc-unit">min · 3 actions</div><div class="track"><div class="fill" style="width:14%;background:var(--yellow)"></div></div></div>
-</div>
-<div class="divider"></div>
-<p class="label">goal roadmap — 2026</p>
-<div class="gantt-header"><div></div><div class="qtr-row"><div class="qtr">Q1</div><div class="qtr">Q2</div><div class="qtr">Q3</div><div class="qtr">Q4</div></div></div>
-<div id="gantt"></div>
-<div class="legend" style="margin-top:.875rem">
-  <span><span class="ld" style="background:#044524;border-radius:2px"></span><span class="ll">Delivery</span></span>
-  <span><span class="ld" style="background:#579B7A;border-radius:2px"></span><span class="ll">People</span></span>
-  <span><span class="ld" style="background:#b7994a;border-radius:2px"></span><span class="ll">Added value</span></span>
-  <span><span class="ld" style="background:var(--forest);opacity:.5;border-radius:0"></span><span class="ll">coach session</span></span>
-</div>
-<div class="divider"></div>
-<p class="label">reflection insights</p>
-<div class="ref-grid">
-  <div class="rc">
-    <div class="rc-label">energy after actions</div>
-    <div class="eb-row"><div class="eb-lbl">energised</div><div class="eb-track"><div class="eb-fill" style="width:67%;background:var(--essense)"></div></div><div class="eb-n">2</div></div>
-    <div class="eb-row"><div class="eb-lbl">neutral</div><div class="eb-track"><div class="eb-fill" style="width:33%;background:var(--bright)"></div></div><div class="eb-n">1</div></div>
-    <div class="eb-row"><div class="eb-lbl">drained</div><div class="eb-track"><div class="eb-fill" style="width:0%"></div></div><div class="eb-n">0</div></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:.65rem">3 actions · all within energy</div>
+
+<!-- ═══════════════════════════════════════════════
+     DASHBOARD (returning user)
+════════════════════════════════════════════════ -->
+<div id="view-dashboard" style="display:none">
+
+  <p class="label">essense pd</p>
+  <h1 class="heading">overview of your growth</h1>
+  <p class="sub">week <span id="d-week"></span> &nbsp;·&nbsp; <span id="d-context"></span></p>
+
+  <!-- Block 1: Profile -->
+  <div class="block">
+    <div class="block-header" onclick="toggleBlock('pf')">
+      <div class="profile-bar">
+        <div>
+          <div class="profile-name" id="d-name">—</div>
+          <div class="profile-role-line" id="d-role"></div>
+        </div>
+      </div>
+      <div class="block-right">
+        <div class="profile-badge" id="d-level"></div>
+        <span style="font-size:.75rem;color:var(--muted)">edit</span>
+        <span class="chevron" id="chev-pf">▶</span>
+      </div>
+    </div>
+    <div class="block-body hidden" id="body-pf">
+      <div class="pf-grid">
+        <div class="pf-field"><span class="pf-label">name</span><input class="pf-input" id="pf-name"/></div>
+        <div class="pf-field"><span class="pf-label">role</span><input class="pf-input" id="pf-role"/></div>
+        <div class="pf-field"><span class="pf-label">current level <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></span><input class="pf-input" id="pf-level" placeholder="e.g. L1 — The Learner"/></div>
+        <div class="pf-field"><span class="pf-label">target level <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--muted)">(optional)</span></span><input class="pf-input" id="pf-target" placeholder="e.g. L2 — The Practitioner"/><a href="https://www.notion.so/eidra/Career-Framework" target="_blank" style="font-size:.7rem;color:var(--essense);text-decoration:none;margin-top:.2rem;display:inline-block">view career framework ↗</a></div>
+        <div class="pf-field"><span class="pf-label">track</span><input class="pf-input" id="pf-track"/></div>
+        <div class="pf-field"><span class="pf-label">coach</span><input class="pf-input" id="pf-coach"/></div>
+      </div>
+      <div class="pf-actions">
+        <button class="pf-save" onclick="saveProfile()">save</button>
+        <span class="pf-saved" id="pf-saved">saved ✓</span>
+      </div>
+    </div>
   </div>
-  <div class="rc">
-    <div class="rc-label">recent reflections</div>
-    <div style="font-size:13px;color:var(--charcoal);margin-bottom:.4rem">0 logged this period</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">your reflections and the energy you logged will appear here</div>
+
+  <!-- Block 2: Tracking -->
+  <div class="block">
+    <div class="block-header" style="cursor:default;pointer-events:none">
+      <span class="block-title">tracking</span>
+    </div>
+    <div class="block-body" style="padding:.875rem 1rem 1rem">
+      <div class="track-grid">
+        <div class="track-card" id="tc-goals" onclick="toggleTrack('goals')">
+          <div class="tc-label">goals <span class="tc-chev" id="chev-tc-goals">▶</span></div>
+          <div class="tc-num" id="tc-goals-n">0</div>
+          <div class="tc-sub" id="tc-goals-s"></div>
+          <div class="track-detail" id="td-goals"></div>
+        </div>
+        <div class="track-card" id="tc-actions" onclick="toggleTrack('actions')">
+          <div class="tc-label">actions <span class="tc-chev" id="chev-tc-actions">▶</span></div>
+          <div class="tc-num" id="tc-actions-n">0</div>
+          <div class="tc-sub" id="tc-actions-s"></div>
+          <div class="track-detail" id="td-actions"></div>
+        </div>
+        <div class="track-card" id="tc-refl" onclick="toggleTrack('refl')">
+          <div class="tc-label">refl. &amp; feedback <span class="tc-chev" id="chev-tc-refl">▶</span></div>
+          <div class="tc-num" id="tc-refl-n">0</div>
+          <div class="tc-sub" id="tc-refl-s"></div>
+          <div class="track-detail" id="td-refl"></div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-<div class="ref-grid">
-  <div class="rc">
-    <div class="rc-label">goals progress</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:.4rem">Journey & Blueprinting L1→L2</div>
-    <div class="track" style="height:6px"><div class="fill" style="width:0%;background:var(--forest)"></div></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:.5rem">1 active · 3 actions ready · 0 done</div>
+
+  <!-- Block 3: Time spent (optional) -->
+  <div class="block" id="block-time" style="display:none">
+    <div class="block-header" style="cursor:default;pointer-events:none">
+      <span class="block-title">
+        time spent this week
+        <div class="info-wrap" style="margin-left:.3rem">
+          <span class="info-icon" tabindex="0">i</span>
+          <div class="info-tip">Essense recommends spending 4% of your working week on PD — about 1.6 hours. Adjust your target to what works for you.</div>
+        </div>
+      </span>
+    </div>
+    <div class="block-body">
+      <div class="time-row">
+        <div class="time-big"><span id="t-mins">0</span><span style="font-size:1rem;color:var(--muted);font-family:var(--font-body);font-weight:300"> min</span></div>
+        <div class="time-right">
+          <div class="time-desc"><strong id="t-used">0 min</strong> of <strong id="t-target">96 min</strong> this week</div>
+          <div class="time-bar-wrap"><div class="time-bar-fill" id="t-bar" style="width:0%"></div></div>
+          <div class="time-remaining" id="t-remaining"></div>
+        </div>
+      </div>
+      <div class="time-adjust-row">
+        <span class="time-adj-label">weekly target:</span>
+        <input class="time-adj-input" id="t-target-inp" type="number" min="30" max="480"/>
+        <span class="time-adj-label">min</span>
+        <button class="time-adj-btn" onclick="saveTimeTarget()">save</button>
+      </div>
+    </div>
   </div>
-  <div class="rc">
-    <div class="rc-label">feedback received</div>
-    <div style="font-size:13px;color:var(--charcoal);margin-bottom:.4rem">0 new this period</div>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">feedback from coach, lead, and clients will appear here</div>
+
+  <!-- Block 4: Time Sanctity -->
+  <div class="block">
+    <div class="block-header" onclick="toggleBlock('sanc')">
+      <span class="block-title">📅 &nbsp;calendar sanctity</span>
+      <div class="block-right">
+        <span class="toggle-label" id="sanc-lbl">off</span>
+        <div class="toggle" id="sanc-tog" onclick="event.stopPropagation();toggleSanctity()"><div class="toggle-dot"></div></div>
+        <span class="chevron" id="chev-sanc">▶</span>
+      </div>
+    </div>
+    <div class="block-body hidden" id="body-sanc">
+      <div class="sanc-top">
+        <div class="sanc-icon">📅</div>
+        <div>
+          <div class="sanc-title">protect your PD time</div>
+          <div class="sanc-desc">reserve a recurring slot in your calendar so PD time doesn't get crowded out. the system marks the intention — what you do with it is tracked through your actions, reflections and sessions.</div>
+        </div>
+      </div>
+      <div class="sc-grid" id="sanc-fields">
+        <div><span class="sc-label">day</span><select class="sc-select" id="sanc-day" onchange="saveSanctity()"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+        <div><span class="sc-label">time</span><select class="sc-select" id="sanc-time" onchange="saveSanctity()"><option>09:00</option><option>10:00</option><option>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select></div>
+        <div><span class="sc-label">duration</span><select class="sc-select" id="sanc-dur" onchange="saveSanctity()"><option>30 min</option><option>45 min</option><option>60 min</option><option>90 min</option></select></div>
+      </div>
+      <div class="sanc-preview" id="sanc-preview"></div>
+      <div class="sanc-note">📌 PD time registration stays in Teamleader. calendar sanctity is about your <em>intention</em> — reserving the slot.</div>
+    </div>
   </div>
-</div>
-<div class="action-strip">
-  <div class="as-text"><span>38 min</span> left in your budget this week</div>
-  <div class="as-btns">
-    <a class="as-btn" href="./reflection.html" target="_blank">reflect now ↗</a>
-    <a class="as-btn" href="./tracker.html" target="_blank">do a micro-action ↗</a>
-    <a class="as-btn-y" href="./breakdown.html" target="_blank">break down a goal →</a>
+
+  <!-- Block 5: Over time -->
+  <div class="block">
+    <div class="block-header" onclick="toggleBlock('ot')">
+      <span class="block-title">your development over time</span>
+      <div class="block-right"><span class="chevron" id="chev-ot">▶</span></div>
+    </div>
+    <div class="block-body hidden" id="body-ot">
+      <div id="ot-content"></div>
+    </div>
   </div>
-</div>
+
+
+</div><!-- /view-dashboard -->
+
 <script>
-const goals=[
-  {label:'Journey & Blueprinting',dim:'Delivery',color:'#044524',text:'#EAF5F2',start:1,end:3,pct:0},
-  {label:'Communication L1→L2',dim:'People',color:'#579B7A',text:'#EAF5F2',start:0,end:2,pct:0},
-  {label:'Knowledge Building',dim:'Added value',color:'#b7994a',text:'#FAF0DB',start:2,end:3,pct:0},
-];
-const coaches=[{q:1.5,label:'June'}];
-const gantt=document.getElementById('gantt');
-goals.forEach(g=>{
-  const row=document.createElement('div');row.className='gr';
-  const lbl=document.createElement('div');lbl.className='gl';
-  lbl.innerHTML=`<span class="gd">${g.dim}</span>${g.label}`;
-  const ta=document.createElement('div');ta.className='gta';
-  const bg=document.createElement('div');bg.className='gtbg';
-  for(let i=0;i<4;i++){const q=document.createElement('div');q.className='gtq';bg.appendChild(q);}
-  ta.appendChild(bg);
-  const bar=document.createElement('div');bar.className='gbar';
-  bar.style.cssText=`left:${g.start/4*100}%;width:${(g.end-g.start)/4*100}%;background:${g.color}`;
-  bar.innerHTML=`<span class="gbar-lbl" style="color:${g.text}">${g.label}</span><span class="gpct" style="color:${g.color};background:rgba(255,255,255,.6)">${g.pct}%</span>`;
-  ta.appendChild(bar);
-  coaches.forEach(c=>{
-    const cm=document.createElement('div');cm.className='cm';cm.style.left=`${c.q/4*100}%`;
-    const cl=document.createElement('div');cl.className='cm-lbl';cl.style.left=`${c.q/4*100}%`;cl.textContent=c.label;
-    ta.appendChild(cm);ta.appendChild(cl);
+
+
+// ── Onboarding ───────────────────────────────────────────────────
+let obTimeOn = false, obCalOn = false, obPhoto = null;
+
+function obInitDots() {
+  document.getElementById('ob-dots').innerHTML =
+    [1,2,3].map(i=>`<div class="ob-dot ${i===1?'cur':''}"></div>`).join('');
+}
+function obUpdateDots(n) {
+  document.querySelectorAll('.ob-dot').forEach((d,i)=>{
+    d.className = 'ob-dot' + (i+1<n?' done':i+1===n?' cur':'');
   });
-  row.appendChild(lbl);row.appendChild(ta);gantt.appendChild(row);
-});
+}
+function obGo(n) {
+  document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ob-s'+n).classList.add('active');
+  obUpdateDots(n);
+}
+function obNext(from) {
+  if(from===1 && !document.getElementById('ob-name').value.trim()){
+    document.getElementById('ob-name').focus(); return;
+  }
+  obGo(from+1);
+}
+function obTimeToggle() {
+  obTimeOn = !obTimeOn;
+  document.getElementById('ob-time-tog').classList.toggle('on',obTimeOn);
+  document.getElementById('ob-time-card').classList.toggle('on',obTimeOn);
+  document.getElementById('ob-time-fields').style.display = obTimeOn?'block':'none';
+}
+function obCalToggle() {
+  obCalOn = !obCalOn;
+  document.getElementById('ob-cal-tog').classList.toggle('on',obCalOn);
+  document.getElementById('ob-cal-card').classList.toggle('on',obCalOn);
+  document.getElementById('ob-cal-fields').style.display = obCalOn?'block':'none';
+}
+function previewPhoto(inp) {
+  const file = inp.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    obPhoto = e.target.result;
+    const img = document.getElementById('ob-photo-prev');
+    img.src = e.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+function obComplete() {
+  PD.saveProfile({
+    name:          document.getElementById('ob-name').value.trim()||'you',
+    role:          document.getElementById('ob-role').value.trim(),
+    track:         document.getElementById('ob-track').value.trim(),
+    level:         document.getElementById('ob-level').value.trim(),
+    targetLevel:   document.getElementById('ob-target').value.trim(),
+    coach:         document.getElementById('ob-coach').value.trim(),
+    pdTimeEnabled: obTimeOn,
+    pdTimeMinutes: parseInt(document.getElementById('ob-minutes').value)||96,
+    calendarSanctity: {
+      enabled:  obCalOn,
+      day:      document.getElementById('ob-cal-day').value,
+      time:     document.getElementById('ob-cal-time').value,
+      duration: document.getElementById('ob-cal-dur').value
+    }
+  });
+  const goalText = document.getElementById('ob-goal').value.trim();
+  if(goalText) PD.saveGoal({title:goalText,photo:obPhoto,subgoals:[]});
+  PD.completeFirstRun();
+  showDashboard();
+}
+
+// ── Dashboard rendering ──────────────────────────────────────────
+function showDashboard() {
+  document.getElementById('view-onboarding').style.display = 'none';
+  document.getElementById('view-dashboard').style.display  = 'block';
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const p  = PD.profile();
+  const s  = PD.summary();
+  const goals   = PD.goals();
+  const actions = PD.actions();
+  const refls   = PD.reflections();
+  const feedbs  = PD.feedback();
+
+  // Header context
+  document.getElementById('d-week').textContent = weekNum(new Date());
+  document.getElementById('d-context').textContent =
+    [p.name, p.level, p.targetLevel?'→ '+p.targetLevel:''].filter(Boolean).join(' · ');
+
+  // Profile bar
+  document.getElementById('d-name').textContent  = p.name  || '—';
+  document.getElementById('d-role').textContent  = [p.role, p.track?p.track+' track':''].filter(Boolean).join(' · ');
+  document.getElementById('d-level').textContent = p.level || '';
+
+  // Profile edit inputs
+  const pmap = {name:'name',role:'role',level:'level',target:'targetLevel',track:'track',coach:'coach'};
+  Object.entries(pmap).forEach(([k,pk])=>{
+    const el=document.getElementById('pf-'+k); if(el) el.value=p[pk]||'';
+  });
+
+  // Tracking cards
+  const goalText = g => {
+    const sub = g.subgoals||[];
+    return sub.length ? `${sub.filter(s=>s.done).length}/${sub.length} sub-goals` : 'no sub-goals';
+  };
+  setCard('goals', s.goalsCount,
+    s.subgoalsTotal ? `${s.subgoalsDone}/${s.subgoalsTotal} sub-goals done` : 'no sub-goals yet',
+    goals.slice(0,5).map(g=>({text:g.title,meta:goalText(g)})),
+    'no goals yet');
+
+  // Actions: count = open, sub = done this week, list = open only
+  var openActions = actions.filter(function(a){ return !a.done; });
+  var doneThisWeek = actions.filter(function(a){
+    if(!a.done||!a.doneAt) return false;
+    var weekStart = new Date(); weekStart.setDate(weekStart.getDate()-weekStart.getDay()+(weekStart.getDay()===0?-6:1)); weekStart.setHours(0,0,0,0);
+    return new Date(a.doneAt) >= weekStart;
+  }).length;
+  var actSubText = s.actionsTotal ? (doneThisWeek + ' done this week') : 'no actions yet';
+  var openItems = openActions.slice(0,5).map(function(a){
+    var g = a.goalId ? goals.find(function(x){ return x.id===a.goalId; }) : null;
+    return {text:a.title, done:false, meta:g?g.title:''};
+  });
+  setCard('actions', openActions.length, actSubText, openItems, 'nothing planned yet — add actions in the actions page');
+
+  const combined=[
+    ...refls.slice(0,3).map(r=>({text:fmtDate(r.date)+' — '+(r.format||'reflection'),meta:r.energy||''})),
+    ...feedbs.slice(0,2).map(f=>({text:(f.from||'feedback')+' — '+(f.type||''),meta:''}))
+  ];
+  setCard('refl', s.reflectionsCount+s.feedbackCount,
+    `${s.reflectionsCount} reflection${s.reflectionsCount!==1?'s':''} · ${s.feedbackCount} feedback`,
+    combined, 'no reflections or feedback yet');
+
+  // Time spent
+  if(s.pdTimeEnabled) {
+    document.getElementById('block-time').style.display = 'block';
+    const mins=s.minutesThisWeek, tgt=s.targetMinutes;
+    const pct=Math.min(100,Math.round(mins/tgt*100));
+    document.getElementById('t-mins').textContent    = mins;
+    document.getElementById('t-used').textContent    = mins+' min';
+    document.getElementById('t-target').textContent  = tgt+' min';
+    document.getElementById('t-bar').style.width     = pct+'%';
+    document.getElementById('t-remaining').textContent = Math.max(0,tgt-mins)+' min remaining this week';
+    document.getElementById('t-target-inp').value    = tgt;
+  }
+
+  // Time Sanctity
+  const sc = p.calendarSanctity||{};
+  document.getElementById('sanc-tog').classList.toggle('on',!!sc.enabled);
+  document.getElementById('sanc-lbl').textContent = sc.enabled?'on':'off';
+  if(sc.day)      setSelectVal('sanc-day',  sc.day);
+  if(sc.time)     setSelectVal('sanc-time', sc.time);
+  if(sc.duration) setSelectVal('sanc-dur',  sc.duration);
+  if(sc.enabled) renderSanctityPreview();
+
+  // Over time
+  renderOverTime(goals);
+
+
+}
+
+function setCard(key, num, sub, items, emptyMsg) {
+  document.getElementById('tc-'+key+'-n').textContent = num;
+  document.getElementById('tc-'+key+'-s').textContent = sub;
+  const det = document.getElementById('td-'+key);
+  if(!items.length){
+    det.innerHTML=`<div class="t-empty">${emptyMsg}</div>`; return;
+  }
+  det.innerHTML = items.map(item=>`
+    <div class="t-item ${item.done?'t-item-done':''}">
+      <div>
+        <div class="t-item-text">${esc(item.text)}</div>
+        ${item.meta?`<div class="t-item-meta">${esc(item.meta)}</div>`:''}
+      </div>
+      ${item.done?'<span class="t-pill t-done-pill">done</span>':''}
+    </div>`).join('');
+}
+
+function renderOverTime(goals) {
+  const el = document.getElementById('ot-content');
+  if(!goals.length){
+    el.innerHTML='<div class="ot-empty">add goals and complete actions to see your growth trajectory here.</div>';
+    return;
+  }
+  const dims={Delivery:{t:0,d:0},People:{t:0,d:0},'Added value':{t:0,d:0}};
+  goals.forEach(g=>{
+    const dim=g.dimension&&dims[g.dimension]?g.dimension:'Delivery';
+    (g.subgoals||[]).forEach(sg=>{dims[dim].t++;if(sg.done)dims[dim].d++;});
+  });
+  const colors={Delivery:'#044524',People:'#579B7A','Added value':'#b7994a'};
+  el.innerHTML=Object.entries(dims).map(([dim,v])=>{
+    const pct=v.t?Math.round(v.d/v.t*100):0;
+    return `<div class="ot-dim">
+      <div class="ot-dim-head"><span class="ot-dim-label">${dim}</span><span class="ot-dim-pct">${v.d}/${v.t} · ${pct}%</span></div>
+      <div class="ot-bar"><div class="ot-fill" style="width:${pct}%;background:${colors[dim]}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Collapsibles ─────────────────────────────────────────────────
+function toggleBlock(key) {
+  const body = document.getElementById('body-'+key);
+  const chev = document.getElementById('chev-'+key);
+  const nowHidden = body.classList.toggle('hidden');
+  chev.classList.toggle('open', !nowHidden);
+}
+function toggleTrack(key) {
+  const card = document.getElementById('tc-'+key);
+  const det  = document.getElementById('td-'+key);
+  const chev = document.getElementById('chev-tc-'+key);
+  const open = card.classList.toggle('open');
+  det.classList.toggle('open',open);
+  chev.style.transform = open?'rotate(90deg)':'';
+}
+
+// ── Profile save ─────────────────────────────────────────────────
+function saveProfile() {
+  PD.saveProfile({
+    name:        document.getElementById('pf-name').value.trim(),
+    role:        document.getElementById('pf-role').value.trim(),
+    track:       document.getElementById('pf-track').value.trim(),
+    level:       document.getElementById('pf-level').value.trim(),
+    targetLevel: document.getElementById('pf-target').value.trim(),
+    coach:       document.getElementById('pf-coach').value.trim(),
+  });
+  renderDashboard();
+  const msg=document.getElementById('pf-saved');
+  msg.style.opacity='1'; setTimeout(()=>msg.style.opacity='0',2200);
+}
+
+// ── Time target ──────────────────────────────────────────────────
+function saveTimeTarget() {
+  PD.saveProfile({pdTimeMinutes:parseInt(document.getElementById('t-target-inp').value)||96});
+  renderDashboard();
+}
+
+// ── Time Sanctity ─────────────────────────────────────────────────
+function toggleSanctity() {
+  const tog = document.getElementById('sanc-tog');
+  const on  = tog.classList.toggle('on');
+  document.getElementById('sanc-lbl').textContent = on?'on':'off';
+  const sc = PD.profile().calendarSanctity||{};
+  PD.saveProfile({calendarSanctity:{...sc,enabled:on}});
+  if(on){ const b=document.getElementById('body-sanc'); if(b.classList.contains('hidden'))toggleBlock('sanc'); renderSanctityPreview(); }
+  else { document.getElementById('sanc-preview').classList.remove('visible'); }
+}
+function saveSanctity() {
+  const sc=PD.profile().calendarSanctity||{};
+  const day=document.getElementById('sanc-day').value;
+  const time=document.getElementById('sanc-time').value;
+  const dur=document.getElementById('sanc-dur').value;
+  PD.saveProfile({calendarSanctity:{...sc,day,time,duration:dur}});
+  if(sc.enabled||document.getElementById('sanc-tog').classList.contains('on')) renderSanctityPreview();
+}
+function renderSanctityPreview() {
+  const day=document.getElementById('sanc-day').value;
+  const time=document.getElementById('sanc-time').value;
+  const dur=document.getElementById('sanc-dur').value;
+  const p=document.getElementById('sanc-preview');
+  p.classList.add('visible');
+  p.innerHTML=`📆 <strong>next block:</strong> ${day} at ${time} · ${dur} · repeating weekly`;
+}
+
+// ── Utilities ────────────────────────────────────────────────────
+function weekNum(d) {
+  const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+  date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7));
+  const yr=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+  return Math.ceil((((date-yr)/864e5)+1)/7);
+}
+function fmtDate(iso) {
+  if(!iso) return '—';
+  try{ return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+  catch(e){ return '—'; }
+}
+function setSelectVal(id,val) {
+  const el=document.getElementById(id); if(!el) return;
+  [...el.options].forEach((o,i)=>{ if(o.value===val) el.selectedIndex=i; });
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+
+// ── Demo mode functions ───────────────────────────────────────────
+var DEMO_DATA = {
+  meta: { firstRunComplete: true, createdAt: new Date(Date.now()-30*864e5).toISOString() },
+  profile: { name:'Rosie de Vries', role:'Junior Service Designer', track:'Service Design', level:'L1 — The Learner', targetLevel:'L2 — The Practitioner', coach:'Giusivelia', pdTimeEnabled:true, pdTimeMinutes:96, calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'} },
+  goals: [
+    { id:'dg1', title:'Get better at facilitating stakeholder workshops', dimension:'People', linkedToFramework:true, photo:null, createdAt: new Date(Date.now()-28*864e5).toISOString(),
+      subgoals:[
+        {id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},
+        {id:'ds2',title:'Read Facilitating Complex Conversations (Stanford dSchool)',done:true},
+        {id:'ds3',title:'Run a low-stakes internal workshop and reflect on it',done:true},
+        {id:'ds4',title:'Get peer feedback from a colleague on my facilitation style',done:false},
+        {id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}
+      ]},
+    { id:'dg2', title:'Build my systems thinking skills', dimension:'Delivery', linkedToFramework:true, photo:null, createdAt: new Date(Date.now()-20*864e5).toISOString(),
+      subgoals:[
+        {id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},
+        {id:'ds7',title:'Map the feedback loops in a current client project',done:false},
+        {id:'ds8',title:'Present a systems map to the team and get critique',done:false}
+      ]}
+  ],
+  actions: [
+    {id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:90,energy:'energised',note:'Learned how she handles resistance in the room.'},
+    {id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:45,energy:'neutral',note:''},
+    {id:'da3',title:'Watch the NN/g workshop facilitation video series',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:60,energy:'energised',note:''},
+    {id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},
+    {id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}
+  ],
+  reflections: [
+    {id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session — a lot happened.','wr-1':'I managed to keep the group on track even when two participants went off on a tangent.','wr-4':'Ask for feedback right after the session, not a week later.'}},
+    {id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},
+    {id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:18,content:{'wk-0':'I kept thinking about why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}
+  ],
+  feedback: [
+    {id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},
+    {id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down a bit when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}
+  ],
+  coaching: { nextSessionDate:new Date(Date.now()+7*864e5).toISOString(), nextSessionDuration:60, myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.', commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}], prepShared:false }
+};
+
+function openDemoPanel() { document.getElementById('demo-overlay').classList.add('open'); }
+function closeDemoPanel() { document.getElementById('demo-overlay').classList.remove('open'); }
+
+function loadDemoFirstUse() {
+  closeDemoPanel();
+  PD.init('demo');
+  PD.reset();
+  sessionStorage.setItem('pdMode','demo-first');
+  location.reload();
+}
+
+function loadDemoInUse() {
+  closeDemoPanel();
+  PD.init('demo');
+  PD.reset();
+  PD.save(DEMO_DATA);
+  sessionStorage.setItem('pdMode','demo-inuse');
+  location.reload();
+}
+
+function showMyData() {
+  closeDemoPanel();
+  sessionStorage.removeItem('pdMode');
+  PD.init();
+  location.reload();
+}
+
+function exitDemo() {
+  sessionStorage.removeItem('pdMode');
+  PD.init();
+  location.reload();
+}
+
+function initDemoUI() {
+  var mode = sessionStorage.getItem('pdMode');
+  if (mode === 'demo-inuse' || mode === 'demo-first') {
+    var banner = document.getElementById('demo-banner');
+    var btn    = document.getElementById('demo-btn');
+    var label  = document.getElementById('demo-mode-label');
+    // move banner to top of dashboard view
+    var dashView = document.getElementById('view-dashboard');
+    if (dashView) dashView.insertBefore(banner, dashView.firstChild);
+    banner.style.display = 'flex';
+    btn.classList.add('active');
+    btn.textContent = 'demo ✦';
+    label.textContent = mode === 'demo-inuse' ? '— system in use' : '— first usage';
+  }
+}
+
+// ── Boot ─────────────────────────────────────────────────────────
+initDemoUI();
+obInitDots();
+if(PD.isFirstRun()){
+  document.getElementById('view-onboarding').style.display='block';
+} else {
+  showDashboard();
+}
 </script>
+
+<!-- ── Demo mode ── -->
+<div class="demo-banner" id="demo-banner" style="display:none">
+  🎬 <strong>Demo mode</strong> <span id="demo-mode-label"></span>
+  <button class="demo-exit" onclick="exitDemo()">exit demo</button>
+</div>
+
+<button class="demo-btn" id="demo-btn" onclick="openDemoPanel()">demo</button>
+
+<div class="demo-overlay" id="demo-overlay">
+  <div class="demo-panel">
+    <div class="demo-panel-title">Demo mode</div>
+    <div class="demo-panel-sub">Switch between research scenarios without touching your real data. Your data is always safe.</div>
+    <button class="demo-option" onclick="loadDemoFirstUse()">
+      <div class="demo-option-title">👋 First usage</div>
+      <div class="demo-option-desc">Shows the onboarding flow as if it's day one. Good for showing how someone sets up the system.</div>
+    </button>
+    <button class="demo-option" onclick="loadDemoInUse()">
+      <div class="demo-option-title">🌱 System in use</div>
+      <div class="demo-option-desc">Loads a filled example — goals, actions, reflections, feedback — showing what the system looks like after a few weeks of use.</div>
+    </button>
+    <button class="demo-option" onclick="showMyData()">
+      <div class="demo-option-title">👤 My real data</div>
+      <div class="demo-option-desc">Return to your own data. Nothing in your data is ever changed by demo mode.</div>
+    </button>
+    <button class="demo-close" onclick="closeDemoPanel()">cancel</button>
+  </div>
+</div>
 </body>
 </html>

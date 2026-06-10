@@ -3,174 +3,277 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Action Tracker — Essense PD</title>
+<title>Actions — Essense PD</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
-.view{display:none}.view.active{display:block;animation:up .3s ease}
-@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
-.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
-.divider{height:1px;background:var(--border);margin:1.5rem 0}
-.action-card{background:var(--egg);border:1.5px solid var(--border);border-radius:13px;padding:1.1rem;margin-bottom:.65rem;cursor:pointer;display:flex;align-items:center;gap:.875rem;transition:all .25s}
-.action-card:hover{border-color:var(--essense);box-shadow:0 2px 10px rgba(4,69,36,.07)}
-.action-card.done-card{background:var(--bright);border-color:var(--essense);opacity:.75}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 4rem;max-width:620px;margin:0 auto}
+.view{display:none}.view.active{display:block;animation:fadeup .28s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.65rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem;align-items:center}
+
+/* Action list */
+.action-card{background:var(--egg);border:1.5px solid var(--border);border-radius:13px;padding:1rem 1.1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.875rem;cursor:pointer;transition:all .25s}
+.action-card:hover{border-color:var(--essense);box-shadow:0 2px 10px rgba(4,69,36,.06)}
+.action-card.done-card{background:var(--bright);border-color:var(--essense);opacity:.7}
 .ac-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .2s}
 .action-card.done-card .ac-check{background:var(--forest);border-color:var(--forest);color:var(--white)}
-.ac-body{flex:1}
-.ac-title{font-size:.9rem;font-weight:500;color:var(--charcoal);margin-bottom:.3rem;line-height:1.35}
+.ac-body{flex:1;min-width:0}
+.ac-title{font-size:.9rem;font-weight:500;color:var(--charcoal);margin-bottom:.25rem;line-height:1.3}
 .action-card.done-card .ac-title{text-decoration:line-through;color:var(--muted)}
-.ac-meta{display:flex;gap:.6rem;flex-wrap:wrap}
-.meta-pill{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.15rem .55rem;font-size:.72rem;color:var(--muted)}
-.ac-goal{font-size:.72rem;color:var(--essense);margin-top:.3rem;font-style:italic}
-.ac-arrow{font-size:1.1rem;color:var(--border);flex-shrink:0;transition:color .2s}
-.action-card:hover .ac-arrow{color:var(--essense)}
-.done-badge{background:var(--essense);color:var(--white);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;font-weight:500;margin-left:.4rem}
-.action-screen{background:var(--egg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
-.as-header{background:var(--forest);padding:1.25rem 1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
-.as-title{font-family:var(--font-head);font-size:1.15rem;color:var(--white);line-height:1.3}
-.as-back{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:.3rem .7rem;font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.8);cursor:pointer;white-space:nowrap}
-.as-back:hover{border-color:var(--white);color:var(--white)}
-.as-body{padding:1.25rem 1.5rem}
-.as-meta-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.25rem}
-.as-pill{background:var(--bright);border:1px solid var(--border);border-radius:99px;padding:.25rem .7rem;font-size:.75rem;color:var(--forest);font-weight:500}
+.ac-meta{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center}
+.ac-goal{font-size:.72rem;color:var(--essense);font-style:italic}
+.ac-energy{font-size:.75rem;color:var(--muted)}
+.ac-time{font-size:.72rem;color:var(--muted)}
+.ac-arr{font-size:1rem;color:var(--border);flex-shrink:0;transition:color .2s}
+.action-card:not(.done-card):hover .ac-arr{color:var(--essense)}
+
+/* Add row */
+.add-row{display:flex;gap:.6rem;margin-bottom:1.75rem;flex-wrap:wrap}
+.add-input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:9px;padding:.6rem .875rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
+.add-input:focus{border-color:var(--essense);background:var(--white)}
+.add-select{border:1.5px solid var(--border);border-radius:9px;padding:.6rem .75rem;font-family:var(--font-body);font-size:.825rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s;max-width:180px}
+.add-select:focus{border-color:var(--essense);background:var(--white)}
+
+/* Detail screen */
+.detail-card{background:var(--egg);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:1.25rem}
+.dc-header{background:var(--forest);padding:1.25rem 1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.dc-title{font-family:var(--font-head);font-size:1.1rem;color:var(--white);line-height:1.3;flex:1}
+.dc-back{background:transparent;border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:.3rem .7rem;font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.8);cursor:pointer;flex-shrink:0}
+.dc-back:hover{border-color:var(--white);color:var(--white)}
+.dc-body{padding:1.25rem 1.5rem}
+.dc-goal{font-size:.825rem;color:var(--essense);font-style:italic;margin-bottom:1rem}
 .q-block{margin-bottom:1rem}
 .q-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.3rem}
 .q-text{font-family:var(--font-head);font-size:.95rem;color:var(--forest);margin-bottom:.6rem;line-height:1.4}
-textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:68px;line-height:1.6;outline:none;transition:border .2s}
+textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:68px;line-height:1.6;outline:none;transition:border .2s}
 textarea:focus{border-color:var(--essense)}
 .energy-label{font-size:.8rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .4rem}
 .energy-row{display:flex;gap:.5rem}
-.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--white);cursor:pointer;font-size:.72rem;text-align:center;transition:all .2s;color:var(--muted)}
+.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--white);cursor:pointer;font-size:.72rem;text-align:center;transition:all .2s;color:var(--muted);font-family:var(--font-body)}
 .e-btn:hover{border-color:var(--essense);background:var(--bright)}
 .e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
 .e-emoji{font-size:.95rem;display:block;margin-bottom:.2rem}
-.time-row{display:flex;align-items:center;gap:.75rem;margin:.875rem 0}
-.time-label{font-size:.8rem;color:var(--muted);white-space:nowrap}
-input[type=number]{width:64px;border:1px solid var(--border);border-radius:7px;padding:.4rem .6rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);outline:none;text-align:center}
-input[type=number]:focus{border-color:var(--essense)}
-.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
-.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
-.btn-p:hover{background:var(--essense)}
-.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
-.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
-.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
-.summary-strip{background:var(--bright);border-radius:12px;padding:1rem 1.25rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;margin-top:1rem;border:1px solid var(--border)}
-.sum-num{font-family:var(--font-head);font-size:1.6rem;color:var(--forest);line-height:1}
-.sum-label{font-size:.72rem;color:var(--muted)}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.8rem 1rem;font-size:.85rem;color:var(--forest);font-style:italic;margin:.875rem 0;line-height:1.6}
-.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
-.add-row{display:flex;gap:.6rem;margin-top:.875rem}
-.add-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
-.add-input:focus{border-color:var(--essense);background:var(--white)}
-.btn-add{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.65rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:500;cursor:pointer;white-space:nowrap}
+
+/* Time confirm */
+.time-confirm{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;margin-bottom:.875rem}
+.tc-label{font-size:.825rem;color:var(--charcoal);flex:1}
+.tc-input{width:60px;border:1px solid var(--border);border-radius:7px;padding:.35rem .5rem;font-family:var(--font-body);font-size:.875rem;text-align:center;outline:none;background:var(--white)}
+.tc-input:focus{border-color:var(--essense)}
+.tc-unit{font-size:.8rem;color:var(--muted)}
+
+/* Done screen */
+.done-card{background:var(--bright);border-radius:13px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.done-icon{font-size:1.75rem;margin-bottom:.4rem}
+.done-title{font-family:var(--font-head);font-size:1.05rem;color:var(--forest);margin-bottom:.3rem}
+.done-sub{font-size:.825rem;color:var(--muted);line-height:1.5}
 </style>
 </head>
 <body>
-<div class="view active" id="list-view">
+
+<!-- ── LIST VIEW ──────────────────────────────────────────────── -->
+<div class="view active" id="v-list">
   <p class="label">micro-actions</p>
   <h1 class="heading">what did you do today?</h1>
-  <p class="sub">tap an action to open its fill-in screen. takes 30 seconds.</p>
-<div class="insight" style="margin-bottom:1.25rem"><span class="arrow">→</span><strong>stealth tracking:</strong> every action you tick here automatically updates your dashboard time budget and energy overview — no separate logging needed.</div>
-  <div id="action-list"></div>
+  <p class="sub">tap an action to log what happened. takes 30 seconds.</p>
+
   <div class="add-row">
-    <input class="add-input" id="new-input" placeholder="add something you did today…" onkeydown="if(event.key==='Enter')addAction()"/>
-    <button class="btn-add" onclick="addAction()">+ add</button>
+    <input class="add-input" id="new-inp" placeholder="add something you did or planned…" onkeydown="if(event.key==='Enter')addAction()"/>
+    <select class="add-select" id="new-goal-sel"></select>
+    <button class="btn-y" onclick="addAction()">add</button>
   </div>
-  <div class="divider"></div>
-  <div class="summary-strip">
-    <div><div class="sum-num" id="sum-done">0</div><div class="sum-label">done today</div></div>
-    <div><div class="sum-num" id="sum-min">0</div><div class="sum-label">minutes logged</div></div>
-    <div><div class="sum-num" id="sum-left">38</div><div class="sum-label">min budget left</div></div>
-  </div>
-  <div class="insight" id="list-insight" style="display:none"></div>
+
+  <div id="action-list"></div>
 </div>
-<div class="view" id="action-view">
-  <div class="action-screen">
-    <div class="as-header">
-      <div class="as-title" id="av-title"></div>
-      <button class="as-back" onclick="backToList()">← back to list</button>
+
+<!-- ── DETAIL VIEW ──────────────────────────────────────────────── -->
+<div class="view" id="v-detail">
+  <div class="detail-card">
+    <div class="dc-header">
+      <div class="dc-title" id="det-title"></div>
+      <button class="dc-back" onclick="goList()">← back</button>
     </div>
-    <div class="as-body">
-      <div class="as-meta-row" id="av-meta"></div>
-      <div class="q-block"><div class="q-tag">how did it go?</div><div class="q-text">a quick note on what happened</div><textarea id="av-note" placeholder="e.g. Spent 20 min reading — got clearer on how to structure the back-stage columns…" rows="3"></textarea></div>
-      <div class="q-block"><div class="q-tag">what I noticed</div><div class="q-text">anything that surprised you or clicked?</div><textarea id="av-insight" placeholder="optional…" rows="2"></textarea></div>
-      <div class="time-row"><span class="time-label">actual time spent</span><input type="number" id="av-time" min="1" max="120" value="15"/><span class="time-label">min</span></div>
-      <div class="energy-label">energy after this action</div>
+    <div class="dc-body">
+      <div class="dc-goal" id="det-goal"></div>
+      <div class="q-block">
+        <div class="q-tag">reflection</div>
+        <div class="q-text">what happened — and what did you notice?</div>
+        <textarea id="det-note" rows="3" placeholder="a sentence or two is plenty…"></textarea>
+      </div>
+      <div class="energy-label">how did this action feel?</div>
       <div class="energy-row">
         <button class="e-btn" onclick="pickE('energised',this)"><span class="e-emoji">🔋</span>energised</button>
         <button class="e-btn" onclick="pickE('neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
         <button class="e-btn" onclick="pickE('drained',this)"><span class="e-emoji">🪫</span>drained</button>
-        <button class="e-btn" onclick="pickE('surprised',this)"><span class="e-emoji">✨</span>surprised</button>
       </div>
       <div class="btn-row">
-        <button class="btn-y" onclick="completeCurrent()">mark done →</button>
-        <button class="btn-s" onclick="skipCurrent()">skip this one</button>
+        <button class="btn-y" onclick="markDone()">mark as done →</button>
+        <button class="btn-s" onclick="goList()">cancel</button>
       </div>
     </div>
   </div>
-  <div class="insight" id="av-next-insight" style="display:none"></div>
-  <div class="btn-row" id="av-next-row" style="display:none">
-    <button class="btn-p" id="av-next-btn">next action →</button>
-    <button class="btn-s" onclick="backToList()">back to overview</button>
+</div>
+
+<!-- ── TIME CONFIRM VIEW ───────────────────────────────────────── -->
+<div class="view" id="v-time">
+  <p class="label">almost done</p>
+  <h1 class="heading" style="margin-bottom:.4rem">how long did this take?</h1>
+  <p class="sub">we'll track this toward your weekly PD time. adjust if needed.</p>
+  <div class="time-confirm">
+    <span class="tc-label">this action took about</span>
+    <input class="tc-input" id="time-inp" type="number" min="1" max="240" value="15"/>
+    <span class="tc-unit">minutes</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn-y" onclick="saveAction()">save</button>
+    <button class="btn-s" onclick="goDetail()">← back</button>
   </div>
 </div>
+
+<!-- ── DONE VIEW ───────────────────────────────────────────────── -->
+<div class="view" id="v-done">
+  <div class="done-card">
+    <div class="done-icon">✓</div>
+    <div class="done-title">action logged</div>
+    <div class="done-sub" id="done-msg"></div>
+  </div>
+  <button class="btn-s" onclick="goList()">back to actions</button>
+</div>
+
 <script>
-let actions=[
-  {id:1,title:'Read: NN/g article on service blueprints',time:15,type:'Reading',goal:'Journey & Blueprinting L1→L2',done:false,skipped:false,energy:'',note:'',actualTime:15},
-  {id:2,title:'Sketch a back-stage layer for your current project',time:15,type:'Practice',goal:'Journey & Blueprinting L1→L2',done:false,skipped:false,energy:'',note:'',actualTime:15},
-  {id:3,title:'Ask a senior service designer how they reveal back-stage',time:15,type:'Conversation',goal:'Journey & Blueprinting L1→L2',done:false,skipped:false,energy:'',note:'',actualTime:15},
-];
-let currentId=null,doneMin=0,budgetLeft=38,currentEnergy='';
-function renderList(){
-  const list=document.getElementById('action-list');list.innerHTML='';
-  actions.forEach(a=>{
-    const card=document.createElement('div');
-    card.className='action-card'+(a.done||a.skipped?' done-card':'');
-    card.onclick=()=>openAction(a.id);
-    card.innerHTML=`<div class="ac-check">${a.done?'✓':a.skipped?'–':''}</div><div class="ac-body"><div class="ac-title">${a.title}${a.done?'<span class="done-badge">done</span>':a.skipped?'<span class="done-badge" style="background:var(--muted)">skipped</span>':''}</div><div class="ac-meta"><span class="meta-pill">⏱ ${a.time} min</span><span class="meta-pill">${a.type}</span></div><div class="ac-goal">→ ${a.goal}</div></div><div class="ac-arrow">›</div>`;
-    list.appendChild(card);
-  });
-  updateSummary();
-  const insight=document.getElementById('list-insight');
-  const doneCount=actions.filter(a=>a.done).length;
-  if(doneCount>0){insight.style.display='block';insight.innerHTML='<span class="arrow">→</span>'+doneCount+' action'+(doneCount>1?'s':'')+' done. copy your time log from the summary above and paste into Notion.';}
+// Demo mode namespace check
+(function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
+
+let currentId = null, detEnergy = '';
+
+function goList()   { show('v-list');   renderList(); }
+function goDetail() { show('v-detail'); }
+function show(id)   { document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+// ── Render action list ─────────────────────────────────────────────
+function renderList() {
+  populateGoalSelect('new-goal-sel', true);
+  const actions = PD.actions();
+  const goals   = PD.goals();
+  const el = document.getElementById('action-list');
+
+  if(!actions.length) {
+    el.innerHTML=`<div style="background:var(--egg);border:2px dashed var(--border);border-radius:13px;padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.875rem">
+      <div style="font-size:1.5rem;margin-bottom:.5rem">🧱</div>
+      <div style="font-family:var(--font-head);color:var(--forest);font-size:1rem;margin-bottom:.3rem">no actions yet</div>
+      add something you did or plan to do above.
+    </div>`; return;
+  }
+
+  const todo = actions.filter(a=>!a.done);
+  const done = actions.filter(a=>a.done);
+
+  let html = '';
+  if(todo.length) {
+    html += todo.map(a=>actionCardHTML(a,goals)).join('');
+  }
+  if(done.length) {
+    html += `<p style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin:1rem 0 .5rem">done</p>`;
+    html += done.map(a=>actionCardHTML(a,goals)).join('');
+  }
+  el.innerHTML=html;
 }
-function openAction(id){
-  currentId=id;currentEnergy='';
-  const a=actions.find(x=>x.id===id);
-  document.getElementById('av-title').textContent=a.title;
-  document.getElementById('av-meta').innerHTML=`<span class="as-pill">⏱ ${a.time} min estimated</span><span class="as-pill">${a.type}</span><span class="as-pill">→ ${a.goal}</span>`;
-  document.getElementById('av-note').value=a.note||'';
-  document.getElementById('av-insight').value='';
-  document.getElementById('av-time').value=a.time;
+
+function actionCardHTML(a, goals) {
+  const goal = a.goalId ? goals.find(g=>g.id===a.goalId) : null;
+  return `<div class="action-card ${a.done?'done-card':''}" onclick="openAction('${a.id}')">
+    <div class="ac-check">✓</div>
+    <div class="ac-body">
+      <div class="ac-title">${esc(a.title)}</div>
+      <div class="ac-meta">
+        ${goal?`<span class="ac-goal">${esc(goal.title)}</span>`:''}
+        ${a.energy?`<span class="ac-energy">${a.energy}</span>`:''}
+        ${a.minutesSpent?`<span class="ac-time">· ${a.minutesSpent} min</span>`:''}
+      </div>
+    </div>
+    <div class="ac-arr">›</div>
+  </div>`;
+}
+
+function populateGoalSelect(selId, withBlank) {
+  const sel=document.getElementById(selId); if(!sel) return;
+  const goals=PD.goals();
+  sel.innerHTML=(withBlank?'<option value="">no linked goal</option>':'')+goals.map(g=>`<option value="${g.id}">${esc(g.title)}</option>`).join('');
+}
+
+// ── Add ────────────────────────────────────────────────────────────
+function addAction() {
+  const inp=document.getElementById('new-inp');
+  const val=inp.value.trim(); if(!val) return;
+  const goalId=document.getElementById('new-goal-sel').value||null;
+  PD.saveAction({title:val,goalId,done:false});
+  inp.value=''; renderList();
+}
+
+// ── Open detail ────────────────────────────────────────────────────
+function openAction(id) {
+  currentId=id; detEnergy='';
+  const action=PD.actionById?PD.actionById(id):PD.actions().find(a=>a.id===id);
+  if(!action) return;
+  if(action.done){ return; } // done actions are read-only in list view
+
+  const goals=PD.goals();
+  const goal=action.goalId?goals.find(g=>g.id===action.goalId):null;
+
+  document.getElementById('det-title').textContent = action.title;
+  document.getElementById('det-goal').textContent  = goal?'linked to: '+goal.title:'';
+  document.getElementById('det-note').value        = action.note||'';
   document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('av-next-insight').style.display='none';
-  document.getElementById('av-next-row').style.display='none';
-  showView('action-view');
+  goDetail();
 }
-function pickE(e,el){currentEnergy=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function completeCurrent(){
-  const a=actions.find(x=>x.id===currentId);
-  a.done=true;a.energy=currentEnergy;a.note=document.getElementById('av-note').value;a.actualTime=parseInt(document.getElementById('av-time').value)||a.time;
-  doneMin+=a.actualTime;budgetLeft=Math.max(0,budgetLeft-a.actualTime);
-  const nextPending=actions.find(x=>!x.done&&!x.skipped&&x.id!==currentId);
-  const insight=document.getElementById('av-next-insight');const nextRow=document.getElementById('av-next-row');
-  insight.style.display='block';insight.innerHTML='<span class="arrow">→</span>done! '+a.actualTime+' min logged.'+(nextPending?' ready for the next one?':' all actions completed for today.');
-  nextRow.style.display='flex';
-  const btn=document.getElementById('av-next-btn');
-  if(nextPending){btn.textContent='next action →';btn.onclick=()=>openAction(nextPending.id);}
-  else{btn.textContent='back to overview';btn.onclick=backToList;}
-  updateSummary();
+
+function pickE(val, el) {
+  detEnergy=val;
+  document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
 }
-function skipCurrent(){actions.find(x=>x.id===currentId).skipped=true;backToList();}
-function backToList(){renderList();showView('list-view');}
-function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
-function addAction(){const input=document.getElementById('new-input');const val=input.value.trim();if(!val)return;actions.push({id:Date.now(),title:val,time:15,type:'Self-added',goal:'Journey & Blueprinting L1→L2',done:false,skipped:false,energy:'',note:'',actualTime:15});input.value='';renderList();}
-function updateSummary(){document.getElementById('sum-done').textContent=actions.filter(a=>a.done).length;document.getElementById('sum-min').textContent=doneMin;document.getElementById('sum-left').textContent=budgetLeft;}
+
+function markDone() {
+  // Go to time confirmation
+  show('v-time');
+  document.getElementById('time-inp').value=15; // default suggestion
+}
+
+function saveAction() {
+  const mins=parseInt(document.getElementById('time-inp').value)||15;
+  const note=document.getElementById('det-note').value||'';
+  PD.markActionDone(currentId, mins);
+  // Also save note + energy
+  const data=PD.get();
+  const action=data.actions.find(a=>a.id===currentId);
+  if(action){ action.note=note; action.energy=detEnergy; PD.save(data); }
+
+  const action2=PD.actions().find(a=>a.id===currentId);
+  const goal=action2?.goalId?PD.goals().find(g=>g.id===action2.goalId):null;
+  document.getElementById('done-msg').textContent =
+    `${mins} minutes logged toward your PD time.`+(goal?' linked to: '+goal.title:'');
+  show('v-done');
+}
+
+function esc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+// Boot
+PD.markActionDone = PD.markActionDone || function(id, mins) {
+  const data=PD.get();
+  const a=data.actions.find(x=>x.id===id);
+  if(a){ a.done=true; a.doneAt=new Date().toISOString(); a.minutesSpent=mins; PD.save(data); }
+};
+
 renderList();
 </script>
 </body>

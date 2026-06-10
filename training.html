@@ -86,7 +86,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
   <div class="ss-controls">
     <select class="ss-select" id="goal-select">
       <option value="">— pick a goal —</option>
-      <option value="journey">Grow Journey & Blueprinting from L1 to L2</option>
+      <option value="journey">Grow Journey & Blueprinting</option>
       <option value="comm">Improve Communication & Collaboration</option>
       <option value="knowledge">Build Service Design knowledge</option>
     </select>
@@ -126,26 +126,26 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 <div id="training-list"></div>
 
 <div class="insight">
-  <span class="arrow">→</span>find something useful? add it to your roadmap as a micro-action, or share it with a colleague. when colleagues endorse, the system surfaces it higher for everyone.
+  <span class="arrow">→</span>find something useful? add it as an action, or share it with a colleague. when colleagues endorse, the system surfaces it higher for everyone.
 </div>
 
 <script>
 const trainings=[
-  {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. Essential for L1 → L2.',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
+  {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. ',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
   {icon:'🛠',title:'Service Blueprinting: A Digital Template',provider:'Nielsen Norman Group',type:'Tool / template',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Free downloadable template — use in your next project.',endorsements:3,url:'https://www.nngroup.com/articles/service-blueprinting-template/'},
-  {icon:'▶️',title:'Overcoming Service Blueprinting Frustrations',provider:'Nielsen Norman Group',type:'Video',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Good for L2 practitioners after their first blueprint.',endorsements:2,url:'https://www.nngroup.com/videos/service-blueprinting-frustrations/'},
+  {icon:'▶️',title:'Overcoming Service Blueprinting Frustrations',provider:'Nielsen Norman Group',type:'Video',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Good after your first blueprint.',endorsements:2,url:'https://www.nngroup.com/videos/service-blueprinting-frustrations/'},
   {icon:'🎙',title:'This is HCD',provider:'Gerry Scullion',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Most downloaded SD podcast globally. Great for commutes.',endorsements:6,url:'https://www.thisishcd.com/'},
   {icon:'🎙',title:'The Service Design Show',provider:'Marc Fonteijn',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Long-form interviews with practitioners. 4.7/5 on Apple.',endorsements:5,url:'https://www.servicedesignshow.com/'},
   {icon:'📰',title:'Design Thinking 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Foundational 6-stage model. Read before facilitating discovery.',endorsements:5,url:'https://www.nngroup.com/articles/design-thinking/'},
-  {icon:'📰',title:'User Interviews: How, When, and Why',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Comprehensive guide. L1 essential for research work.',endorsements:4,url:'https://www.nngroup.com/articles/user-interviews/'},
+  {icon:'📰',title:'User Interviews: How, When, and Why',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Comprehensive guide. Essential for research work.',endorsements:4,url:'https://www.nngroup.com/articles/user-interviews/'},
   {icon:'📰',title:'Common Journey Mapping Mistakes',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX & Journey Thinking',note:'After your first map, helps you evaluate your own work.',endorsements:3,url:'https://www.nngroup.com/articles/journey-mapping-pitfalls/'},
   {icon:'📰',title:'AI Is Reshaping Service Design',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Innovation & Orchestration',note:'2025 article on AI shifting the discipline.',endorsements:2,url:'https://www.nngroup.com/articles/ai-service-design/'},
-  {icon:'📰',title:'Usability Testing 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Experience Design',note:'Standard reference. L1 essential for testing work.',endorsements:3,url:'https://www.nngroup.com/articles/usability-testing-101/'},
+  {icon:'📰',title:'Usability Testing 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Experience Design',note:'Standard reference. Essential reading for testing work.',endorsements:3,url:'https://www.nngroup.com/articles/usability-testing-101/'},
   {icon:'📰',title:'Stakeholder Management for UX',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Stakeholder Engagement',note:'Navigating stakeholders in design projects.',endorsements:4,url:'https://www.nngroup.com/articles/ux-stakeholder-management/'},
   {icon:'🎤',title:'Service Design Network Global Conference',provider:'Service Design Network',type:'Webinar',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Service Design — general',note:'Annual conference recordings. Case studies + strategic talks.',endorsements:3,url:'https://www.service-design-network.org/'},
-  {icon:'📰',title:'How to Facilitate Workshops',provider:'Service Design Network',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'L2 core skill. Practical facilitation guide.',endorsements:5,url:'https://www.service-design-network.org/'},
+  {icon:'📰',title:'How to Facilitate Workshops',provider:'Service Design Network',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'Practical facilitation guide.',endorsements:5,url:'https://www.service-design-network.org/'},
   {icon:'📚',title:'This is Service Design Doing',provider:'Marc Stickdorn et al.',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'Service Design — general',note:'Field standard. Start with the methods section.',endorsements:7,url:'https://www.thisisservicedesigndoing.com/'},
-  {icon:'📚',title:'Practical Empathy',provider:'Indi Young',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Design Thinking & Discovery',note:'Changes how you conduct interviews. High impact for L1.',endorsements:4,url:'https://rosenfeldmedia.com/books/practical-empathy/'},
+  {icon:'📚',title:'Practical Empathy',provider:'Indi Young',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Design Thinking & Discovery',note:'Changes how you conduct interviews.',endorsements:4,url:'https://rosenfeldmedia.com/books/practical-empathy/'},
   {icon:'🎓',title:'Design Thinking Bootcamp',provider:'Stanford d.school',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Free Stanford resources with method cards.',endorsements:6,url:'https://dschool.stanford.edu/resources'},
   {icon:'📰',title:'Facilitating Co-Design Sessions',provider:'IDEO',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'IDEO\'s open-source HCD toolkit. Free and practical.',endorsements:3,url:'https://www.designkit.org/'},
   {icon:'🎓',title:'Introduction to Qualitative Research',provider:'University of Amsterdam',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Structured intro to qualitative methods.',endorsements:2,url:'https://www.coursera.org/'},
@@ -160,7 +160,7 @@ const trainings=[
   {icon:'📰',title:'Change Management Fundamentals',provider:'Prosci',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX Consulting',note:'ADKAR model explained — change management for CX.',endorsements:2,url:'https://www.prosci.com/resources/articles/change-management-fundamentals'},
   {icon:'🎓',title:'Google Analytics 4 for Beginners',provider:'Google',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Analytics & Governance',note:'Free GA4 course. Relevant to Data Consulting track.',endorsements:2,url:'https://skillshop.google.com/'},
   {icon:'📰',title:'GROW Model Coaching Guide',provider:'MindTools',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Feedback & Coaching',note:'The GROW model used in Eidra coaching, explained clearly.',endorsements:5,url:'https://www.mindtools.com/an0ykcs/the-grow-model'},
-  {icon:'🎓',title:'Figma for Beginners',provider:'Figma',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Experience Design',note:'Official beginner tutorials. L0–L1 starting point.',endorsements:4,url:'https://www.figma.com/resources/learn-design/'},
+  {icon:'🎓',title:'Figma for Beginners',provider:'Figma',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Experience Design',note:'Official beginner tutorials.',endorsements:4,url:'https://www.figma.com/resources/learn-design/'},
   {icon:'💻',title:'Service Design Fundamentals',provider:'Interaction Design Foundation',type:'E-learning',time:'1+ hours',timeCat:'long',days:'~3 days',cost:'Paid (budget)',competence:'Service Design — general',note:'Self-paced e-learning with assignments and certificate. One of the highest-rated SD e-learning programs available.',endorsements:5,url:'https://www.interaction-design.org/courses/service-design'},
   {icon:'💻',title:'Design Research Methods',provider:'Ideo U',type:'E-learning',time:'1+ hours',timeCat:'long',days:'~5 days',cost:'Paid (budget)',competence:'Design Thinking & Discovery',note:'Project-based e-learning. Practical and highly applied — comes with mentor feedback.',endorsements:4,url:'https://www.ideou.com/products/design-research'},
   {icon:'💻',title:'UX Research — Methods in Practice',provider:'Nielsen Norman Group',type:'E-learning',time:'1+ hours',timeCat:'long',days:'2 days',cost:'Paid (budget)',competence:'Design Thinking & Discovery',note:'NN/g certification-track e-learning. Recognised across the industry.',endorsements:6,url:'https://www.nngroup.com/training/'},
@@ -194,7 +194,7 @@ function render(){
       <div class="tc-note">${t.note}</div>
       <div class="tc-actions">
         <a class="tc-btn yellow" href="${t.url}" target="_blank">open ↗</a>
-        <button class="tc-btn" onclick="addToRoadmap('${t.title.replace(/'/g,'\\\'')}')">+ add to roadmap</button>
+        <button class="tc-btn" onclick="addAsAction('${t.title.replace(/'/g,'\\\'')}')">+ add as action</button>
         <button class="tc-btn" onclick="shareIt('${t.title.replace(/'/g,'\\\'')}')">share with colleague</button>
       </div>
     `;
@@ -242,7 +242,7 @@ function suggest(){
       <div style="font-size:.78rem;color:var(--bright);margin-top:.4rem">${t.note}</div>
       <div class="ss-rec-actions">
         <a class="ss-rec-btn yellow" href="${t.url}" target="_blank">open ↗</a>
-        <button class="ss-rec-btn" onclick="addToRoadmap('${t.title.replace(/'/g,'\\\'')}')">+ add to roadmap</button>
+        <button class="ss-rec-btn" onclick="addAsAction('${t.title.replace(/'/g,'\\\'')}')">+ add as action</button>
       </div>
     `;
     res.appendChild(div);
@@ -251,11 +251,13 @@ function suggest(){
   document.getElementById('web-note').style.display='block';
 }
 
-function addToRoadmap(el){
-  const title=typeof el==='string'?el:el.dataset?el.dataset.t:el;
-  navigator.clipboard.writeText('add this training to my roadmap as a micro-action:\n'+title).then(()=>{
-    alert('✓ copied — paste into Claude to add to your roadmap, or open the Action tracker.');
-  });
+function addAsAction(title){
+  if(typeof PD !== 'undefined'){
+    PD.saveAction({title:'Do: '+title,done:false});
+    alert('✓ added to your actions.');
+  } else {
+    alert('✓ noted — open the actions page to log this.');
+  }
 }
 
 // shareIt replaced by openShareModal
@@ -285,7 +287,7 @@ render();
     <div class="modal-sub">You finished <strong id="share-title-display"></strong>. Share a short takeaway — it helps colleagues know if it's worth their time.</div>
     <div class="share-form">
       <div class="share-form-label">your key takeaway (1–3 sentences)</div>
-      <textarea class="share-textarea" id="share-text" placeholder="e.g. Really practical — the section on back-stage logic clicked for me immediately. Worth the 30 min, especially for L1→L2."></textarea>
+      <textarea class="share-textarea" id="share-text" placeholder="e.g. Really practical — the section on back-stage logic clicked for me immediately. Worth the 30 min, ."></textarea>
       <button class="btn-sm" onclick="submitShare()">share with team →</button>
     </div>
     <div id="share-confirm" style="display:none;margin-top:.875rem;font-size:.82rem;color:var(--essense);font-style:italic">✓ shared — thank you. this will appear in the training card for colleagues.</div>
@@ -293,6 +295,9 @@ render();
 </div>
 
 <script>
+// Demo mode namespace check
+(function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
+
 let shareTargetTitle='';
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openApproval(){document.getElementById('approval-modal').classList.add('open');}

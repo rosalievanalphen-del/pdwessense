@@ -3,66 +3,69 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reflection — Essense PD</title>
+<title>Reflect — Essense PD</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
-body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:640px;margin:0 auto}
-.step{display:none}.step.active{display:block;animation:up .3s ease}
-@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 4rem;max-width:600px;margin:0 auto}
+.view{display:none}.view.active{display:block;animation:fadeup .28s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
 .heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
-.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
 .dots{display:flex;gap:.5rem;margin-bottom:1.5rem}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
 .dot.done{background:var(--essense)}.dot.cur{background:var(--forest)}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.35;cursor:not-allowed}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem;align-items:center}
+
+/* Format picker */
 .fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.75rem}
-.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s}
+.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:13px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s;display:block;width:100%;font-family:var(--font-body)}
 .fmt-btn:hover{border-color:var(--essense);background:var(--bright)}
 .fmt-btn.sel{border-color:var(--forest);background:var(--bright)}
 .fmt-icon{font-size:1.3rem;margin-bottom:.4rem}
 .fmt-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
 .fmt-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
-.fmt-time{font-size:.7rem;color:var(--essense);font-weight:500;margin-top:.3rem}
-.fmt-tag{font-size:.65rem;background:var(--forest);color:var(--bright);border-radius:99px;padding:.1rem .45rem;margin-top:.35rem;display:inline-block}
-.card{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.875rem}
-.card-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
-.card-q{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
-textarea{width:100%;border:1px solid var(--border);border-radius:8px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:72px;line-height:1.6;outline:none;transition:border .2s}
+.fmt-time{font-size:.7rem;color:var(--essense);font-weight:500;margin-top:.35rem}
+.fmt-tag{font-size:.65rem;background:var(--forest);color:var(--bright);border-radius:99px;padding:.1rem .45rem;margin-top:.3rem;display:inline-block}
+
+/* Question cards */
+.q-card{background:var(--egg);border:1px solid var(--border);border-radius:13px;padding:1.25rem;margin-bottom:.875rem}
+.q-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
+.q-text{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
+textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:80px;line-height:1.6;outline:none;transition:border .2s}
 textarea:focus{border-color:var(--essense)}
+
+/* Energy */
 .energy-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .5rem}
 .energy-row{display:flex;gap:.5rem}
-.e-btn{flex:1;padding:.5rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted)}
+.e-btn{flex:1;padding:.55rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted);font-family:var(--font-body)}
 .e-btn:hover{border-color:var(--essense);background:var(--bright)}
 .e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
-.e-emoji{font-size:.95rem;display:block;margin-bottom:.2rem}
-.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem}
-.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer}
-.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.4;cursor:not-allowed}
-.btn-s{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer}
-.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
-.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.7rem 1.35rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
-.output-box{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;font-size:.8rem;color:var(--forest);line-height:1.75;white-space:pre-wrap;margin-bottom:1rem}
-.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin:.875rem 0;line-height:1.6}
-.arrow{color:var(--yellow);margin-right:.3rem;font-style:normal}
-.tag{display:inline-block;background:var(--forest);color:var(--bright);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;font-weight:500;margin:.15rem}
-.fmt-feedback{display:flex;gap:.5rem;flex-wrap:wrap}
-.fmt-fb-btn{background:var(--egg);border:1px solid var(--border);border-radius:8px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer;color:var(--charcoal);transition:all .2s}
-.fmt-fb-btn:hover{border-color:var(--essense);background:var(--bright)}
-.fmt-fb-btn.sel{background:var(--forest);color:var(--white);border-color:var(--forest)}
-.walk-banner{background:var(--forest);color:var(--bright);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:.85rem;line-height:1.5}
-.walk-banner strong{color:var(--white);display:block;margin-bottom:.3rem;font-family:var(--font-head);font-size:.95rem}
-/* audio */
-.audio-controls{background:var(--egg);border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:.875rem;text-align:center}
-.rec-btn{background:var(--forest);color:var(--white);border:none;border-radius:99px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.5rem}
+.e-emoji{font-size:1rem;display:block;margin-bottom:.2rem}
+
+/* Walk banner */
+.walk-banner{background:var(--forest);color:#b7e4c7;border-radius:13px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:.85rem;line-height:1.5}
+.walk-banner strong{color:var(--white);display:block;margin-bottom:.25rem;font-family:var(--font-head);font-size:.95rem}
+
+/* Audio */
+.audio-card{background:var(--egg);border:1px solid var(--border);border-radius:13px;padding:1.25rem;margin-bottom:.875rem;text-align:center}
+.rec-btn{background:var(--forest);color:var(--white);border:none;border-radius:99px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.85rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
 .rec-btn.recording{background:#c0392b;animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
 .rec-status{font-size:.8rem;color:var(--muted);margin-top:.65rem}
 .rec-transcript{margin-top:.75rem;font-size:.82rem;color:var(--charcoal);background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;min-height:48px;text-align:left;line-height:1.6;display:none}
-/* chat / AI */
-.chat-area{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.875rem}
-.chat-messages{padding:1rem;max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;background:var(--white)}
+
+/* Chat */
+.chat-area{border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:.875rem}
+.chat-messages{padding:1rem;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;background:var(--white)}
 .msg{max-width:88%;font-size:.85rem;line-height:1.55;border-radius:10px;padding:.6rem .9rem}
 .msg.bot{background:var(--bright);color:var(--forest);align-self:flex-start;border-bottom-left-radius:2px}
 .msg.user{background:var(--forest);color:var(--white);align-self:flex-end;border-bottom-right-radius:2px}
@@ -70,305 +73,413 @@ textarea:focus{border-color:var(--essense)}
 .chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);outline:none}
 .chat-input:focus{border-color:var(--essense)}
 .chat-send{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.5rem .9rem;font-family:var(--font-body);font-size:.82rem;font-weight:500;cursor:pointer}
-.ai-note{font-size:.72rem;color:var(--muted);font-style:italic;margin-top:.4rem;line-height:1.5}
+
+/* Info icon */
+.info-wrap{position:relative;display:inline-flex;align-items:center;vertical-align:middle;margin-left:.3rem}
+.info-icon{width:15px;height:15px;border-radius:50%;background:var(--bright);border:1px solid var(--border);color:var(--essense);font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-style:normal;line-height:1}
+.info-tip{display:none;position:absolute;bottom:calc(100%+6px);left:50%;transform:translateX(-50%);background:var(--forest);color:#b7e4c7;font-size:.74rem;line-height:1.5;padding:.6rem .875rem;border-radius:9px;width:240px;z-index:20;pointer-events:none}
+.info-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--forest)}
+.info-icon:hover + .info-tip{display:block}
+
+/* Time confirmation */
+.time-confirm{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;margin-bottom:.875rem}
+.tc-label{font-size:.825rem;color:var(--charcoal);flex:1}
+.tc-input{width:60px;border:1px solid var(--border);border-radius:7px;padding:.35rem .5rem;font-family:var(--font-body);font-size:.875rem;text-align:center;outline:none;background:var(--white)}
+.tc-input:focus{border-color:var(--essense)}
+.tc-unit{font-size:.8rem;color:var(--muted)}
+
+/* Done state */
+.done-card{background:var(--bright);border-radius:13px;padding:1.5rem;text-align:center}
+.done-icon{font-size:2rem;margin-bottom:.5rem}
+.done-title{font-family:var(--font-head);font-size:1.1rem;color:var(--forest);margin-bottom:.3rem}
+.done-sub{font-size:.825rem;color:var(--muted);line-height:1.5}
+
+@media(max-width:480px){.fmt-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="dots" id="dots-bar"></div>
 
-<div class="step active" id="s0">
+<!-- ── VIEW 0: Format picker ─────────────────────────────────────── -->
+<div class="view active" id="v-pick">
   <p class="label">reflection</p>
   <h1 class="heading">how do you want to reflect today?</h1>
-  <p class="sub">pick a format. the questions adapt to what you choose. you can always change later.</p>
+  <p class="sub">pick a format. you can always come back and try a different one.</p>
   <div class="fmt-grid">
-    <button class="fmt-btn" onclick="pickFmt('written',this)">
-      <div class="fmt-icon">✍️</div><div class="fmt-title">written</div>
+    <button class="fmt-btn" onclick="pickFmt('written')">
+      <div class="fmt-icon">✍️</div>
+      <div class="fmt-title">written</div>
       <div class="fmt-desc">structured questions, write at your own pace</div>
       <div class="fmt-time">5 questions · ~8 min</div>
     </button>
-    <button class="fmt-btn" onclick="pickFmt('walk',this)">
-      <div class="fmt-icon">🚶</div><div class="fmt-title">walk-and-talk</div>
-      <div class="fmt-desc">2 prompts to think about on a walk — type back when you return</div>
+    <button class="fmt-btn" onclick="pickFmt('walk')">
+      <div class="fmt-icon">🚶</div>
+      <div class="fmt-title">walk-and-talk</div>
+      <div class="fmt-desc">2 prompts to think about on a walk, write back when you return</div>
       <div class="fmt-time">2 prompts · ~15 min</div>
     </button>
-    <button class="fmt-btn" onclick="pickFmt('quick',this)">
-      <div class="fmt-icon">⚡</div><div class="fmt-title">quick check-in</div>
-      <div class="fmt-desc">two questions, three minutes</div>
+    <button class="fmt-btn" onclick="pickFmt('quick')">
+      <div class="fmt-icon">⚡</div>
+      <div class="fmt-title">quick check-in</div>
+      <div class="fmt-desc">one question at a time, three minutes total</div>
       <div class="fmt-time">2 questions · ~3 min</div>
     </button>
-    <button class="fmt-btn" onclick="pickFmt('audio',this)">
-      <div class="fmt-icon">🎙️</div><div class="fmt-title">audio reflection</div>
-      <div class="fmt-desc">speak your thoughts — transcribed automatically</div>
+    <button class="fmt-btn" onclick="pickFmt('audio')">
+      <div class="fmt-icon">🎙️</div>
+      <div class="fmt-title">audio</div>
+      <div class="fmt-desc">speak your thoughts, add notes to go with your recording</div>
       <div class="fmt-time">open · ~5 min</div>
     </button>
-    <button class="fmt-btn" onclick="pickFmt('talk',this)" style="grid-column:span 2">
-      <div class="fmt-icon">🤖</div><div class="fmt-title">talk it through — guided</div>
-      <div class="fmt-desc">a conversational agent asks you one question at a time, adapts to your answers, and helps you reach an insight you might not have found alone</div>
+    <button class="fmt-btn" onclick="pickFmt('talk')" style="grid-column:span 2">
+      <div class="fmt-icon">🤖</div>
+      <div class="fmt-title">talk it through — guided</div>
+      <div class="fmt-desc">a conversational agent asks one question at a time, adapts to your answers, and helps you reach an insight you might not have found alone</div>
       <div class="fmt-time">adaptive · ~10 min</div>
       <div class="fmt-tag">AI-guided</div>
     </button>
-    <button class="fmt-btn" onclick="pickFmt('free',this)">
-      <div class="fmt-icon">🌊</div><div class="fmt-title">free-form</div>
-      <div class="fmt-desc">one open prompt — write what comes</div>
-      <div class="fmt-time">1 prompt · open</div>
-    </button>
   </div>
-  <div class="btn-row"><button class="btn-p" id="btn-start" disabled onclick="goTo(1)">continue →</button></div>
 </div>
 
-<!-- step 1: context / walk / quick / free / audio start -->
-<div class="step" id="s1">
-  <div id="walk-banner-slot"></div>
-  <p class="label">reflection · <span id="fmt-name">written</span></p>
-  <h2 class="heading" id="s1-head">what happened recently?</h2>
-  <p class="sub" id="s1-sub">just one or two sentences — what's the moment you want to reflect on?</p>
-  <div id="audio-block" style="display:none">
-    <div class="audio-controls">
-      <button class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️ start recording</button>
-      <div class="rec-status" id="rec-status">tap to record your reflection out loud</div>
-      <div class="rec-transcript" id="rec-transcript"></div>
-    </div>
-    <p class="ai-note">In the final version this connects to a speech-to-text service. For the prototype: record your thoughts, then type a summary below.</p>
-  </div>
-  <div class="card" id="card-q1"><div class="card-tag">context</div><div class="card-q" id="q1">what's been going on recently that you want to reflect on?</div><textarea id="a1" placeholder="e.g. I tried mapping a back-stage layer for my project for the first time…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="advance(1)">continue →</button><button class="btn-s" onclick="goTo(0)">back</button></div>
+<!-- ── VIEW: Written ─────────────────────────────────────────────── -->
+<div class="view" id="v-written">
+  <div class="dots" id="dots-written"></div>
+  <p class="label">written reflection</p>
+  <div id="wr-steps"></div>
 </div>
 
-<!-- step 2: what worked -->
-<div class="step" id="s2">
-  <p class="label">reflection · what worked</p>
-  <h2 class="heading">what went well, and what gave you energy?</h2>
-  <p class="sub">successes and energy first — they're the signal, not the afterthought.</p>
-  <div class="card"><div class="card-tag">what went well</div><div class="card-q">what are you proud of, however small?</div><textarea id="a2" placeholder="e.g. I asked a question the senior designer said was exactly right…" rows="3"></textarea></div>
-  <div class="card"><div class="card-tag">energy</div><div class="card-q">when did you feel most like yourself recently?</div><textarea id="a3" placeholder="e.g. The moment the back-stage connection clicked…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="advance(2)">continue →</button><button class="btn-s" onclick="goTo(1)">back</button></div>
+<!-- ── VIEW: Walk-and-talk ───────────────────────────────────────── -->
+<div class="view" id="v-walk">
+  <div class="dots" id="dots-walk"></div>
+  <p class="label">walk-and-talk</p>
+  <div id="wk-steps"></div>
 </div>
 
-<!-- step 3: learned -->
-<div class="step" id="s3">
-  <p class="label">reflection · what I learned</p>
-  <h2 class="heading">what did you learn?</h2>
-  <p class="sub">connect it to your goal if you can.</p>
-  <div class="card"><div class="card-tag">insight</div><div class="card-q">what do you know now that you didn't before?</div><textarea id="a4" placeholder="e.g. Back-stage mapping is about asking the right questions…" rows="3"></textarea></div>
-  <div class="btn-row"><button class="btn-p" onclick="advance(3)">continue →</button><button class="btn-s" onclick="goTo(2)">back</button></div>
+<!-- ── VIEW: Quick check-in ─────────────────────────────────────── -->
+<div class="view" id="v-quick">
+  <div class="dots" id="dots-quick"></div>
+  <p class="label">quick check-in</p>
+  <div id="qk-steps"></div>
 </div>
 
-<!-- step 4: next -->
-<div class="step" id="s4">
-  <p class="label">reflection · next step</p>
-  <h2 class="heading">what will you do differently or try next?</h2>
-  <p class="sub">one concrete thing. even if it's small.</p>
-  <div class="card"><div class="card-tag">next step</div><div class="card-q">if you could change or try one thing — what would it be?</div><textarea id="a5" placeholder="e.g. I'll ask to sit in on a blueprinting session before I try again alone…" rows="3"></textarea></div>
-  <div class="card"><div class="card-tag">action</div><div class="card-q">what's the first small thing you'll do in the next 48 hours?</div><textarea id="a6" placeholder="e.g. Send a Slack to ask Pieter if I can observe his next mapping session" rows="2"></textarea></div>
-  <div class="energy-label">how are you feeling right now?</div>
-  <div class="energy-row">
-    <button class="e-btn" onclick="pickEnergy('energised',this)"><span class="e-emoji">🔋</span>energised</button>
-    <button class="e-btn" onclick="pickEnergy('neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
-    <button class="e-btn" onclick="pickEnergy('drained',this)"><span class="e-emoji">🪫</span>drained</button>
-    <button class="e-btn" onclick="pickEnergy('surprised',this)"><span class="e-emoji">✨</span>surprised</button>
-  </div>
-  <div class="btn-row" style="margin-top:1.25rem"><button class="btn-y" onclick="buildOutput()">save reflection →</button><button class="btn-s" onclick="goTo(3)">back</button></div>
+<!-- ── VIEW: Audio ───────────────────────────────────────────────── -->
+<div class="view" id="v-audio">
+  <div class="dots" id="dots-audio"></div>
+  <p class="label">audio reflection</p>
+  <div id="au-steps"></div>
 </div>
 
-<!-- step: AI talk-it-through -->
-<div class="step" id="s-talk">
-  <p class="label">reflection · talk it through</p>
-  <h2 class="heading">let's think together</h2>
-  <p class="sub">answer each question honestly — the agent adapts to what you share and helps you reach an insight.</p>
+<!-- ── VIEW: Talk it through ─────────────────────────────────────── -->
+<div class="view" id="v-talk">
+  <p class="label">guided reflection</p>
+  <h1 class="heading">talk it through</h1>
+  <p class="sub">answer one question at a time. the conversation adapts as you go.</p>
   <div class="chat-area">
     <div class="chat-messages" id="chat-msgs"></div>
     <div class="chat-input-row">
-      <input class="chat-input" id="chat-in" placeholder="type your answer…" onkeydown="if(event.key==='Enter')sendChat()"/>
-      <button class="chat-send" onclick="sendChat()">→</button>
+      <input class="chat-input" id="chat-in" placeholder="type your response…" onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send" onclick="sendChat()">send</button>
     </div>
   </div>
-  <p class="ai-note">🤖 In the final version this connects live to Claude. In this prototype the agent follows a guided script that adapts based on keywords in your answer.</p>
+  <button class="btn-y" id="btn-chat-save" onclick="saveChatReflection()" style="display:none">save reflection →</button>
+  <button class="btn-s" style="margin-top:.5rem" onclick="goTo('pick')">← change format</button>
+</div>
+
+<!-- ── VIEW: Time confirm ─────────────────────────────────────────── -->
+<div class="view" id="v-time">
+  <p class="label">almost done</p>
+  <h1 class="heading">how long did this take?</h1>
+  <p class="sub">we'll track this toward your weekly PD time. adjust if needed.</p>
+  <div class="time-confirm">
+    <span class="tc-label">this reflection took about</span>
+    <input class="tc-input" id="time-inp" type="number" min="1" max="120"/>
+    <span class="tc-unit">minutes</span>
+  </div>
   <div class="btn-row">
-    <button class="btn-y" id="btn-chat-save" onclick="saveChatReflection()" style="display:none">save reflection →</button>
-    <button class="btn-s" onclick="goTo(0)">← start over</button>
+    <button class="btn-y" onclick="saveAndDone()">save reflection</button>
   </div>
 </div>
 
-<!-- step 5: output -->
-<div class="step" id="s5">
-  <p class="label">reflection saved</p>
-  <h2 class="heading">here's your reflection</h2>
-  <p class="sub">your reflection is ready. copy it into Notion — or use the button below to open your reflections database directly.</p>
-  <div class="output-box" id="out-text"></div>
-  <div style="margin-bottom:1rem"><span style="font-size:.8rem;color:var(--muted);margin-right:.5rem">linked goal</span><span class="tag">Journey & Blueprinting L1→L2</span></div>
-  <div class="insight" id="out-insight"></div>
-  <div style="margin:1.1rem 0 .5rem;font-size:.8rem;color:var(--muted)">did this format work for you?</div>
-  <div class="fmt-feedback">
-    <button class="fmt-fb-btn" onclick="fbPick(this)">do this again</button>
-    <button class="fmt-fb-btn" onclick="fbPick(this)">it was fine</button>
-    <button class="fmt-fb-btn" onclick="fbPick(this)">try something else next time</button>
+<!-- ── VIEW: Done ─────────────────────────────────────────────────── -->
+<div class="view" id="v-done">
+  <div class="done-card">
+    <div class="done-icon">✦</div>
+    <div class="done-title">reflection saved</div>
+    <div class="done-sub" id="done-msg"></div>
   </div>
-  <div class="btn-row" style="margin-top:1.5rem">
-    <button class="btn-y" onclick="copyOutput()">copy to clipboard</button>
-    <a class="btn-s" href="https://www.notion.so/8f659d396ea347109fba6c95213148b2" target="_blank">open in Notion →</a>
-    <button class="btn-s" onclick="resetAll()">new reflection</button>
+  <div class="btn-row" style="margin-top:1.25rem">
+    <button class="btn-s" onclick="startOver()">reflect again</button>
   </div>
 </div>
 
 <script>
-let fmt='',energy='';
-const stepIds=['s0','s1','s2','s3','s4','s-talk','s5'];
-const flows={written:[1,2,3,4,5],walk:[1,2,5],quick:[1,4,5],free:[1,5],audio:[1,5],talk:['talk']};
-let currentFlow=[];let currentIdx=0;
+// Demo mode namespace check
+(function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
 
-function dotCount(){return currentFlow.length;}
-function buildDots(){
-  const bar=document.getElementById('dots-bar');bar.innerHTML='';
-  // No flow chosen yet (format-selection screen) → show no progress dots
-  if(!currentFlow.length){return;}
-  const count=currentFlow.includes('talk')?3:currentFlow.length+1;
-  for(let i=0;i<count;i++){const d=document.createElement('div');d.className='dot';d.id='d'+i;bar.appendChild(d);}
-}
-function updateDots(cur){
-  for(let i=0;i<20;i++){const d=document.getElementById('d'+i);if(d)d.className='dot'+(i<cur?' done':i===cur?' cur':'');}
-}
-function goTo(stepId){
-  stepIds.forEach(id=>{const el=document.getElementById('s'+id);if(el)el.classList.remove('active');});
-  const t=document.getElementById('s'+stepId);if(t)t.classList.add('active');
-  if(stepId===0){currentIdx=0;}
-  else{const idx=currentFlow.indexOf(stepId);currentIdx=idx>=0?idx+1:1;}
-  updateDots(currentIdx);
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function advance(fromStep){
-  const nextIdx=currentFlow.indexOf(fromStep)+1;
-  if(nextIdx<currentFlow.length){goTo(currentFlow[nextIdx]);}
-  else{buildOutput();}
-}
-function pickFmt(f,el){
-  fmt=f;
-  document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
-  document.getElementById('btn-start').disabled=false;
-  currentFlow=flows[f]||[1,2,3,4,5];
-  const names={written:'written',walk:'walk-and-talk',quick:'quick check-in',free:'free-form',audio:'audio',talk:'guided'};
-  document.getElementById('fmt-name').textContent=names[f]||f;
-  const banner=document.getElementById('walk-banner-slot');
-  const audioBlock=document.getElementById('audio-block');
-  const cardQ1=document.getElementById('card-q1');
-  audioBlock.style.display='none';cardQ1.style.display='block';
-  if(f==='walk'){
-    document.getElementById('s1-head').textContent='take your walk first';
-    document.getElementById('s1-sub').textContent='think about these questions while you walk. when you return, type what came up.';
-    document.getElementById('q1').textContent='what stood out recently? what would you do differently next time?';
-    banner.innerHTML='<div class="walk-banner"><strong>your walk prompt</strong>find a quiet route, read the questions, walk 10–15 min. type what came up when you return.</div>';
-  } else if(f==='quick'){
-    document.getElementById('s1-head').textContent='what stood out recently?';
-    document.getElementById('s1-sub').textContent='one sentence. that\'s it.';
-    document.getElementById('q1').textContent='what\'s the one thing from recently that stuck with you?';
-    banner.innerHTML='';
-  } else if(f==='free'){
-    document.getElementById('s1-head').textContent='write what comes';
-    document.getElementById('s1-sub').textContent='no structure needed. write whatever\'s on your mind for a few minutes.';
-    document.getElementById('q1').textContent='what\'s on your mind?';
-    banner.innerHTML='';
-  } else if(f==='audio'){
-    document.getElementById('s1-head').textContent='record your reflection';
-    document.getElementById('s1-sub').textContent='speak your thoughts out loud. the transcript will appear below. add any notes you want to keep.';
-    document.getElementById('q1').textContent='add any notes or context to go with your recording';
-    audioBlock.style.display='block';banner.innerHTML='';
-  } else {
-    document.getElementById('s1-head').textContent='what happened recently?';
-    document.getElementById('s1-sub').textContent='just one or two sentences — what\'s the moment you want to reflect on?';
-    document.getElementById('q1').textContent='what\'s been going on recently that you want to reflect on?';
-    banner.innerHTML='';
-  }
-  buildDots();updateDots(0);
+let fmt = '', energy = '', content = {}, pendingMinutes = 0;
+
+// ── Navigation ────────────────────────────────────────────────────
+function goTo(viewId) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+viewId).classList.add('active');
 }
 
-// Audio recording (prototype)
-let isRecording=false,recTimer=null,recSec=0;
-function toggleRec(){
-  const btn=document.getElementById('rec-btn');
-  const status=document.getElementById('rec-status');
-  const transcript=document.getElementById('rec-transcript');
-  if(!isRecording){
-    isRecording=true;recSec=0;
-    btn.textContent='⏹ stop recording';btn.classList.add('recording');
-    transcript.style.display='block';
-    transcript.textContent='Recording… speak your reflection.';
-    status.textContent='recording in progress';
-    recTimer=setInterval(()=>{recSec++;status.textContent='recording — '+recSec+'s';},1000);
-  } else {
-    isRecording=false;clearInterval(recTimer);
-    btn.textContent='🎙️ record again';btn.classList.remove('recording');
-    status.textContent='recording saved · '+recSec+'s';
-    transcript.textContent='[In the final version, your audio would be transcribed here automatically via Claude. For the prototype, type a summary of what you said in the notes area below.]';
+function pickFmt(f) {
+  fmt = f;
+  content = {};
+  energy  = '';
+  switch(f){
+    case 'written': buildWritten(); goTo('written'); break;
+    case 'walk':    buildWalk();    goTo('walk');    break;
+    case 'quick':   buildQuick();   goTo('quick');   break;
+    case 'audio':   buildAudio();   goTo('audio');   break;
+    case 'talk':    initChat();     goTo('talk');    break;
   }
 }
 
-// AI chat flow
-const chatScript=[
-  {q:"Let's start simply — what's been on your mind lately when it comes to your development?",key:'open'},
-  {q:"That's useful context. What about that situation felt most challenging for you?",key:'challenge'},
-  {q:"And when you look back at it now — what do you think you actually learned from it, even if it was hard?",key:'learn'},
-  {q:"Good. If you could do one thing differently going forward, what would that be?",key:'next'},
-  {q:"Last one — how are you feeling right now, having reflected on this?",key:'feeling'},
-  {q:"Thank you. That's a solid reflection. Tap 'save reflection' to store this.",key:'done'},
+function startOver() { fmt=''; energy=''; content={}; goTo('pick'); }
+
+// ── Dots helper ───────────────────────────────────────────────────
+function makeDots(containerId, total, current) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = Array.from({length:total},(_,i)=>`<div class="dot ${i<current?'done':i===current?'cur':''}"></div>`).join('');
+}
+
+// ── Energy picker ─────────────────────────────────────────────────
+function energyHTML(key) {
+  return `<div class="energy-label">how are you feeling right now?</div>
+  <div class="energy-row">
+    <button class="e-btn" onclick="pickE('${key}','energised',this)"><span class="e-emoji">🔋</span>energised</button>
+    <button class="e-btn" onclick="pickE('${key}','neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
+    <button class="e-btn" onclick="pickE('${key}','drained',this)"><span class="e-emoji">🪫</span>drained</button>
+    <button class="e-btn" onclick="pickE('${key}','surprised',this)"><span class="e-emoji">✨</span>surprised</button>
+  </div>`;
+}
+function pickE(key, val, el) {
+  energy = val;
+  document.querySelectorAll(`#${key} .e-btn`).forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── Written ───────────────────────────────────────────────────────
+const writtenQs = [
+  {tag:'context',    q:'what happened recently that you want to reflect on?'},
+  {tag:'well',       q:'what went well — and what made it work?'},
+  {tag:'energy',     q:'what gave you energy, and what drained it?'},
+  {tag:'learned',    q:'what did you learn or realise?'},
+  {tag:'next',       q:'what\'s one thing you\'ll try differently or take forward?'},
 ];
-let chatIdx=0;let chatLog=[];
-function initChat(){
-  chatIdx=0;chatLog=[];
-  const msgs=document.getElementById('chat-msgs');msgs.innerHTML='';
+let wrStep = 0;
+function buildWritten() { wrStep=0; renderWrStep(); }
+function renderWrStep() {
+  makeDots('dots-written', writtenQs.length+1, wrStep);
+  const q = writtenQs[wrStep];
+  document.getElementById('wr-steps').innerHTML = `
+    <div class="q-card">
+      <div class="q-tag">${q.tag}</div>
+      <div class="q-text">${q.q}</div>
+      <textarea id="wr-inp-${wrStep}" rows="4" placeholder="write freely…">${content['wr-'+wrStep]||''}</textarea>
+    </div>
+    <div class="btn-row">
+      ${wrStep===0?'<button class="btn-s" onclick="goTo(\'pick\')">← formats</button>':'<button class="btn-s" onclick="wrBack()">← back</button>'}
+      <button class="btn-p" onclick="wrNext()">next →</button>
+    </div>`;
+}
+function wrNext() {
+  content['wr-'+wrStep] = document.getElementById('wr-inp-'+wrStep)?.value||'';
+  if(wrStep < writtenQs.length-1){ wrStep++; renderWrStep(); }
+  else { renderWrEnergy(); }
+}
+function wrBack() { if(wrStep>0){ wrStep--; renderWrStep(); } }
+function renderWrEnergy() {
+  makeDots('dots-written', writtenQs.length+1, writtenQs.length);
+  document.getElementById('wr-steps').innerHTML = `
+    <div id="wr-energy">${energyHTML('wr-energy')}</div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn-s" onclick="wrBack()">← back</button>
+      <button class="btn-p" onclick="showTimeConfirm()">continue →</button>
+    </div>`;
+}
+
+// ── Walk-and-talk ─────────────────────────────────────────────────
+const walkQs = [
+  {tag:'on the walk',  q:'what moment or challenge from this week is on your mind?'},
+  {tag:'when you\'re back', q:'what did you notice, and what\'s one thing you\'ll take forward?'},
+];
+let wkStep = 0;
+function buildWalk() { wkStep=0; renderWkStep(); }
+function renderWkStep() {
+  makeDots('dots-walk', walkQs.length+1, wkStep);
+  if(wkStep===0) {
+    document.getElementById('wk-steps').innerHTML = `
+      <div class="walk-banner"><strong>before you go</strong>hold these two prompts in your mind while you walk. come back and write when you return.</div>
+      <div class="q-card">
+        <div class="q-tag">prompt 1</div>
+        <div class="q-text">${walkQs[0].q}</div>
+      </div>
+      <div class="q-card">
+        <div class="q-tag">prompt 2</div>
+        <div class="q-text">${walkQs[1].q}</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="wkNext()">I'm back — write my reflection →</button>
+        <button class="btn-s" onclick="goTo('pick')">← change format</button>
+      </div>`;
+  } else {
+    document.getElementById('wk-steps').innerHTML = walkQs.map((q,i)=>`
+      <div class="q-card">
+        <div class="q-tag">${q.tag}</div>
+        <div class="q-text">${q.q}</div>
+        <textarea id="wk-inp-${i}" rows="3" placeholder="write freely…">${content['wk-'+i]||''}</textarea>
+      </div>`).join('')+`
+      <div id="wk-energy">${energyHTML('wk-energy')}</div>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn-s" onclick="wkBack()">← back</button>
+        <button class="btn-p" onclick="wkSave()">continue →</button>
+      </div>`;
+  }
+}
+function wkNext() { wkStep=1; renderWkStep(); }
+function wkBack() { wkStep=0; renderWkStep(); }
+function wkSave() {
+  walkQs.forEach((_,i)=>{ content['wk-'+i]=document.getElementById('wk-inp-'+i)?.value||''; });
+  showTimeConfirm();
+}
+
+// ── Quick check-in ────────────────────────────────────────────────
+const quickQs = [
+  {tag:'what stood out', q:'what\'s one thing that stood out for you this week?'},
+  {tag:'what\'s next',   q:'what\'s one thing you\'ll do or try differently next week?'},
+];
+let qkStep = 0;
+function buildQuick() { qkStep=0; renderQkStep(); }
+function renderQkStep() {
+  makeDots('dots-quick', quickQs.length+1, qkStep);
+  if(qkStep < quickQs.length) {
+    const q=quickQs[qkStep];
+    document.getElementById('qk-steps').innerHTML=`
+      <div class="q-card">
+        <div class="q-tag">${q.tag}</div>
+        <div class="q-text">${q.q}</div>
+        <textarea id="qk-inp" rows="3" placeholder="just a sentence or two is enough…">${content['qk-'+qkStep]||''}</textarea>
+      </div>
+      <div class="btn-row">
+        ${qkStep>0?'<button class="btn-s" onclick="qkBack()">← back</button>':'<button class="btn-s" onclick="goTo(\'pick\')">← formats</button>'}
+        <button class="btn-p" onclick="qkNext()">next →</button>
+      </div>`;
+  } else {
+    document.getElementById('qk-steps').innerHTML=`
+      <div id="qk-energy">${energyHTML('qk-energy')}</div>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn-s" onclick="qkBack()">← back</button>
+        <button class="btn-p" onclick="showTimeConfirm()">continue →</button>
+      </div>`;
+  }
+}
+function qkNext() {
+  content['qk-'+qkStep]=document.getElementById('qk-inp')?.value||'';
+  qkStep++; renderQkStep();
+}
+function qkBack() { if(qkStep>0){ qkStep--; renderQkStep(); } }
+
+// ── Audio ─────────────────────────────────────────────────────────
+let isRec=false, recTimer=null, recSec=0;
+function buildAudio() {
+  makeDots('dots-audio',2,0);
+  document.getElementById('au-steps').innerHTML=`
+    <h1 class="heading">record your reflection</h1>
+    <p class="sub">speak your thoughts. add any notes to go with your recording.</p>
+    <div class="audio-card">
+      <button class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️ start recording</button>
+      <div class="rec-status" id="rec-status">tap to begin</div>
+      <div class="rec-transcript" id="rec-transcript"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-tag">notes</div>
+      <div class="q-text">anything to add or clarify?</div>
+      <textarea id="au-notes" rows="3" placeholder="add context or key points…"></textarea>
+    </div>
+    <div id="au-energy">${energyHTML('au-energy')}</div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn-s" onclick="goTo('pick')">← formats</button>
+      <button class="btn-p" onclick="auSave()">continue →</button>
+    </div>`;
+}
+function toggleRec() {
+  const btn=document.getElementById('rec-btn');
+  const st=document.getElementById('rec-status');
+  const tr=document.getElementById('rec-transcript');
+  if(!isRec){
+    isRec=true; recSec=0;
+    btn.textContent='⏹ stop recording'; btn.classList.add('recording');
+    tr.style.display='block'; tr.textContent='Recording… speak your reflection.';
+    st.textContent='recording in progress';
+    recTimer=setInterval(()=>{ recSec++; st.textContent='recording — '+recSec+'s'; },1000);
+  } else {
+    isRec=false; clearInterval(recTimer);
+    btn.textContent='🎙️ record again'; btn.classList.remove('recording');
+    st.textContent='recording done · '+recSec+'s';
+    tr.textContent='[Audio captured — '+recSec+'s. Add any notes below.]';
+  }
+}
+function auSave() {
+  content.notes=document.getElementById('au-notes')?.value||'';
+  content.duration=recSec;
+  showTimeConfirm();
+}
+
+// ── AI chat ───────────────────────────────────────────────────────
+const chatScript=[
+  'Let\'s start simply — what\'s been on your mind lately when it comes to your development?',
+  'That\'s useful context. What about that situation felt most challenging for you?',
+  'And when you look back — what do you think you actually learned from it, even if it was hard?',
+  'Good. If you could do one thing differently going forward, what would that be?',
+  'Last one — how are you feeling right now, having reflected on this?',
+];
+let chatIdx=0, chatLog=[];
+function initChat() {
+  chatIdx=0; chatLog=[];
+  const msgs=document.getElementById('chat-msgs'); msgs.innerHTML='';
   document.getElementById('btn-chat-save').style.display='none';
-  addMsg('bot',chatScript[0].q);
+  addMsg('bot',chatScript[0]);
 }
-function addMsg(role,text){
+function addMsg(role,text) {
   const msgs=document.getElementById('chat-msgs');
-  const m=document.createElement('div');m.className='msg '+role;m.textContent=text;msgs.appendChild(m);
-  msgs.scrollTop=msgs.scrollHeight;
+  const m=document.createElement('div'); m.className='msg '+role; m.textContent=text;
+  msgs.appendChild(m); msgs.scrollTop=msgs.scrollHeight;
 }
-function sendChat(){
+function sendChat() {
   const inp=document.getElementById('chat-in');
-  const val=inp.value.trim();if(!val)return;
-  addMsg('user',val);
-  chatLog.push({role:'user',text:val,key:chatScript[chatIdx]?.key});
-  inp.value='';chatIdx++;
-  if(chatIdx<chatScript.length){
-    setTimeout(()=>addMsg('bot',chatScript[chatIdx].q),600);
-  }
-  if(chatIdx>=chatScript.length-1){
-    setTimeout(()=>document.getElementById('btn-chat-save').style.display='inline-block',800);
-  }
+  const val=inp.value.trim(); if(!val) return;
+  addMsg('user',val); chatLog.push(val); inp.value=''; chatIdx++;
+  if(chatIdx<chatScript.length) setTimeout(()=>addMsg('bot',chatScript[chatIdx]),600);
+  if(chatIdx>=chatScript.length-1) setTimeout(()=>document.getElementById('btn-chat-save').style.display='inline-block',900);
 }
-function saveChatReflection(){
-  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  const body='reflection · '+date+'\nformat: guided conversation · AI-assisted\n\n'+chatLog.map(e=>(e.key?e.key.toUpperCase()+'\n':'')+e.text).join('\n\n')+'\n\nlinked goal: Journey & Blueprinting L1→L2';
-  document.getElementById('out-text').textContent=body;
-  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. the guided format helped surface your thinking — this is stored and will feed into your insights.';
-  goTo(5);
+function saveChatReflection() {
+  content.chat=chatLog; fmt='talk'; showTimeConfirm();
 }
 
-function pickEnergy(e,el){energy=e;document.querySelectorAll('.e-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function buildOutput(){
-  const emojiMap={energised:'🔋',neutral:'⚖️',drained:'🪫',surprised:'✨'};
-  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-  const get=id=>document.getElementById(id)?.value||'—';
-  let body='';
-  if(fmt==='free'){body=`reflection · ${date}\nformat: free-form · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat I wrote\n${get('a1')}`;}
-  else if(fmt==='quick'){body=`reflection · ${date}\nformat: quick check-in · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat stood out\n${get('a1')}\n\nwhat I'll do next\n${get('a6')}`;}
-  else if(fmt==='walk'){body=`reflection · ${date}\nformat: walk-and-talk · energy: ${emojiMap[energy]||'—'} ${energy}\n\nwhat came up on the walk\n${get('a1')}\n\nnext step\n${get('a6')}`;}
-  else if(fmt==='audio'){body=`reflection · ${date}\nformat: audio · energy: ${emojiMap[energy]||'—'} ${energy}\n\nnotes\n${get('a1')}`;}
-  else{body=`reflection · ${date}\nformat: ${fmt} · energy: ${emojiMap[energy]||'—'} ${energy}\n\ncontext\n${get('a1')}\n\nwhat went well\n${get('a2')}\n\nwhat energised me\n${get('a3')}\n\nwhat I learned\n${get('a4')}\n\nwhat to try differently\n${get('a5')}\n\nnext step\n${get('a6')}`;}
-  body+='\n\nlinked goal: Journey & Blueprinting L1→L2';
-  document.getElementById('out-text').textContent=body;
-  document.getElementById('out-insight').innerHTML='<span class="arrow">→</span>reflection complete. copy and paste into your Reflections database in Notion, or tell Claude to save it.';
-  goTo(5);
+// ── Time confirmation ─────────────────────────────────────────────
+function showTimeConfirm() {
+  pendingMinutes = PD.suggestedMinutes(fmt);
+  document.getElementById('time-inp').value = pendingMinutes;
+  goTo('time');
 }
-function fbPick(el){document.querySelectorAll('.fmt-fb-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function copyOutput(){navigator.clipboard.writeText(document.getElementById('out-text').textContent).then(()=>alert('copied to clipboard'));}
-function resetAll(){fmt='';energy='';document.querySelectorAll('.fmt-btn').forEach(b=>b.classList.remove('sel'));document.querySelectorAll('textarea').forEach(t=>t.value='');document.getElementById('btn-start').disabled=true;document.getElementById('walk-banner-slot').innerHTML='';currentFlow=[];goTo(0);}
 
-// intercept "continue" for talk format
-document.getElementById('btn-start').addEventListener('click',function(e){
-  if(fmt==='talk'){e.preventDefault();goTo('-talk');initChat();}
-},true);
+function saveAndDone() {
+  const mins = parseInt(document.getElementById('time-inp').value)||pendingMinutes;
+  PD.saveReflection({ format:fmt, energy, content, minutesSpent:mins });
 
-buildDots();updateDots(0);
+  const msgs={
+    written:  'your written reflection is saved and will feed into your insights.',
+    walk:     'walk-and-talk saved. walking while thinking is one of the best things you can do for creativity.',
+    quick:    'quick check-in done. two minutes of reflection goes further than you think.',
+    audio:    'audio reflection saved.',
+    talk:     'guided reflection saved. the conversation is stored and will feed into your insights.',
+  };
+  document.getElementById('done-msg').textContent = msgs[fmt]||'reflection saved.';
+  goTo('done');
+}
+
+function startOver() { fmt=''; energy=''; content={}; goTo('pick'); }
 </script>
 </body>
 </html>

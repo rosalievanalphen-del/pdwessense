@@ -154,12 +154,15 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 }
 
 /* ── Demo mode ── */
-.demo-btn{position:fixed;bottom:1.25rem;right:1.25rem;background:var(--egg);border:1.5px solid var(--border);border-radius:99px;padding:.35rem .875rem;font-family:var(--font-body);font-size:.72rem;font-weight:500;color:var(--muted);cursor:pointer;z-index:100;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.demo-btn:hover{border-color:var(--essense);color:var(--charcoal)}
-.demo-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest)}
-.demo-banner{background:var(--forest);color:var(--white);text-align:center;padding:.5rem 1rem;font-size:.78rem;font-weight:500;border-radius:9px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
+/* ── Showcase strip ── */
+.showcase-strip{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:.65rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.sc-label{font-size:.72rem;color:var(--muted);font-weight:500;margin-right:.25rem;white-space:nowrap}
+.sc-btn{background:var(--white);border:1.5px solid var(--border);border-radius:99px;padding:.3rem .8rem;font-family:var(--font-body);font-size:.72rem;color:var(--muted);cursor:pointer;transition:all .2s;white-space:nowrap}
+.sc-btn:hover{border-color:var(--essense);color:var(--charcoal)}
+.sc-btn.active{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.demo-banner{background:var(--forest);color:var(--white);padding:.5rem 1rem;font-size:.78rem;font-weight:500;border-radius:9px;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
 .demo-banner span{opacity:.75;font-weight:400}
-.demo-exit{background:rgba(255,255,255,.15);border:none;border-radius:99px;padding:.2rem .65rem;font-family:var(--font-body);font-size:.72rem;color:var(--white);cursor:pointer;transition:background .2s}
+.demo-exit{background:rgba(255,255,255,.15);border:none;border-radius:99px;padding:.2rem .65rem;font-family:var(--font-body);font-size:.72rem;color:var(--white);cursor:pointer}
 .demo-exit:hover{background:rgba(255,255,255,.25)}
 .demo-overlay{display:none;position:fixed;inset:0;background:rgba(4,69,36,.5);z-index:200;align-items:center;justify-content:center}
 .demo-overlay.open{display:flex}
@@ -294,6 +297,19 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 ════════════════════════════════════════════════ -->
 <div id="view-dashboard" style="display:none">
 
+  <!-- Showcase strip — always visible at top -->
+  <div class="showcase-strip" id="showcase-strip">
+    <span class="sc-label">view:</span>
+    <button class="sc-btn active" id="sc-mydata" onclick="showMyData()">👤 my data</button>
+    <button class="sc-btn" id="sc-inuse" onclick="loadDemoInUse()">🌱 system in use</button>
+    <button class="sc-btn" id="sc-firstuse" onclick="loadDemoFirstUse()">👋 first usage</button>
+  </div>
+  <!-- Demo mode banner (shown when in demo) -->
+  <div class="demo-banner" id="demo-banner" style="display:none">
+    🎬 <strong>Demo mode</strong> <span id="demo-mode-label"></span>
+    <button class="demo-exit" onclick="exitDemo()">exit</button>
+  </div>
+
   <p class="label">essense pd</p>
   <h1 class="heading">overview of your growth</h1>
   <p class="sub">week <span id="d-week"></span> &nbsp;·&nbsp; <span id="d-context"></span></p>
@@ -411,6 +427,11 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
         <div><span class="sc-label">duration</span><select class="sc-select" id="sanc-dur" onchange="saveSanctity()"><option>30 min</option><option>45 min</option><option>60 min</option><option>90 min</option></select></div>
       </div>
       <div class="sanc-preview" id="sanc-preview"></div>
+      <div style="margin-top:.75rem">
+        <a id="sanc-cal-link" href="#" target="_blank" style="display:none;align-items:center;gap:.4rem;background:var(--yellow);color:var(--forest);text-decoration:none;border-radius:8px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600;width:fit-content">
+          📅 open in Google Calendar ↗
+        </a>
+      </div>
       <div class="sanc-note">📌 PD time registration stays in Teamleader. calendar sanctity is about your <em>intention</em> — reserving the slot.</div>
     </div>
   </div>
@@ -685,12 +706,27 @@ function saveSanctity() {
   if(sc.enabled||document.getElementById('sanc-tog').classList.contains('on')) renderSanctityPreview();
 }
 function renderSanctityPreview() {
-  const day=document.getElementById('sanc-day').value;
-  const time=document.getElementById('sanc-time').value;
-  const dur=document.getElementById('sanc-dur').value;
-  const p=document.getElementById('sanc-preview');
+  var day = document.getElementById('sanc-day').value;
+  var time = document.getElementById('sanc-time').value;
+  var dur  = document.getElementById('sanc-dur').value;
+  var p = document.getElementById('sanc-preview');
   p.classList.add('visible');
-  p.innerHTML=`📆 <strong>next block:</strong> ${day} at ${time} · ${dur} · repeating weekly`;
+  p.innerHTML = '📆 <strong>next block:</strong> ' + day + ' at ' + time + ' · ' + dur + ' · repeating weekly';
+  // Build Google Calendar link for recurring event
+  var calLink = document.getElementById('sanc-cal-link');
+  if (calLink) {
+    var dayMap = {Monday:'MO',Tuesday:'TU',Wednesday:'WE',Thursday:'TH',Friday:'FR'};
+    var byday  = dayMap[day] || 'TU';
+    var durMins = parseInt(dur) || 45;
+    var title  = encodeURIComponent('PD Time — Essense');
+    var details= encodeURIComponent('Weekly professional development time block.');
+    var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + title
+      + '&details=' + details
+      + '&recur=RRULE:FREQ%3DWEEKLY;BYDAY%3D' + byday;
+    calLink.href = url;
+    calLink.style.display = 'inline-flex';
+  }
 }
 
 // ── Utilities ────────────────────────────────────────────────────
@@ -751,8 +787,8 @@ var DEMO_DATA = {
   coaching: { nextSessionDate:new Date(Date.now()+7*864e5).toISOString(), nextSessionDuration:60, myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.', commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}], prepShared:false }
 };
 
-function openDemoPanel() { document.getElementById('demo-overlay').classList.add('open'); }
-function closeDemoPanel() { document.getElementById('demo-overlay').classList.remove('open'); }
+function openDemoPanel() {} // replaced by showcase strip
+function closeDemoPanel() {}
 
 function loadDemoFirstUse() {
   closeDemoPanel();
@@ -786,17 +822,21 @@ function exitDemo() {
 
 function initDemoUI() {
   var mode = sessionStorage.getItem('pdMode');
-  if (mode === 'demo-inuse' || mode === 'demo-first') {
+  // Update strip button highlight
+  document.querySelectorAll('.sc-btn').forEach(function(b){ b.classList.remove('active'); });
+  if (mode === 'demo-inuse') {
+    var btn = document.getElementById('sc-inuse');
+    if (btn) btn.classList.add('active');
     var banner = document.getElementById('demo-banner');
-    var btn    = document.getElementById('demo-btn');
-    var label  = document.getElementById('demo-mode-label');
-    // move banner to top of dashboard view
-    var dashView = document.getElementById('view-dashboard');
-    if (dashView) dashView.insertBefore(banner, dashView.firstChild);
-    banner.style.display = 'flex';
-    btn.classList.add('active');
-    btn.textContent = 'demo ✦';
-    label.textContent = mode === 'demo-inuse' ? '— system in use' : '— first usage';
+    if (banner) { banner.style.display = 'flex'; document.getElementById('demo-mode-label').textContent = '— system in use'; }
+  } else if (mode === 'demo-first') {
+    var btn2 = document.getElementById('sc-firstuse');
+    if (btn2) btn2.classList.add('active');
+    var banner2 = document.getElementById('demo-banner');
+    if (banner2) { banner2.style.display = 'flex'; document.getElementById('demo-mode-label').textContent = '— first usage'; }
+  } else {
+    var btn3 = document.getElementById('sc-mydata');
+    if (btn3) btn3.classList.add('active');
   }
 }
 
@@ -810,13 +850,8 @@ if(PD.isFirstRun()){
 }
 </script>
 
-<!-- ── Demo mode ── -->
-<div class="demo-banner" id="demo-banner" style="display:none">
-  🎬 <strong>Demo mode</strong> <span id="demo-mode-label"></span>
-  <button class="demo-exit" onclick="exitDemo()">exit demo</button>
-</div>
+<!-- demo banner injected by JS -->
 
-<button class="demo-btn" id="demo-btn" onclick="openDemoPanel()">demo</button>
 
 <div class="demo-overlay" id="demo-overlay">
   <div class="demo-panel">

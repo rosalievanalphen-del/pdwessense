@@ -217,6 +217,23 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 // Demo mode namespace check
 (function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
 
+
+// ── AI helper ─────────────────────────────────────────────────────
+async function callAI(messages, system, maxTokens) {
+  try {
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
+    if (system) body.system = system;
+    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    var data = await resp.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    return null;
+  } catch(e) { return null; }
+}
+function parseJSON(text) {
+  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
+  catch(e) { return null; }
+}
+
 // ── Navigation ─────────────────────────────────────────────────────
 function show(id) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -286,44 +303,51 @@ function renderInsights() {
   }
 }
 
-// Insight → goal panel state
+// Insight → goal panel
 var igItem = null, igMode = 'subgoal';
 
-function openInsightGoalPanel(item) {
+async function openInsightGoalPanel(item) {
   igItem = item; igMode = 'subgoal';
   var goals = PD.goals();
   var panel = document.getElementById('ig-panel');
-  document.getElementById('ig-text').value = item.text;
-  // populate goal selector
+  var ta = document.getElementById('ig-text');
+  ta.value = '';
+  ta.placeholder = 'shaping into a goal…';
+
+  // Use AI to transform the insight into a well-formed goal statement
+  var sys = 'You are a professional development coach. Transform this insight or growth area into a clear, specific, first-person development goal. The goal should be actionable and growth-oriented. Return ONLY the goal statement (1-2 sentences, starting with a verb like "get better at", "learn to", "develop", "build confidence in"). No explanation.';
+  var result = await callAI([{role:'user', content:'Insight: ' + (item.insight || item.text || '')}], sys, 150);
+  ta.value = result || (item.insight || item.text || '');
+  ta.placeholder = '';
+
   var sel = document.getElementById('ig-goal-sel');
-  sel.innerHTML = '<option value="">— pick a goal —</option>';
+  sel.innerHTML = '<option value="">— pick a goal to add as sub-goal —</option>';
   goals.forEach(function(g) { sel.innerHTML += '<option value="' + g.id + '">' + esc(g.title) + '</option>'; });
   panel.classList.add('open');
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+
 function igPickMode(mode, el) {
   igMode = mode;
   document.querySelectorAll('.ig-type-btn').forEach(function(b){ b.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('ig-goal-sel').className = 'ig-sel' + (mode === 'newgoal' ? ' hidden' : '');
 }
+
 function igConfirm() {
   var text = document.getElementById('ig-text').value.trim();
   if (!text) { document.getElementById('ig-text').focus(); return; }
   if (igMode === 'subgoal') {
     var goalId = document.getElementById('ig-goal-sel').value;
     if (!goalId) { document.getElementById('ig-goal-sel').focus(); return; }
-    PD.saveSubgoal(goalId, {title: text, done: false});
+    PD.saveSubgoal(goalId, {title:text, done:false});
   } else {
-    PD.saveGoal({title: text, subgoals: []});
+    PD.saveGoal({title:text, subgoals:[]});
   }
   document.getElementById('ig-panel').classList.remove('open');
-  document.getElementById('insight-action-row').innerHTML =
-    '<div style="background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;font-size:.825rem;color:var(--forest)">✓ ' + (igMode === 'subgoal' ? 'added as a sub-goal' : 'added as a new goal') + '</div>';
+  document.getElementById('insight-action-row').innerHTML = '<div style="background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;font-size:.825rem;color:var(--forest)">✓ ' + (igMode==='subgoal'?'added as a sub-goal':'added as a new goal') + '</div>';
 }
-function igCancel() {
-  document.getElementById('ig-panel').classList.remove('open');
-}
+function igCancel() { document.getElementById('ig-panel').classList.remove('open'); }
 
 function openInsight(item, type) {
   // Just scroll to the relevant section for now

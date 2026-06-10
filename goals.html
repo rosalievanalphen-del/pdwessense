@@ -162,16 +162,26 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
     </div>
 
     <div class="framework-panel" id="fw-panel">
-      <p class="fw-note">linking your goal to the career framework is optional. tick below to connect it — you'll be able to see how it maps to your growth dimension.</p>
-      <label style="display:flex;align-items:center;gap:.5rem;font-size:.825rem;cursor:pointer">
-        <input type="checkbox" id="fw-link-check" style="accent-color:var(--forest)"/>
-        link this goal to the career framework
+      <p class="fw-note">tick to link this goal to the Essense career framework. turn on to get an AI-suggested goal based on your level and dimension.</p>
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:.825rem;cursor:pointer;margin-bottom:.65rem">
+        <input type="checkbox" id="fw-link-check" style="accent-color:var(--forest)" onchange="onFwCheckChange(this)"/>
+        link to career framework
       </label>
+      <div id="fw-suggest-area" style="display:none">
+        <button class="btn-s" style="font-size:.78rem;padding:.4rem .8rem;margin-bottom:.5rem" onclick="suggestFrameworkGoal()">✦ suggest a goal from my level</button>
+        <div id="fw-suggestions" style="font-size:.8rem;color:var(--muted);font-style:italic"></div>
+      </div>
     </div>
 
     <div class="photo-row" id="add-photo-row" style="display:none">
       <img class="photo-preview" id="add-photo-prev"/>
-      <button class="btn-ghost" onclick="clearAddPhoto()">remove photo</button>
+      <div>
+        <button class="btn-ghost" onclick="clearAddPhoto()">remove photo</button>
+        <div id="photo-goals-area" style="margin-top:.5rem;display:none">
+          <div style="font-size:.72rem;color:var(--essense);font-weight:500;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.07em">goals found in photo</div>
+          <div id="photo-goals-list"></div>
+        </div>
+      </div>
     </div>
 
     <div class="add-row-btns">
@@ -234,6 +244,23 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 <script>
 // Demo mode namespace check
 (function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
+
+
+// ── AI helper ─────────────────────────────────────────────────────
+async function callAI(messages, system, maxTokens) {
+  try {
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
+    if (system) body.system = system;
+    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    var data = await resp.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    return null;
+  } catch(e) { return null; }
+}
+function parseJSON(text) {
+  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
+  catch(e) { return null; }
+}
 
 var addOpen = false, addDim = '', addPhoto = null;
 var bdComfort = '', bdGoalId = '';
@@ -381,25 +408,109 @@ function toggleFrameworkPanel() {
   document.getElementById('fw-panel').classList.toggle('open');
 }
 
-function previewAddPhoto(inp) {
-  var file = inp.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    addPhoto = e.target.result;
-    var img = document.getElementById('add-photo-prev');
-    img.src = e.target.result;
-    img.style.display = 'block';
-    document.getElementById('add-photo-row').style.display = 'flex';
-  };
-  reader.readAsDataURL(file);
-}
+
 
 function clearAddPhoto() {
   addPhoto = null;
   document.getElementById('add-photo-row').style.display = 'none';
   document.getElementById('add-photo-prev').style.display = 'none';
   document.getElementById('goal-photo-inp').value = '';
+}
+
+function onFwCheckChange(cb) {
+  document.getElementById('fw-suggest-area').style.display = cb.checked ? 'block' : 'none';
+}
+
+async function suggestFrameworkGoal() {
+  var area = document.getElementById('fw-suggestions');
+  area.textContent = 'thinking…';
+  var p = PD.profile();
+  var dim = addDim || 'Delivery';
+  var sys = 'You are a professional development coach at Essense, a service design consultancy. Suggest 3 specific, practical development goals for a service designer based on their level and chosen dimension. Each goal should be a single sentence starting with a verb. Respond ONLY with a JSON array: ["goal 1", "goal 2", "goal 3"]';
+  var prompt = 'Role: ' + (p.role||'Service Designer') + '
+Current level: ' + (p.level||'junior') + '
+Target level: ' + (p.targetLevel||'next level') + '
+Dimension: ' + dim + '
+Suggest 3 relevant development goals.';
+  var result = await callAI([{role:'user', content:prompt}], sys, 300);
+  if (result) {
+    var parsed = parseJSON(result);
+    if (Array.isArray(parsed)) {
+      area.innerHTML = parsed.map(function(g, i) {
+        return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-bottom:.3rem;font-size:.825rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
+          + '<span>' + esc(g) + '</span>'
+          + '<button onclick="useFrameworkGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--yellow);color:var(--forest);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;flex-shrink:0">use</button>'
+          + '</div>';
+      }).join('');
+      return;
+    }
+  }
+  area.textContent = 'Could not connect. Check API key is set in Vercel.';
+}
+
+function useFrameworkGoal(goalText) {
+  document.getElementById('new-goal-inp').value = goalText;
+  document.getElementById('fw-suggest-area').style.display = 'none';
+}
+
+async function previewAddPhoto(inp) {
+  var file = inp.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    addPhoto = e.target.result;
+    var img = document.getElementById('add-photo-prev');
+    img.src = e.target.result; img.style.display = 'block';
+    document.getElementById('add-photo-row').style.display = 'flex';
+
+    // Extract goals from image using Claude Vision
+    var goalsArea = document.getElementById('photo-goals-area');
+    var goalsList = document.getElementById('photo-goals-list');
+    goalsArea.style.display = 'block';
+    goalsList.innerHTML = '<div style="font-size:.78rem;color:var(--muted);font-style:italic">reading image…</div>';
+
+    try {
+      var base64 = e.target.result.split(',')[1];
+      var mimeType = file.type || 'image/jpeg';
+      var resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 400,
+          messages: [{
+            role: 'user',
+            content: [
+              {type:'image', source:{type:'base64', media_type:mimeType, data:base64}},
+              {type:'text', text:'Look at this image. If it contains any written goals, notes, development ideas, or tasks, extract them as a list. If there are no goals/notes visible, say so briefly. Respond ONLY with a JSON array of strings (goals found), or an empty array if none: ["goal 1", "goal 2", ...]'}
+            ]
+          }]
+        })
+      });
+      var data = await resp.json();
+      var text = data.content && data.content[0] ? data.content[0].text : null;
+      if (text) {
+        var parsed = parseJSON(text);
+        if (Array.isArray(parsed) && parsed.length) {
+          goalsList.innerHTML = parsed.map(function(g) {
+            return '<div style="background:var(--white);border:1px solid var(--border);border-radius:7px;padding:.4rem .65rem;margin-bottom:.3rem;font-size:.8rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
+              + '<span>' + esc(g) + '</span>'
+              + '<button onclick="usePhotoGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--forest);color:var(--white);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:500;cursor:pointer;flex-shrink:0">use</button>'
+              + '</div>';
+          }).join('');
+        } else {
+          goalsList.innerHTML = '<div style="font-size:.78rem;color:var(--muted);font-style:italic">no goals found in this image</div>';
+        }
+      }
+    } catch(err) {
+      goalsList.innerHTML = '<div style="font-size:.78rem;color:var(--muted)">could not read image — check API key</div>';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function usePhotoGoal(text) {
+  document.getElementById('new-goal-inp').value = text;
 }
 
 function addGoal() {
@@ -464,47 +575,44 @@ function pickComfort(el, val) {
   el.classList.add('sel');
 }
 
-function generateSubgoals() {
+async function generateSubgoals() {
   bdGoalId = document.getElementById('bd-goal-sel').value;
   if (!bdGoalId) { alert('please pick a goal first'); return; }
   if (!bdComfort) { alert('please select your comfort level'); return; }
   var goal = PD.goalById(bdGoalId);
   if (!goal) return;
+  var p = PD.profile();
 
-  var templates = {
-    'new to this': [
-      'learn the basics — find one resource and spend 30 min with it',
-      'shadow someone more experienced doing this in practice',
-      'try it out in a low-stakes situation and reflect on what happened',
-      'ask for feedback from your coach on your first attempt',
-      'document what you learned and what to try next'
-    ],
-    'some experience': [
-      'identify one specific area within this goal to go deeper on',
-      'apply it to a real piece of work and document the outcome',
-      'get peer feedback on your approach from a colleague',
-      'read or watch one resource that stretches your thinking on this',
-      'share what you are learning with the team'
-    ],
-    'fairly confident': [
-      'take on a stretch assignment that pushes you past your comfort zone',
-      'proactively apply this in a client or senior stakeholder context',
-      'give feedback to someone earlier in their journey on this skill',
-      'identify the gap between your current level and the next — and plan for it',
-      'document a case study of your work to use as a reference example'
-    ],
-    'ready to lead': [
-      'lead a piece of work end-to-end where this is the core skill',
-      'create a resource or guide that helps others develop in this area',
-      'present your approach and learnings to the broader team',
-      'mentor someone else on this skill',
-      'define what mastery looks like for this at the next level'
-    ]
-  };
+  // Show loading state
+  var list = document.getElementById('sug-list');
+  list.innerHTML = '<div style="font-size:.825rem;color:var(--muted);font-style:italic;padding:.5rem 0">generating sub-goals…</div>';
+  bdGo(2);
 
-  var pool = templates[bdComfort] || templates['new to this'];
-  var adapted = ['understand what "' + goal.title + '" means in practice'];
-  for (var i = 1; i < pool.length; i++) { adapted.push(pool[i]); }
+  var sys = 'You are a professional development coach at Essense, a service design consultancy in the Netherlands. Generate 5 specific, actionable sub-goals for a service designer. Each sub-goal should be a concrete, doable action — not vague. Respond ONLY with a JSON array of strings (no markdown): ["sub-goal 1", "sub-goal 2", ...]';
+  var prompt = 'Goal: "' + goal.title + '"
+Current comfort level: ' + bdComfort + '
+Role: ' + (p.role||'Service Designer') + '
+Current level: ' + (p.level||'Junior') + '
+Generate 5 specific sub-goals for this goal at this comfort level.';
+  var result = await callAI([{role:'user', content:prompt}], sys, 500);
+
+  var adapted;
+  if (result) {
+    var parsed = parseJSON(result);
+    if (Array.isArray(parsed) && parsed.length) {
+      adapted = parsed.slice(0,5);
+    }
+  }
+  if (!adapted) {
+    // Fallback to sensible defaults
+    adapted = [
+      'find one specific resource about "' + goal.title + '" and spend 30 minutes with it',
+      'try applying this in a real piece of work and note what happened',
+      'ask a colleague or your coach for feedback on your approach',
+      'reflect on one situation where this skill made a difference',
+      'identify the next concrete step to deepen this skill'
+    ];
+  }
 
   var html = '';
   for (var j = 0; j < adapted.length; j++) {
@@ -513,8 +621,7 @@ function generateSubgoals() {
     html += "<span class='sug-text'>" + esc(adapted[j]) + "</span>";
     html += '</div>';
   }
-  document.getElementById('sug-list').innerHTML = html;
-  bdGo(2);
+  list.innerHTML = html;
 }
 
 function toggleSug(i) {

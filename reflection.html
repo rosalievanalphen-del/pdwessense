@@ -427,34 +427,64 @@ function auSave() {
 }
 
 // ── AI chat ───────────────────────────────────────────────────────
-const chatScript=[
-  'Let\'s start simply — what\'s been on your mind lately when it comes to your development?',
-  'That\'s useful context. What about that situation felt most challenging for you?',
-  'And when you look back — what do you think you actually learned from it, even if it was hard?',
-  'Good. If you could do one thing differently going forward, what would that be?',
-  'Last one — how are you feeling right now, having reflected on this?',
-];
-let chatIdx=0, chatLog=[];
+var chatHistory = [];
+var REFL_SYSTEM = 'You are a thoughtful professional development coach at Essense, a service design consultancy in the Netherlands. Help the person reflect on their professional growth through natural conversation. Ask one focused question at a time. Start with an open question about something that happened recently in their work. Listen carefully and build on what they say — be specific, not generic. After 4-6 exchanges, help them land on one concrete insight or next step. Keep responses to 2-3 sentences. Warm but direct.';
+
 function initChat() {
-  chatIdx=0; chatLog=[];
-  const msgs=document.getElementById('chat-msgs'); msgs.innerHTML='';
-  document.getElementById('btn-chat-save').style.display='none';
-  addMsg('bot',chatScript[0]);
+  chatHistory = [];
+  var msgs = document.getElementById('chat-msgs'); msgs.innerHTML = '';
+  document.getElementById('btn-chat-save').style.display = 'none';
+  startAIChat();
 }
-function addMsg(role,text) {
-  const msgs=document.getElementById('chat-msgs');
-  const m=document.createElement('div'); m.className='msg '+role; m.textContent=text;
-  msgs.appendChild(m); msgs.scrollTop=msgs.scrollHeight;
+
+async function startAIChat() {
+  addTypingIndicator();
+  var resp = await callAI(
+    [{role:'user', content:'Start our reflection conversation. Ask me one opening question.'}],
+    REFL_SYSTEM
+  );
+  removeTypingIndicator();
+  var opening = resp || 'What has been on your mind lately — anything from your work this week that you want to think through?';
+  addMsg('bot', opening);
+  chatHistory.push({role:'assistant', content:opening});
 }
-function sendChat() {
-  const inp=document.getElementById('chat-in');
-  const val=inp.value.trim(); if(!val) return;
-  addMsg('user',val); chatLog.push(val); inp.value=''; chatIdx++;
-  if(chatIdx<chatScript.length) setTimeout(()=>addMsg('bot',chatScript[chatIdx]),600);
-  if(chatIdx>=chatScript.length-1) setTimeout(()=>document.getElementById('btn-chat-save').style.display='inline-block',900);
+
+function addMsg(role, text) {
+  var msgs = document.getElementById('chat-msgs');
+  var m = document.createElement('div'); m.className = 'msg ' + role; m.textContent = text;
+  msgs.appendChild(m); msgs.scrollTop = msgs.scrollHeight;
 }
+
+function addTypingIndicator() {
+  var msgs = document.getElementById('chat-msgs');
+  var t = document.createElement('div'); t.className = 'msg bot'; t.id = 'typing-ind';
+  t.style.opacity = '.5'; t.style.fontStyle = 'italic'; t.textContent = '...';
+  msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+}
+function removeTypingIndicator() {
+  var t = document.getElementById('typing-ind'); if (t) t.remove();
+}
+
+async function sendChat() {
+  var inp = document.getElementById('chat-in');
+  var val = inp.value.trim(); if (!val) return;
+  addMsg('user', val);
+  chatHistory.push({role:'user', content:val});
+  inp.value = '';
+  addTypingIndicator();
+  var resp = await callAI(chatHistory, REFL_SYSTEM);
+  removeTypingIndicator();
+  if (!resp) resp = 'I\'m having trouble connecting right now — please check your internet and try again.';
+  addMsg('bot', resp);
+  chatHistory.push({role:'assistant', content:resp});
+  if (chatHistory.filter(function(m){return m.role==='user';}).length >= 4) {
+    document.getElementById('btn-chat-save').style.display = 'inline-block';
+  }
+}
+
 function saveChatReflection() {
-  content.chat=chatLog; fmt='talk'; showTimeConfirm();
+  content.chat = chatHistory.filter(function(m){return m.role==='user';}).map(function(m){return m.content;});
+  fmt = 'talk'; showTimeConfirm();
 }
 
 // ── Time confirmation ─────────────────────────────────────────────

@@ -15,6 +15,20 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 .sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
 .btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
 .btn-p:hover{background:var(--essense)}
+.session-banner{border-radius:13px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:none}
+.session-banner.upcoming{background:var(--forest);color:var(--white)}
+.session-banner.plan{background:var(--egg);border:1.5px dashed var(--border)}
+.sb-head{font-family:var(--font-head);font-size:1rem;margin-bottom:.3rem}
+.sb-upcoming .sb-head{color:var(--white)}
+.sb-plan .sb-head{color:var(--forest)}
+.sb-meta{font-size:.8rem;line-height:1.5}
+.sb-upcoming .sb-meta{color:#b7e4c7}
+.sb-plan .sb-meta{color:var(--muted)}
+.sb-actions{margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap}
+.cal-link{display:inline-flex;align-items:center;gap:.35rem;background:var(--yellow);color:var(--forest);text-decoration:none;border-radius:8px;padding:.4rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600}
+.cal-link-ghost{display:inline-flex;align-items:center;gap:.35rem;background:transparent;color:var(--white);text-decoration:none;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.4rem .875rem;font-family:var(--font-body);font-size:.78rem}
+.cal-link-ghost:hover{border-color:var(--white)}
+
 .btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
 .btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.65rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
 .btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
@@ -82,6 +96,10 @@ textarea:focus{border-color:var(--essense);background:var(--white)}
 <body>
 
 <p class="label">coaching</p>
+
+<!-- Session banner -->
+<div class="session-banner" id="session-banner"></div>
+
 <h1 class="heading" id="page-heading">prep for your session</h1>
 <p class="sub" id="page-sub">your coach is <strong id="coach-name">—</strong>. use this page to gather your thinking before you meet.</p>
 
@@ -175,9 +193,52 @@ textarea:focus{border-color:var(--essense);background:var(--white)}
 (function(){ var m=sessionStorage.getItem("pdMode"); if(m==="demo-inuse"||m==="demo-first") PD.init("demo"); })();
 
 // ── Render ─────────────────────────────────────────────────────────
+function buildCalUrl(coachName, coaching) {
+  var title = encodeURIComponent('Coaching session — ' + coachName);
+  var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + title;
+  if (coaching && coaching.nextSessionDate) {
+    var d   = new Date(coaching.nextSessionDate);
+    var dur = parseInt(coaching.nextSessionDuration) || 60;
+    var end = new Date(d.getTime() + dur * 60000);
+    var fmt = function(dt) {
+      var pad = function(n){ return n < 10 ? '0'+n : ''+n; };
+      return dt.getFullYear() + pad(dt.getMonth()+1) + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+    };
+    url += '&dates=' + fmt(d) + '/' + fmt(end);
+  }
+  return url;
+}
+
 function render() {
-  const p = PD.profile();
-  const c = PD.coaching();
+  var p = PD.profile();
+  var c = PD.coaching();
+
+  // Session banner
+  var banner = document.getElementById('session-banner');
+  var coachName = p.coach || 'your coach';
+  if (c.nextSessionDate) {
+    var d = new Date(c.nextSessionDate);
+    var now = new Date();
+    var daysUntil = Math.ceil((d - now) / 864e5);
+    var calUrl = buildCalUrl(coachName, c);
+    if (daysUntil >= 0) {
+      banner.style.display = 'block';
+      banner.className = 'session-banner upcoming';
+      var urgency = daysUntil === 0 ? 'today' : daysUntil === 1 ? 'tomorrow' : 'in ' + daysUntil + ' days';
+      banner.innerHTML = '<div class="sb-head">📅 Session ' + urgency + '</div>'
+        + '<div class="sb-meta">' + fmtDate(c.nextSessionDate) + ' · ' + (c.nextSessionDuration || 60) + ' min with ' + esc(coachName) + '</div>'
+        + '<div class="sb-actions"><a class="cal-link-ghost" href="' + calUrl + '" target="_blank">open in Google Calendar ↗</a></div>';
+    } else {
+      banner.style.display = 'none';
+    }
+  } else {
+    banner.style.display = 'block';
+    banner.className = 'session-banner plan';
+    var calUrl2 = buildCalUrl(coachName, c);
+    banner.innerHTML = '<div class="sb-head" style="color:var(--forest)">no session planned yet</div>'
+      + '<div class="sb-meta">set a date with ' + esc(coachName) + ' when you're ready.</div>'
+      + '<div class="sb-actions"><a class="cal-link" href="' + calUrl2 + '" target="_blank">📅 plan a session in Google Calendar ↗</a></div>';
+  }
 
   document.getElementById('coach-name').textContent = p.coach||'your coach';
   document.getElementById('share-coach-name').textContent = p.coach||'coach';

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coach overview — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);padding:2rem 1.5rem 4rem;max-width:700px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.2}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.65rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+
+/* Coachee roster */
+.roster{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem}
+.roster-btn{display:flex;align-items:center;gap:.6rem;background:var(--white);border:1.5px solid var(--border);border-radius:99px;padding:.4rem .875rem .4rem .6rem;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.roster-btn:hover{border-color:var(--essense)}
+.roster-btn.active{border-color:var(--forest);background:var(--forest)}
+.roster-avatar{width:26px;height:26px;border-radius:50%;background:var(--bright);color:var(--forest);font-size:.75rem;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.roster-btn.active .roster-avatar{background:rgba(255,255,255,.2);color:var(--white)}
+.roster-name{font-size:.8rem;font-weight:500;color:var(--charcoal)}
+.roster-btn.active .roster-name{color:var(--white)}
+.roster-role{font-size:.7rem;color:var(--muted)}
+.roster-btn.active .roster-role{color:rgba(255,255,255,.7)}
+
+/* Coachee card */
+.coachee-card{background:var(--forest);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.cc-avatar{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.cc-info{flex:1}
+.cc-name{font-family:var(--font-head);font-size:1.05rem;color:var(--white);margin-bottom:.2rem}
+.cc-role{font-size:.78rem;color:#b7e4c7}
+.cc-shared{font-size:.72rem;color:#b7e4c7;font-style:italic;margin-top:.2rem}
+.cc-level{background:var(--yellow);color:var(--forest);border-radius:7px;padding:.2rem .6rem;font-size:.72rem;font-weight:600;flex-shrink:0}
+
+/* Section blocks */
+.section-block{background:var(--white);border:1.5px solid var(--border);border-radius:14px;margin-bottom:.875rem;overflow:hidden}
+.sb-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;user-select:none;transition:background .15s}
+.sb-header:hover{background:var(--bright)}
+.sb-title{font-size:.875rem;font-weight:500;color:var(--charcoal);display:flex;align-items:center;gap:.5rem}
+.sb-chevron{font-size:.7rem;color:var(--muted);transition:transform .25s}
+.sb-chevron.open{transform:rotate(90deg)}
+.sb-body{border-top:1px solid var(--border);padding:1.1rem 1.25rem;animation:fadedn .2s ease}
+.sb-body.hidden{display:none}
+@keyframes fadedn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.count-pill{font-size:.72rem;background:var(--bright);border:1px solid var(--border);color:var(--essense);border-radius:99px;padding:.1rem .5rem;font-weight:500}
+.not-shared{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.75rem 1.5rem;text-align:center;margin-bottom:.875rem}
+.ns-icon{font-size:2rem;margin-bottom:.5rem}
+.ns-title{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.35rem}
+.ns-desc{font-size:.825rem;color:var(--muted);line-height:1.5}
+
+/* Prep content */
+.prep-topics{background:var(--bright);border-radius:10px;padding:.875rem 1rem;font-size:.875rem;color:var(--forest);line-height:1.6;white-space:pre-wrap;font-style:italic;margin-bottom:.875rem}
+.commit-item{display:flex;align-items:flex-start;gap:.65rem;padding:.4rem 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.commit-item:last-of-type{border-bottom:none}
+.ci-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;margin-top:1px}
+.commit-item.done .ci-check{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.ci-text{font-size:.825rem;color:var(--charcoal);line-height:1.4}
+.commit-item.done .ci-text{text-decoration:line-through;color:var(--muted)}
+.empty-note{font-size:.825rem;color:var(--muted);font-style:italic}
+.act-item{font-size:.825rem;color:var(--charcoal);padding:.35rem 0;border-bottom:1px solid rgba(0,0,0,.04);line-height:1.4;display:flex;justify-content:space-between;gap:.5rem}
+.act-item:last-of-type{border-bottom:none}
+.act-date{font-size:.7rem;color:var(--muted);flex-shrink:0}
+.act-done{text-decoration:line-through;color:var(--muted)}
+
+/* Google Calendar button */
+.cal-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.25rem;margin-bottom:.875rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.cal-info{flex:1}
+.cal-title{font-family:var(--font-head);font-size:.95rem;color:var(--forest);margin-bottom:.2rem}
+.cal-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+.cal-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.6rem 1.1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;text-decoration:none;flex-shrink:0}
+.cal-btn:hover{opacity:.9}
+.no-coachee{background:var(--white);border:2px dashed var(--border);border-radius:14px;padding:2rem;text-align:center;color:var(--muted);font-size:.875rem}
+
+
+</style>
+</head>
+<body>
+
+<p class="label">coach view</p>
+<h1 class="heading">your coachees</h1>
+<p class="sub">select a coachee to see their prep and recent activity.</p>
+
+<!-- Coachee roster -->
+<div class="roster" id="roster"></div>
+
+<!-- Coachee detail (shown once selected) -->
+<div id="coachee-detail" style="display:none">
+
+  <!-- Card -->
+  <div class="coachee-card">
+    <div class="cc-avatar" id="cc-initial">?</div>
+    <div class="cc-info">
+      <div class="cc-name" id="cc-name">—</div>
+      <div class="cc-role" id="cc-role"></div>
+      <div class="cc-shared" id="cc-shared"></div>
+    </div>
+    <div class="cc-level" id="cc-level"></div>
+  </div>
+
+  <!-- Not-shared message -->
+  <div class="not-shared" id="not-shared-msg" style="display:none">
+    <div class="ns-icon">📬</div>
+    <div class="ns-title">prep not shared yet</div>
+    <div class="ns-desc">this coachee hasn't shared their session prep yet. you'll see their topics and commitments here once they do.</div>
+  </div>
+
+  <!-- Prep: topics -->
+  <div class="section-block" id="block-topics" style="display:none">
+    <div class="sb-header" onclick="toggleSb('topics')">
+      <span class="sb-title">📝 &nbsp;what they want to discuss</span>
+      <span class="sb-chevron" id="chev-topics">▶</span>
+    </div>
+    <div class="sb-body hidden" id="body-topics">
+      <div class="prep-topics" id="topics-content"></div>
+    </div>
+  </div>
+
+  <!-- Prep: commitments -->
+  <div class="section-block" id="block-commits" style="display:none">
+    <div class="sb-header" onclick="toggleSb('commits')">
+      <span class="sb-title">✓ &nbsp;commitments from last time <span class="count-pill" id="commits-count">0</span></span>
+      <span class="sb-chevron" id="chev-commits">▶</span>
+    </div>
+    <div class="sb-body hidden" id="body-commits">
+      <div id="commits-content"></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="section-block">
+    <div class="sb-header" onclick="toggleSb('actions')">
+      <span class="sb-title">🧱 &nbsp;actions <span class="count-pill" id="actions-count">0</span></span>
+      <span class="sb-chevron" id="chev-actions">▶</span>
+    </div>
+    <div class="sb-body hidden" id="body-actions"></div>
+  </div>
+
+  <!-- Reflections -->
+  <div class="section-block">
+    <div class="sb-header" onclick="toggleSb('reflections')">
+      <span class="sb-title">✍️ &nbsp;reflections <span class="count-pill" id="refls-count">0</span></span>
+      <span class="sb-chevron" id="chev-reflections">▶</span>
+    </div>
+    <div class="sb-body hidden" id="body-reflections"></div>
+  </div>
+
+  <!-- Feedback -->
+  <div class="section-block">
+    <div class="sb-header" onclick="toggleSb('feedback')">
+      <span class="sb-title">💬 &nbsp;feedback received <span class="count-pill" id="fb-count">0</span></span>
+      <span class="sb-chevron" id="chev-feedback">▶</span>
+    </div>
+    <div class="sb-body hidden" id="body-feedback"></div>
+  </div>
+
+  <!-- Schedule next session → Google Calendar -->
+  <div class="cal-card">
+    <div class="cal-info">
+      <div class="cal-title">schedule the next session</div>
+      <div class="cal-desc">opens Google Calendar with the session details pre-filled. adjust the time and send the invite from there.</div>
+    </div>
+    <a class="cal-btn" id="cal-link" href="#" target="_blank">📅 open Google Calendar ↗</a>
+  </div>
+
+</div><!-- /coachee-detail -->
+
+<div class="no-coachee" id="no-coachee-msg">select a coachee above to see their overview.</div>
+
+<script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:52,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:90,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:45,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:60,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:18,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo');
+    PD.reset(); // always empty — true first-usage state
+  }
+  // no param = real data, default namespace
+})();
+
+
+
+
+// ── Coachees list ──────────────────────────────────────────────────
+// Each entry: { name, role, level, namespace }
+var COACHEES = [
+  { name: 'Rosie de Vries',       role: 'Junior Service Designer',  level: 'L1', namespace: 'rosie'    },
+  { name: 'Rosanne Bloemraad',    role: 'Service Designer',         level: 'L2', namespace: 'rosanne'  },
+  { name: 'Dafne',                role: 'Junior Service Designer',  level: 'L1', namespace: 'dafne'    },
+  { name: 'Wouter van der Wal',   role: 'Senior Service Designer',  level: 'L3', namespace: 'wouter'   },
+];
+
+var activeNamespace = null;
+var FMT_LABELS = {written:'written',walk:'walk-and-talk',quick:'quick check-in',audio:'audio',talk:'guided'};
+var FMT_ICONS  = {written:'✍️',walk:'🚶',quick:'⚡',audio:'🎙️',talk:'🤖'};
+
+// ── Build roster ───────────────────────────────────────────────────
+function buildRoster() {
+  var roster = document.getElementById('roster');
+  var html = '';
+  COACHEES.forEach(function(c) {
+    var initials = c.name.split(' ').map(function(w){ return w[0]; }).slice(0,2).join('');
+    html += '<button class="roster-btn" onclick="selectCoachee(\'' + c.namespace + '\')">';
+    html += '<div class="roster-avatar">' + initials + '</div>';
+    html += '<div><div class="roster-name">' + esc(c.name) + '</div>';
+    html += '<div class="roster-role">' + esc(c.role) + '</div></div>';
+    html += '</button>';
+  });
+  roster.innerHTML = html;
+}
+
+// ── Select coachee ─────────────────────────────────────────────────
+function selectCoachee(ns) {
+  activeNamespace = ns;
+
+  // Update roster active state
+  var btns = document.querySelectorAll('.roster-btn');
+  COACHEES.forEach(function(c, i) {
+    btns[i].classList.toggle('active', c.namespace === ns);
+  });
+
+  // Switch PD namespace
+  PD.init(ns);
+
+  // Show detail panel
+  document.getElementById('no-coachee-msg').style.display = 'none';
+  document.getElementById('coachee-detail').style.display = 'block';
+
+  render();
+}
+
+// ── Render coachee detail ──────────────────────────────────────────
+function render() {
+  var p  = PD.profile();
+  var c  = PD.coaching();
+  var actions  = PD.actions();
+  var refls    = PD.reflections();
+  var feedbs   = PD.feedback();
+
+  // Find coachee info from roster
+  var coachee = COACHEES.find(function(x){ return x.namespace === activeNamespace; }) || {};
+  var displayName = p.name || coachee.name || '—';
+  var displayRole = [p.role || coachee.role, p.level || coachee.level].filter(Boolean).join(' · ');
+
+  document.getElementById('cc-initial').textContent = displayName.slice(0,1).toUpperCase();
+  document.getElementById('cc-name').textContent    = displayName;
+  document.getElementById('cc-role').textContent    = displayRole;
+  document.getElementById('cc-level').textContent   = p.level || coachee.level || '';
+  document.getElementById('cc-shared').textContent  =
+    c.prepShared && c.lastSharedAt ? 'prep shared ' + fmtDate(c.lastSharedAt) : 'prep not yet shared';
+
+  // Prep (only if shared)
+  if (c.prepShared) {
+    document.getElementById('not-shared-msg').style.display = 'none';
+    if (c.myTopics) {
+      document.getElementById('block-topics').style.display = 'block';
+      document.getElementById('topics-content').textContent = c.myTopics;
+    }
+    var commits = c.commitments || [];
+    if (commits.length) {
+      document.getElementById('block-commits').style.display = 'block';
+      document.getElementById('commits-count').textContent = commits.length;
+      var cHtml = '';
+      commits.forEach(function(ci) {
+        cHtml += '<div class="commit-item ' + (ci.done ? 'done' : '') + '">';
+        cHtml += '<div class="ci-check">✓</div>';
+        cHtml += '<span class="ci-text">' + esc(ci.text) + '</span></div>';
+      });
+      document.getElementById('commits-content').innerHTML = cHtml || '<span class="empty-note">no commitments</span>';
+    }
+  } else {
+    document.getElementById('not-shared-msg').style.display = 'block';
+    document.getElementById('block-topics').style.display = 'none';
+    document.getElementById('block-commits').style.display = 'none';
+  }
+
+  // Actions
+  document.getElementById('actions-count').textContent = actions.length;
+  var actHtml = '';
+  if (actions.length) {
+    actions.slice(0,8).forEach(function(a) {
+      actHtml += '<div class="act-item"><span class="' + (a.done?'act-done':'') + '">' + esc(a.title) + '</span>';
+      actHtml += '<span class="act-date">' + (a.done ? 'done ' + fmtDate(a.doneAt) : 'open') + '</span></div>';
+    });
+  } else { actHtml = '<div class="empty-note">no actions yet</div>'; }
+  document.getElementById('body-actions').innerHTML = actHtml;
+
+  // Reflections
+  document.getElementById('refls-count').textContent = refls.length;
+  var rHtml = '';
+  if (refls.length) {
+    refls.slice(0,6).forEach(function(r) {
+      rHtml += '<div class="act-item"><span>' + (FMT_ICONS[r.format]||'✍️') + ' ' + (FMT_LABELS[r.format]||'reflection') + (r.minutesSpent?' · '+r.minutesSpent+' min':'') + '</span>';
+      rHtml += '<span class="act-date">' + fmtDate(r.date) + '</span></div>';
+    });
+  } else { rHtml = '<div class="empty-note">no reflections yet</div>'; }
+  document.getElementById('body-reflections').innerHTML = rHtml;
+
+  // Feedback
+  document.getElementById('fb-count').textContent = feedbs.length;
+  var fHtml = '';
+  if (feedbs.length) {
+    feedbs.slice(0,6).forEach(function(f) {
+      fHtml += '<div class="act-item"><span>' + (f.type==='positive'?'👍':f.type==='improve'?'↑':'⚖️') + ' ' + esc(f.from||'feedback');
+      if (f.text) fHtml += ' — "' + esc(f.text.slice(0,60)) + (f.text.length>60?'…':'"') + '"';
+      fHtml += '</span><span class="act-date">' + fmtDate(f.date) + '</span></div>';
+    });
+  } else { fHtml = '<div class="empty-note">no feedback yet</div>'; }
+  document.getElementById('body-feedback').innerHTML = fHtml;
+
+  // Google Calendar link
+  buildCalLink(displayName, c);
+}
+
+// ── Build Google Calendar link ─────────────────────────────────────
+function buildCalLink(coacheeName, coaching) {
+  var title = encodeURIComponent('Coaching session — ' + coacheeName);
+  var details = encodeURIComponent('PD coaching session at Essense');
+  var base = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
+  var url = base + '&text=' + title + '&details=' + details;
+  if (coaching.nextSessionDate) {
+    // Format: YYYYMMDDTHHmmss
+    var d = new Date(coaching.nextSessionDate);
+    var dur = parseInt(coaching.nextSessionDuration) || 60;
+    var end = new Date(d.getTime() + dur * 60000);
+    var fmt = function(dt) {
+      return dt.getFullYear() +
+        pad(dt.getMonth()+1) + pad(dt.getDate()) + 'T' +
+        pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+    };
+    url += '&dates=' + fmt(d) + '/' + fmt(end);
+  }
+  document.getElementById('cal-link').href = url;
+}
+
+function pad(n) { return n < 10 ? '0'+n : ''+n; }
+
+// ── Collapsibles ───────────────────────────────────────────────────
+function toggleSb(key) {
+  var body = document.getElementById('body-'+key);
+  var chev = document.getElementById('chev-'+key);
+  var nowHidden = body.classList.toggle('hidden');
+  chev.classList.toggle('open', !nowHidden);
+}
+
+// ── Utils ──────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '—';
+  try { return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+  catch(e) { return '—'; }
+}
+function esc(s) { var d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+buildRoster();
+</script>
+</body>
+</html>

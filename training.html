@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Training Menu — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 3rem;max-width:780px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);margin-bottom:.6rem;font-weight:500}
+.heading{font-family:var(--font-head);font-size:1.55rem;color:var(--forest);margin-bottom:.4rem}
+.sub{font-size:.875rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.6}
+.divider{height:1px;background:var(--border);margin:1.75rem 0}
+.suggest-strip{background:var(--forest);color:var(--bright);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.ss-label{font-size:11px;color:var(--yellow);letter-spacing:.12em;text-transform:uppercase;font-weight:500;margin-bottom:.4rem}
+.ss-title{font-family:var(--font-head);font-size:1.15rem;color:var(--white);margin-bottom:.6rem;line-height:1.3}
+.ss-controls{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-bottom:.875rem}
+.ss-select{flex:1;min-width:200px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);border-radius:8px;padding:.55rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--white);outline:none;cursor:pointer}
+.ss-select option{background:var(--forest);color:var(--white)}
+.ss-select:focus{border-color:var(--yellow)}
+.ss-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.ss-btn:hover{filter:brightness(.95)}
+.ss-results{display:none}
+.ss-results.open{display:block}
+.ss-rec{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;padding:.7rem .9rem;margin-bottom:.4rem;font-size:.85rem;color:var(--white);line-height:1.5}
+.ss-rec-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.ss-rec-pill{background:rgba(255,255,255,.12);color:var(--bright);border-radius:99px;padding:.1rem .55rem;font-size:.65rem;font-weight:500}
+.ss-rec-actions{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+.ss-rec-btn{background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.25rem .65rem;font-family:var(--font-body);font-size:.7rem;cursor:pointer;color:var(--white)}
+.ss-rec-btn:hover{background:rgba(255,255,255,.12)}
+.ss-rec-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
+.filter-row{display:flex;gap:.6rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .85rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);outline:none;transition:border .2s}
+.search-input:focus{border-color:var(--essense)}
+.filter-select{border:1.5px solid var(--border);border-radius:8px;padding:.6rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);outline:none;cursor:pointer;transition:border .2s}
+.filter-select:focus{border-color:var(--essense)}
+.results-info{font-size:.78rem;color:var(--muted);margin-bottom:.875rem}
+.training-card{background:var(--egg);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.15rem;margin-bottom:.65rem;transition:all .2s}
+.training-card:hover{border-color:var(--essense);box-shadow:0 3px 12px rgba(4,69,36,.06)}
+.tc-head{display:flex;align-items:flex-start;gap:.65rem;margin-bottom:.4rem}
+.tc-icon{font-size:1.25rem;flex-shrink:0;margin-top:.15rem}
+.tc-info{flex:1;min-width:0}
+.tc-title{font-size:.92rem;font-weight:500;color:var(--charcoal);line-height:1.3;margin-bottom:.2rem}
+.tc-provider{font-size:.72rem;color:var(--muted);font-style:italic}
+.tc-meta{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem}
+.tc-pill{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.15rem .55rem;font-size:.68rem;color:var(--muted)}
+.tc-pill.free{background:var(--bright);color:var(--essense);border-color:var(--essense)}
+.tc-pill.paid{background:#fdf3e7;color:#b7994a;border-color:#d4b884}
+.tc-pill.competence{background:var(--bright);color:var(--forest);border-color:var(--essense);font-weight:500}
+.tc-note{font-size:.76rem;color:var(--charcoal);margin-top:.5rem;line-height:1.5;padding:.5rem .7rem;background:var(--white);border-radius:8px;border-left:3px solid var(--essense)}
+.tc-actions{display:flex;gap:.4rem;margin-top:.55rem;flex-wrap:wrap}
+.tc-btn{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:.35rem .75rem;font-family:var(--font-body);font-size:.7rem;cursor:pointer;color:var(--charcoal);text-decoration:none;display:inline-block;transition:all .2s}
+.tc-btn:hover{border-color:var(--essense);background:var(--bright);color:var(--forest)}
+.tc-btn.yellow{background:var(--yellow);color:var(--forest);border-color:var(--yellow);font-weight:600}
+.tc-endorsements{display:inline-flex;align-items:center;gap:.25rem;font-size:.7rem;color:var(--essense);margin-left:.4rem}
+.empty{background:var(--egg);border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;color:var(--muted);font-size:.85rem;line-height:1.5}
+.insight{background:var(--bright);border-left:3px solid var(--yellow);border-radius:0 8px 8px 0;padding:.875rem 1.1rem;font-size:.875rem;color:var(--forest);font-style:italic;margin-top:1.5rem;line-height:1.6}
+.arrow{font-family:var(--font-head);color:var(--yellow);margin-right:.3rem}
+.web-search-note{font-size:.75rem;color:var(--muted);font-style:italic;margin-top:.65rem;text-align:center}
+.tc-pill.days{background:#f0f4ef;color:var(--forest);border-color:var(--border)}
+.approval-note{margin-top:.4rem;font-size:.72rem;color:#b7994a;background:#fdf3e7;border-radius:7px;padding:.3rem .7rem;display:inline-block;cursor:pointer}
+.approval-note:hover{text-decoration:underline}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:16px;padding:1.5rem;max-width:480px;width:90%;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:var(--font-head);font-size:1.15rem;color:var(--forest);margin-bottom:.5rem}
+.modal-sub{font-size:.82rem;color:var(--muted);margin-bottom:1rem;line-height:1.6}
+.modal-close{float:right;background:transparent;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);margin-top:-.25rem}
+
+.btn-sm{background:var(--forest);color:var(--white);border:none;border-radius:7px;padding:.45rem .9rem;font-family:var(--font-body);font-size:.78rem;font-weight:500;cursor:pointer;margin-top:.5rem}
+
+
+</style>
+</head>
+<body>
+<p class="label">training menu</p>
+<h1 class="heading">find the right resource</h1>
+<p class="sub">curated trainings, podcasts, articles, books — tagged to career framework competences. browse the full menu or search.</p>
+
+
+
+<div class="divider"></div>
+
+<h2 style="font-family:var(--font-head);font-size:1.05rem;color:var(--forest);margin-bottom:.875rem">browse the full menu</h2>
+
+<div class="filter-row">
+  <input class="search-input" id="search" placeholder="search by topic, provider, or competence…" oninput="filter()"/>
+  <select class="filter-select" id="type-filter" onchange="filter()">
+    <option value="">all types</option>
+    <option value="Article">articles</option>
+    <option value="Podcast">podcasts</option>
+    <option value="Video">videos</option>
+    <option value="Course">courses</option>
+    <option value="Book">books</option>
+    <option value="Tool / template">tools</option>
+    <option value="E-learning">e-learning</option>
+    <option value="Webinar">webinars</option>
+  </select>
+  <select class="filter-select" id="time-filter" onchange="filter()">
+    <option value="">any length</option>
+    <option value="short">under 30 min</option>
+    <option value="medium">30–60 min</option>
+    <option value="long">1+ hours</option>
+  </select>
+</div>
+
+<div class="results-info" id="results-info">showing 30 resources · 6 free · 24 endorsed by colleagues</div>
+
+<div id="training-list"></div>
+
+<div class="insight">
+  <span class="arrow">→</span>find something useful? add it as an action to make it part of your PD. endorsed resources are marked with ★.
+</div>
+
+<script>
+const trainings=[
+  {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. ',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
+  {icon:'🛠',title:'Service Blueprinting: A Digital Template',provider:'Nielsen Norman Group',type:'Tool / template',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Free downloadable template — use in your next project.',endorsements:3,url:'https://www.nngroup.com/articles/service-blueprinting-template/'},
+  {icon:'▶️',title:'Overcoming Service Blueprinting Frustrations',provider:'Nielsen Norman Group',type:'Video',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'Good after your first blueprint.',endorsements:2,url:'https://www.nngroup.com/videos/service-blueprinting-frustrations/'},
+  {icon:'🎙',title:'This is HCD',provider:'Gerry Scullion',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Most downloaded SD podcast globally. Great for commutes.',endorsements:6,url:'https://www.thisishcd.com/'},
+  {icon:'🎙',title:'The Service Design Show',provider:'Marc Fonteijn',type:'Podcast',time:'30–60 min',timeCat:'medium',cost:'Free',competence:'Service Design — general',note:'Long-form interviews with practitioners. 4.7/5 on Apple.',endorsements:5,url:'https://www.servicedesignshow.com/'},
+  {icon:'📰',title:'Design Thinking 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Foundational 6-stage model. Read before facilitating discovery.',endorsements:5,url:'https://www.nngroup.com/articles/design-thinking/'},
+  {icon:'📰',title:'User Interviews: How, When, and Why',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Design Thinking & Discovery',note:'Comprehensive guide. Essential for research work.',endorsements:4,url:'https://www.nngroup.com/articles/user-interviews/'},
+  {icon:'📰',title:'Common Journey Mapping Mistakes',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX & Journey Thinking',note:'After your first map, helps you evaluate your own work.',endorsements:3,url:'https://www.nngroup.com/articles/journey-mapping-pitfalls/'},
+  {icon:'📰',title:'AI Is Reshaping Service Design',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Innovation & Orchestration',note:'2025 article on AI shifting the discipline.',endorsements:2,url:'https://www.nngroup.com/articles/ai-service-design/'},
+  {icon:'📰',title:'Usability Testing 101',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Experience Design',note:'Standard reference. Essential reading for testing work.',endorsements:3,url:'https://www.nngroup.com/articles/usability-testing-101/'},
+  {icon:'📰',title:'Stakeholder Management for UX',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Stakeholder Engagement',note:'Navigating stakeholders in design projects.',endorsements:4,url:'https://www.nngroup.com/articles/ux-stakeholder-management/'},
+  {icon:'🎤',title:'Service Design Network Global Conference',provider:'Service Design Network',type:'Webinar',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Service Design — general',note:'Annual conference recordings. Case studies + strategic talks.',endorsements:3,url:'https://www.service-design-network.org/'},
+  {icon:'📰',title:'How to Facilitate Workshops',provider:'Service Design Network',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'Practical facilitation guide.',endorsements:5,url:'https://www.service-design-network.org/'},
+  {icon:'📚',title:'This is Service Design Doing',provider:'Marc Stickdorn et al.',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'Service Design — general',note:'Field standard. Start with the methods section.',endorsements:7,url:'https://www.thisisservicedesigndoing.com/'},
+  {icon:'📚',title:'Practical Empathy',provider:'Indi Young',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Design Thinking & Discovery',note:'Changes how you conduct interviews.',endorsements:4,url:'https://rosenfeldmedia.com/books/practical-empathy/'},
+  {icon:'🎓',title:'Design Thinking Bootcamp',provider:'Stanford d.school',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Free Stanford resources with method cards.',endorsements:6,url:'https://dschool.stanford.edu/resources'},
+  {icon:'📰',title:'Facilitating Co-Design Sessions',provider:'IDEO',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'IDEO\'s open-source HCD toolkit. Free and practical.',endorsements:3,url:'https://www.designkit.org/'},
+  {icon:'🎓',title:'Introduction to Qualitative Research',provider:'University of Amsterdam',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Design Thinking & Discovery',note:'Structured intro to qualitative methods.',endorsements:2,url:'https://www.coursera.org/'},
+  {icon:'🎓',title:'Customer Journey Mapping',provider:'Nielsen Norman Group',type:'Course',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'CX & Journey Thinking',note:'Gold-standard journey mapping course. Worth the budget.',endorsements:5,url:'https://www.nngroup.com/courses/customer-journey-maps/'},
+  {icon:'📰',title:'Measuring User Experience',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Data Strategy & KPIs',note:'How to quantify UX with KPIs.',endorsements:3,url:'https://www.nngroup.com/articles/measuring-user-experience/'},
+  {icon:'📚',title:'Value Proposition Design',provider:'Strategyzer',type:'Book',time:'1+ hours',timeCat:'long',cost:'Paid (own)',competence:'Business Impact & Growth',note:'Service design meets business value.',endorsements:4,url:'https://www.strategyzer.com/'},
+  {icon:'📰',title:'Communicating Research Findings',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Communication & Collaboration',note:'Present findings to stakeholders effectively.',endorsements:4,url:'https://www.nngroup.com/articles/reporting-findings/'},
+  {icon:'📰',title:'Feedback and Feedforward',provider:'MindTools',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Feedback & Coaching',note:'SBI model — Situation, Behaviour, Impact.',endorsements:5,url:'https://www.mindtools.com/'},
+  {icon:'🎙',title:'The Art of Facilitation',provider:'Voltage Control',type:'Podcast',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Workshop Facilitation',note:'Practical facilitation skills for designers.',endorsements:2,url:'https://voltagecontrol.com/podcast/'},
+  {icon:'📰',title:'Introduction to OKRs',provider:'Atlassian',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Planning & Management',note:'Clear intro to Objectives & Key Results.',endorsements:3,url:'https://www.atlassian.com/agile/agile-at-scale/okr'},
+  {icon:'🎓',title:'Service Design Foundations',provider:'LinkedIn Learning',type:'Course',time:'1+ hours',timeCat:'long',cost:'Paid (budget)',competence:'Service Design — general',note:'Structured intro covering touchpoints + blueprinting basics.',endorsements:3,url:'https://www.linkedin.com/learning/'},
+  {icon:'📰',title:'Change Management Fundamentals',provider:'Prosci',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'CX Consulting',note:'ADKAR model explained — change management for CX.',endorsements:2,url:'https://www.prosci.com/resources/articles/change-management-fundamentals'},
+  {icon:'🎓',title:'Google Analytics 4 for Beginners',provider:'Google',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Analytics & Governance',note:'Free GA4 course. Relevant to Data Consulting track.',endorsements:2,url:'https://skillshop.google.com/'},
+  {icon:'📰',title:'GROW Model Coaching Guide',provider:'MindTools',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Feedback & Coaching',note:'The GROW model used in Eidra coaching, explained clearly.',endorsements:5,url:'https://www.mindtools.com/an0ykcs/the-grow-model'},
+  {icon:'🎓',title:'Figma for Beginners',provider:'Figma',type:'Course',time:'1+ hours',timeCat:'long',cost:'Free',competence:'Experience Design',note:'Official beginner tutorials.',endorsements:4,url:'https://www.figma.com/resources/learn-design/'},
+  {icon:'💻',title:'Service Design Fundamentals',provider:'Interaction Design Foundation',type:'E-learning',time:'1+ hours',timeCat:'long',days:'~3 days',cost:'Paid (budget)',competence:'Service Design — general',note:'Self-paced e-learning with assignments and certificate. One of the highest-rated SD e-learning programs available.',endorsements:5,url:'https://www.interaction-design.org/courses/service-design'},
+  {icon:'💻',title:'Design Research Methods',provider:'Ideo U',type:'E-learning',time:'1+ hours',timeCat:'long',days:'~5 days',cost:'Paid (budget)',competence:'Design Thinking & Discovery',note:'Project-based e-learning. Practical and highly applied — comes with mentor feedback.',endorsements:4,url:'https://www.ideou.com/products/design-research'},
+  {icon:'💻',title:'UX Research — Methods in Practice',provider:'Nielsen Norman Group',type:'E-learning',time:'1+ hours',timeCat:'long',days:'2 days',cost:'Paid (budget)',competence:'Design Thinking & Discovery',note:'NN/g certification-track e-learning. Recognised across the industry.',endorsements:6,url:'https://www.nngroup.com/training/'},
+  {icon:'💻',title:'Stakeholder Management for Designers',provider:'Coursera / IDEO',type:'E-learning',time:'30–60 min',timeCat:'medium',days:'3 sessions',cost:'Free',competence:'Stakeholder Engagement',note:'Short modular e-learning. Practical communication frameworks for design contexts.',endorsements:3,url:'https://www.coursera.org/'},
+];
+
+let filtered=[...trainings];
+
+function render(){
+  const list=document.getElementById('training-list');
+  list.innerHTML='';
+  if(filtered.length===0){list.innerHTML='<div class="empty">no resources match your filters. try clearing search or broadening the type filter.</div>';return;}
+  filtered.forEach(t=>{
+    const card=document.createElement('div');
+    card.className='training-card';
+    const costClass=t.cost.toLowerCase().includes('free')?'free':'paid';
+    card.innerHTML=`
+      <div class="tc-head">
+        <div class="tc-icon">${t.icon}</div>
+        <div class="tc-info">
+          <div class="tc-title">${t.title}</div>
+          <div class="tc-provider">${t.provider} ${t.endorsements>=4?'<span class="tc-endorsements">★ '+t.endorsements+' endorsed</span>':''}</div>
+        </div>
+      </div>
+      <div class="tc-meta">
+        <span class="tc-pill">${t.type}</span>
+        <span class="tc-pill">${t.time}</span>
+        <span class="tc-pill ${costClass}">${t.cost}</span>
+        <span class="tc-pill competence">${t.competence}</span>
+      </div>
+      <div class="tc-note">${t.note}</div>
+      <div class="tc-actions">
+        <a class="tc-btn yellow" href="${t.url}" target="_blank">open ↗</a>
+        <button class="tc-btn" onclick="addAsAction('${t.title.replace(/'/g,'\\\'')}', this)">+ add as action</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  document.getElementById('results-info').textContent=`showing ${filtered.length} resources · ${filtered.filter(t=>t.cost.toLowerCase().includes('free')).length} free · ${filtered.filter(t=>t.endorsements>=4).length} highly endorsed`;
+}
+
+function filter(){
+  const q=document.getElementById('search').value.toLowerCase().trim();
+  const type=document.getElementById('type-filter').value;
+  const time=document.getElementById('time-filter').value;
+  filtered=trainings.filter(t=>{
+    if(q&&!`${t.title} ${t.provider} ${t.competence} ${t.note}`.toLowerCase().includes(q))return false;
+    if(type&&t.type!==type)return false;
+    if(time&&t.timeCat!==time)return false;
+    return true;
+  });
+  render();
+}
+
+function suggest(){
+  if(!goal){alert('pick a goal first');return;}
+  const goalCompetences={
+    journey:['Journey & Blueprinting','CX & Journey Thinking','Service Design — general'],
+    comm:['Communication & Collaboration','Workshop Facilitation','Feedback & Coaching'],
+    knowledge:['Service Design — general','Design Thinking & Discovery']
+  };
+  const comps=goalCompetences[goal]||[];
+  const relevant=trainings.filter(t=>comps.includes(t.competence)).sort((a,b)=>b.endorsements-a.endorsements).slice(0,4);
+  const res=document.getElementById('ss-results');
+  res.innerHTML='';
+  relevant.forEach(t=>{
+    const div=document.createElement('div');
+    div.className='ss-rec';
+    div.innerHTML=`
+      <div><strong>${t.title}</strong> · ${t.provider}</div>
+      <div class="ss-rec-meta">
+        <span class="ss-rec-pill">${t.type}</span>
+        <span class="ss-rec-pill">${t.time}</span>
+        <span class="ss-rec-pill">${t.cost}</span>
+        ${t.endorsements>=4?`<span class="ss-rec-pill" style="background:var(--yellow);color:var(--forest);font-weight:600">★ ${t.endorsements} endorsed</span>`:''}
+      </div>
+      <div style="font-size:.78rem;color:var(--bright);margin-top:.4rem">${t.note}</div>
+      <div class="ss-rec-actions">
+        <a class="ss-rec-btn yellow" href="${t.url}" target="_blank">open ↗</a>
+        <button class="ss-rec-btn" onclick="addAsAction('${t.title.replace(/'/g,'\\\'')}', this)">+ add as action</button>
+      </div>
+    `;
+    res.appendChild(div);
+  });
+  res.classList.add('open');
+  document.getElementById('web-note').style.display='block';
+}
+
+function addAsAction(title, btn) {
+  if (typeof PD !== 'undefined') {
+    PD.saveAction({title:'Do: ' + title, done:false});
+  }
+  // Visual feedback — change button to confirm
+  if (btn) {
+    btn.textContent = '✓ added';
+    btn.style.background = 'var(--essense)';
+    btn.style.color = 'var(--white)';
+    btn.style.borderColor = 'var(--essense)';
+    btn.disabled = true;
+  }
+}
+
+// shareIt replaced by openShareModal
+
+render();
+</script>
+
+<div class="modal-overlay" id="approval-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('approval-modal')">✕</button>
+    <div class="modal-title">Training approval</div>
+    <div class="modal-sub">Paid trainings that use the Essense training budget require approval from your team lead. Here's how it works:</div>
+    <div style="font-size:.83rem;color:var(--charcoal);line-height:1.65">
+      <strong>Gratis (free):</strong> no approval needed. Just do it and log it.<br><br>
+      <strong>Betaald — own cost:</strong> you choose to pay yourself. No approval needed.<br><br>
+      <strong>Betaald — budget:</strong> request goes to your team lead via the Essense training request process. Budget is shared across the team, so request early.<br><br>
+      <strong>Webinars and conferences:</strong> same as budget-paid — request via team lead if there is a cost.
+    </div>
+    <a href="https://www.notion.so/eidra/Training-Budget-Guidelines-3281f15509d881338b78ffc6740a7f49" target="_blank" style="display:inline-block;margin-top:1rem;font-size:.8rem;color:var(--forest);font-weight:600;text-decoration:underline">open full training & approval guidelines in Notion ↗</a>
+  </div>
+</div>
+
+
+<script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo');
+    PD.reset(); // always empty — true first-usage state
+  }
+  // no param = real data, default namespace
+})();
+
+
+
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openApproval(){document.getElementById('approval-modal').classList.add('open');}
+</script>
+</body>
+</html>

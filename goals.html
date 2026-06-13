@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Goals — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 4rem;max-width:720px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.65rem;color:var(--forest);margin-bottom:.3rem}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+.year-label{font-family:var(--font-head);font-size:1.1rem;color:var(--muted);margin-bottom:.75rem}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.6rem 1.2rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.6rem 1.2rem;font-family:var(--font-body);font-size:.825rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.55rem 1rem;font-family:var(--font-body);font-size:.825rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-ghost{background:transparent;color:var(--essense);border:none;font-family:var(--font-body);font-size:.8rem;cursor:pointer;padding:.2rem .4rem;font-weight:500}
+.btn-ghost:hover{color:var(--forest)}
+
+/* Info icon */
+.info-wrap{position:relative;display:inline-flex;align-items:center;vertical-align:middle}
+.info-icon{width:15px;height:15px;border-radius:50%;background:var(--bright);border:1px solid var(--border);color:var(--essense);font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-style:normal;line-height:1}
+.info-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--forest);color:#b7e4c7;font-size:.74rem;line-height:1.5;padding:.6rem .875rem;border-radius:9px;width:240px;z-index:20;pointer-events:none}
+.info-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--forest)}
+.info-icon:hover + .info-tip{display:block}
+
+/* Goal rows */
+.goal-row{background:var(--egg);border:1.5px solid var(--border);border-radius:13px;margin-bottom:.6rem;overflow:hidden;transition:border .2s}
+.goal-row:hover{border-color:var(--essense)}
+.goal-header{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.1rem;cursor:pointer;user-select:none}
+.goal-chev{font-size:.7rem;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.goal-row.open .goal-chev{transform:rotate(90deg)}
+.goal-title{flex:1;font-size:.9rem;font-weight:500;color:var(--charcoal);line-height:1.3}
+.goal-badge{background:var(--white);border:1px solid var(--border);border-radius:99px;padding:.15rem .6rem;font-size:.7rem;color:var(--muted);flex-shrink:0;white-space:nowrap}
+.goal-badge.has-subs{background:var(--bright);color:var(--essense);border-color:var(--essense)}
+.goal-photo-thumb{width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0}
+
+/* Subgoals */
+.subgoals-panel{display:none;padding:.25rem 1.1rem 1rem;border-top:1px solid var(--border)}
+.goal-row.open .subgoals-panel{display:block}
+.sub-item{display:flex;align-items:flex-start;gap:.65rem;padding:.45rem 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.sub-item:last-of-type{border-bottom:none}
+.sub-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.62rem;color:transparent;transition:all .2s;margin-top:1px}
+.sub-item.done .sub-check{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.sub-text{font-size:.825rem;color:var(--charcoal);flex:1;line-height:1.4}
+.sub-item.done .sub-text{text-decoration:line-through;color:var(--muted)}
+.sub-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:.8rem;padding:.1rem;transition:color .15s;flex-shrink:0}
+.sub-del:hover{color:var(--muted)}
+.sub-add-row{display:flex;gap:.5rem;margin-top:.65rem}
+.sub-add-inp{flex:1;border:1px solid var(--border);border-radius:7px;padding:.45rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--charcoal);background:var(--white);outline:none;transition:border .2s}
+.sub-add-inp:focus{border-color:var(--essense)}
+.goal-actions-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.goal-del-btn{margin-left:auto;background:none;border:none;color:var(--border);cursor:pointer;font-size:.75rem;font-family:var(--font-body);padding:.2rem .4rem;transition:color .2s}
+.goal-del-btn:hover{color:var(--muted)}
+
+/* Dim badge */
+.dim-badge{border-radius:99px;padding:.15rem .55rem;font-size:.68rem;font-weight:500;flex-shrink:0}
+.dim-Delivery{background:var(--forest);color:var(--white)}
+.dim-People{background:var(--essense);color:var(--white)}
+.dim-Added{background:#b7994a;color:var(--white)}
+
+/* Add goal panel */
+.add-section{margin-top:1.25rem}
+.add-trigger{display:flex;align-items:center;gap:.5rem;background:var(--egg);border:1.5px dashed var(--border);border-radius:13px;padding:.875rem 1.1rem;cursor:pointer;transition:all .2s;width:100%;font-family:var(--font-body);font-size:.875rem;color:var(--muted)}
+.add-trigger:hover{border-color:var(--essense);color:var(--charcoal);background:var(--bright)}
+.add-panel{display:none;background:var(--egg);border:1.5px solid var(--essense);border-radius:13px;padding:1.1rem;margin-top:.4rem;animation:fadeup .2s ease}
+.add-panel.open{display:block}
+@keyframes fadeup{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.add-field{margin-bottom:.875rem}
+.add-label{font-size:.72rem;font-weight:500;color:var(--charcoal);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem;display:flex;align-items:center;gap:.4rem}
+.add-input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:.6rem .875rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);outline:none;transition:border .2s}
+.add-input:focus{border-color:var(--essense)}
+.add-options{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.875rem}
+.add-option-btn{display:flex;align-items:center;gap:.35rem;background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .2s}
+.add-option-btn:hover,.add-option-btn.active{border-color:var(--essense);color:var(--charcoal);background:var(--bright)}
+.framework-panel{display:none;margin-top:.75rem;background:var(--white);border:1px solid var(--border);border-radius:9px;padding:.75rem .875rem}
+.framework-panel.open{display:block}
+.fw-note{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.5rem}
+.dim-row{display:flex;gap:.4rem;flex-wrap:wrap}
+.dim-btn{padding:.25rem .65rem;border-radius:99px;font-size:.75rem;font-weight:500;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:transparent;transition:all .2s;font-family:var(--font-body)}
+.dim-btn.sel-Delivery{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.dim-btn.sel-People{background:var(--essense);color:var(--white);border-color:var(--essense)}
+.dim-btn.sel-Added{background:#b7994a;color:var(--white);border-color:#b7994a}
+.photo-row{display:flex;align-items:center;gap:.75rem;margin-top:.5rem}
+.photo-btn{background:var(--white);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.8rem;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .2s}
+.photo-btn:hover{border-color:var(--essense);color:var(--charcoal)}
+.photo-preview{width:40px;height:40px;border-radius:7px;object-fit:cover;display:none}
+.add-row-btns{display:flex;gap:.6rem;margin-top:.875rem}
+
+/* Breakdown fold-out */
+.breakdown-section{margin-top:2rem;border-top:1px solid var(--border);padding-top:1.5rem}
+.breakdown-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:.25rem}
+.breakdown-title{font-family:var(--font-head);font-size:1.05rem;color:var(--forest)}
+.breakdown-chev{font-size:.7rem;color:var(--muted);transition:transform .25s}
+.breakdown-chev.open{transform:rotate(90deg)}
+.breakdown-body{display:none;margin-top:.875rem;animation:fadeup .2s ease}
+.breakdown-body.open{display:block}
+.bd-step{display:none;animation:fadeup .25s ease}.bd-step.active{display:block}
+.bd-select{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:.6rem .875rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--egg);outline:none;margin-bottom:.875rem;transition:border .2s}
+.bd-select:focus{border-color:var(--essense)}
+.comfort-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+.comfort-btn{padding:.4rem .875rem;border-radius:99px;font-size:.8rem;border:1.5px solid var(--border);color:var(--muted);background:transparent;cursor:pointer;font-family:var(--font-body);transition:all .2s}
+.comfort-btn.sel{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.sug-item{display:flex;align-items:flex-start;gap:.75rem;background:var(--egg);border:1.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem;cursor:pointer;transition:all .2s}
+.sug-item:hover{border-color:var(--essense)}
+.sug-item.approved{border-color:var(--essense);background:var(--bright)}
+.sug-item.dropped{opacity:.4}
+.sug-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:transparent;transition:all .2s;margin-top:1px}
+.sug-item.approved .sug-check{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.sug-text{font-size:.825rem;color:var(--charcoal);flex:1;line-height:1.4}
+.sug-item.dropped .sug-text{text-decoration:line-through;color:var(--muted)}
+.bd-actions{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+
+
+</style>
+</head>
+<body>
+
+<p class="label">your goals</p>
+<h1 class="heading">this year</h1>
+<p class="sub">your goals for <span id="g-year"></span>. tap any goal to see and manage sub-goals.
+  <span class="info-wrap" style="margin-left:.25rem">
+    <span class="info-icon" tabindex="0">i</span>
+    <div class="info-tip">Goals are linked to the Essense Career Framework. Use "suggest from framework" when adding a goal to connect it to your growth dimension.</div>
+  </span>
+</p>
+
+<p class="year-label" id="g-year-label"></p>
+<div id="goals-list"></div>
+
+<!-- Add goal -->
+<div class="add-section">
+  <button class="add-trigger" onclick="toggleAddPanel()">
+    <span style="font-size:1rem">＋</span> add a goal
+  </button>
+  <div class="add-panel" id="add-panel">
+    <div class="add-field">
+      <label class="add-label">goal</label>
+      <input class="add-input" id="new-goal-inp" placeholder="what do you want to grow in?"/>
+    </div>
+
+    <div class="add-field">
+      <label class="add-label">dimension (optional)</label>
+      <div class="dim-row">
+        <button class="dim-btn" onclick="pickDim(this,'Delivery')">Delivery</button>
+        <button class="dim-btn" onclick="pickDim(this,'People')">People</button>
+        <button class="dim-btn" onclick="pickDim(this,'Added')">Added value</button>
+      </div>
+    </div>
+
+    <div class="add-options">
+      <button class="add-option-btn" onclick="toggleFrameworkPanel()">
+        📘 suggest from career framework
+      </button>
+      <button class="add-option-btn" onclick="document.getElementById('goal-photo-inp').click()">
+        📷 add a photo
+      </button>
+      <input type="file" id="goal-photo-inp" accept="image/*" style="display:none" onchange="previewAddPhoto(this)"/>
+    </div>
+
+    <div class="framework-panel" id="fw-panel">
+      <p class="fw-note">tick to link this goal to the Essense career framework. turn on to get an AI-suggested goal based on your level and dimension.</p>
+      <label style="display:flex;align-items:center;gap:.5rem;font-size:.825rem;cursor:pointer;margin-bottom:.65rem">
+        <input type="checkbox" id="fw-link-check" style="accent-color:var(--forest)" onchange="onFwCheckChange(this)"/>
+        link to career framework
+      </label>
+      <div id="fw-suggest-area" style="display:none">
+        <button class="btn-s" style="font-size:.78rem;padding:.4rem .8rem;margin-bottom:.5rem" onclick="suggestFrameworkGoal()">✦ suggest a goal from my level</button>
+        <div id="fw-suggestions" style="font-size:.8rem;color:var(--muted);font-style:italic"></div>
+      </div>
+    </div>
+
+    <div id="add-photo-row" style="display:none;margin-top:.75rem">
+      <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem">
+        <img class="photo-preview" id="add-photo-prev" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0"/>
+        <div style="flex:1;min-width:0">
+          <div id="photo-status" style="font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:.25rem">reading image\u2026</div>
+          <button class="btn-ghost" style="font-size:.72rem;padding:.2rem .5rem" onclick="clearAddPhoto()">remove photo</button>
+        </div>
+      </div>
+      <div id="photo-goals-area" style="display:none">
+        <div style="font-size:.72rem;color:var(--essense);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">
+          goals found in photo \u2014 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">tick the ones to add</span>
+        </div>
+        <div id="photo-goals-list" style="margin-bottom:.5rem"></div>
+        <button id="photo-add-btn" onclick="addSelectedPhotoGoals()" style="display:none;background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.45rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;width:100%">
+          + add goals
+        </button>
+      </div>
+    </div>
+
+    <div class="add-row-btns">
+      <button class="btn-y" onclick="addGoal()">save goal</button>
+      <button class="btn-s" onclick="closeAddPanel()">cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Breakdown fold-out -->
+<div class="breakdown-section">
+  <div class="breakdown-header" onclick="toggleBreakdown()">
+    <div>
+      <div class="breakdown-title">break down a goal</div>
+      <div style="font-size:.78rem;color:var(--muted);margin-top:.15rem">turn a big goal into approved, doable sub-goals</div>
+    </div>
+    <span class="breakdown-chev" id="bd-chev">▶</span>
+  </div>
+  <div class="breakdown-body" id="bd-body">
+
+    <!-- BD step 1: pick goal + comfort -->
+    <div class="bd-step active" id="bd-s1">
+      <p style="font-size:.825rem;color:var(--muted);margin-bottom:.75rem">select the goal you want to break down, then tell us where you're starting from.</p>
+      <select class="bd-select" id="bd-goal-sel"></select>
+      <p style="font-size:.78rem;font-weight:500;color:var(--charcoal);margin-bottom:.5rem">how comfortable are you with this right now?</p>
+      <div class="comfort-row">
+        <button class="comfort-btn" onclick="pickComfort(this,'new to this')">new to this</button>
+        <button class="comfort-btn" onclick="pickComfort(this,'some experience')">some experience</button>
+        <button class="comfort-btn" onclick="pickComfort(this,'fairly confident')">fairly confident</button>
+        <button class="comfort-btn" onclick="pickComfort(this,'ready to lead')">ready to lead</button>
+      </div>
+      <div style="display:flex;gap:.6rem;margin-top:.875rem">
+        <button class="btn-p" onclick="generateSubgoals()">suggest sub-goals →</button>
+      </div>
+    </div>
+
+    <!-- BD step 2: approve sub-goals -->
+    <div class="bd-step" id="bd-s2">
+      <p style="font-size:.825rem;color:var(--muted);margin-bottom:.875rem">approve the ones that feel right. drop the ones that don't. only approved ones are saved to your goal.</p>
+      <div id="sug-list"></div>
+      <div class="bd-actions">
+        <button class="btn-y" onclick="saveSuggestedSubgoals()">save approved sub-goals</button>
+        <button class="btn-s" onclick="bdGo(1)">← back</button>
+      </div>
+    </div>
+
+    <!-- BD step 3: done -->
+    <div class="bd-step" id="bd-s3">
+      <div style="background:var(--bright);border-radius:12px;padding:1.1rem 1.25rem;text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:.4rem">✓</div>
+        <div style="font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.3rem">sub-goals saved</div>
+        <div style="font-size:.825rem;color:var(--muted)">tap the goal above to see them.</div>
+      </div>
+      <button class="btn-s" style="margin-top:.875rem" onclick="bdReset()">break down another goal</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo');
+    PD.reset(); // always empty — true first-usage state
+  }
+  // no param = real data, default namespace
+})();
+
+
+
+
+
+// ── AI helper ─────────────────────────────────────────────────────
+async function callAI(messages, system, maxTokens) {
+  try {
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
+    if (system) body.system = system;
+    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    var data = await resp.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    return null;
+  } catch(e) { return null; }
+}
+function parseJSON(text) {
+  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
+  catch(e) { return null; }
+}
+
+var addOpen = false, addDim = '', addPhoto = null;
+var bdComfort = '', bdGoalId = '';
+
+// ── Render goals list ─────────────────────────────────────────────
+function render() {
+  var goals = PD.goals();
+  var year = new Date().getFullYear();
+  document.getElementById('g-year').textContent = year;
+  document.getElementById('g-year-label').textContent = year;
+
+  var list = document.getElementById('goals-list');
+  if (!goals.length) {
+    list.innerHTML = '<div style="background:var(--egg);border:2px dashed var(--border);border-radius:13px;padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.875rem;margin-bottom:.875rem"><div style="font-size:1.5rem;margin-bottom:.5rem">\uD83C\uDFAF</div><div style="font-family:var(--font-head);color:var(--forest);font-size:1rem;margin-bottom:.3rem">no goals yet</div>add a goal below to get started.</div>';
+    populateBdSelect(); return;
+  }
+
+  var html = '';
+  for (var gi = 0; gi < goals.length; gi++) {
+    var g = goals[gi];
+    var subs = g.subgoals || [];
+    var done = 0;
+    for (var si = 0; si < subs.length; si++) { if (subs[si].done) done++; }
+    var hasSubs = subs.length > 0;
+    var badgeTxt = hasSubs ? (done + '/' + subs.length + ' sub-goals') : 'no sub-goals';
+    var badgeCls = hasSubs ? 'goal-badge has-subs' : 'goal-badge';
+    var dimFirst = g.dimension ? g.dimension.split(' ')[0] : '';
+    var dimCls   = dimFirst ? 'dim-' + dimFirst : '';
+
+    // sub-goal rows
+    var subsHtml = '';
+    for (var si2 = 0; si2 < subs.length; si2++) {
+      var s = subs[si2];
+      var doneCls = s.done ? ' done' : '';
+      subsHtml += "<div class='sub-item" + doneCls + "' id='si-" + s.id + "'>";
+      subsHtml += "<div class='sub-check' onclick=\"toggleSub('" + g.id + "','" + s.id + "')\">&#10003;</div>";
+      subsHtml += "<span class='sub-text'>" + esc(s.title) + "</span>";
+      subsHtml += "<button class='sub-del' onclick=\"deleteSub('" + g.id + "','" + s.id + "')\" title='remove'>&#x2715;</button>";
+      subsHtml += '</div>';
+    }
+
+    html += "<div class='goal-row' id='gr-" + g.id + "'>";
+    html += "<div class='goal-header' onclick=\"toggleGoal('" + g.id + "')\">";
+    html += "<span class='goal-chev'>&#9658;</span>";
+    if (g.photo) { html += "<img class='goal-photo-thumb' src='" + g.photo + "'/>"; }
+    html += "<span class='goal-title'>" + esc(g.title) + "</span>";
+    if (g.dimension) { html += "<span class='dim-badge " + dimCls + "'>" + esc(g.dimension) + "</span>"; }
+    html += "<span class='" + badgeCls + "'>" + badgeTxt + "</span>";
+    html += '</div>';
+    html += '<div class="subgoals-panel">';
+    html += subsHtml;
+    html += '<div class="sub-add-row">';
+    html += "<input class='sub-add-inp' id='si-inp-" + g.id + "' placeholder='add a sub-goal\u2026' onkeydown=\"if(event.key==='Enter')addSub('" + g.id + "')\" />";
+    html += "<button class='btn-s' style='font-size:.78rem;padding:.4rem .75rem' onclick=\"addSub('" + g.id + "')\">add</button>";
+    html += '</div>';
+    html += '<div class="goal-actions-row">';
+    html += "<button class='btn-ghost' onclick=\"event.stopPropagation();selectGoalForBreakdown('" + g.id + "')\">&#10022; break this down</button>";
+    html += "<button class='goal-del-btn' onclick=\"event.stopPropagation();deleteGoal('" + g.id + "')\">remove goal</button>";
+    html += '</div>';
+    html += '</div></div>';
+  }
+
+  list.innerHTML = html;
+  populateBdSelect();
+}
+
+function toggleGoal(id) {
+  document.getElementById('gr-' + id).classList.toggle('open');
+}
+
+// ── Subgoals ──────────────────────────────────────────────────────
+function toggleSub(goalId, subId) {
+  var data = PD.get();
+  var goal = null;
+  for (var i = 0; i < data.goals.length; i++) { if (data.goals[i].id === goalId) { goal = data.goals[i]; break; } }
+  if (!goal) return;
+  var sub = null;
+  for (var j = 0; j < goal.subgoals.length; j++) { if (goal.subgoals[j].id === subId) { sub = goal.subgoals[j]; break; } }
+  if (!sub) return;
+  sub.done = !sub.done;
+  PD.save(data);
+  var openId = goalId;
+  render();
+  var el = document.getElementById('gr-' + openId);
+  if (el) el.classList.add('open');
+}
+
+function addSub(goalId) {
+  var inp = document.getElementById('si-inp-' + goalId);
+  var val = inp.value.trim();
+  if (!val) return;
+  PD.saveSubgoal(goalId, {title: val, done: false});
+  inp.value = '';
+  render();
+  var el = document.getElementById('gr-' + goalId);
+  if (el) el.classList.add('open');
+}
+
+function deleteSub(goalId, subId) {
+  var data = PD.get();
+  var goal = null;
+  for (var i = 0; i < data.goals.length; i++) { if (data.goals[i].id === goalId) { goal = data.goals[i]; break; } }
+  if (!goal) return;
+  goal.subgoals = goal.subgoals.filter(function(s) { return s.id !== subId; });
+  PD.save(data);
+  render();
+  var el = document.getElementById('gr-' + goalId);
+  if (el) el.classList.add('open');
+}
+
+function deleteGoal(id) {
+  if (!confirm('Remove this goal?')) return;
+  PD.deleteGoal(id);
+  render();
+}
+
+// ── Add goal panel ────────────────────────────────────────────────
+function toggleAddPanel() { if (addOpen) { closeAddPanel(); } else { openAddPanel(); } }
+
+function openAddPanel() {
+  addOpen = true;
+  document.getElementById('add-panel').classList.add('open');
+}
+
+function closeAddPanel() {
+  addOpen = false;
+  document.getElementById('add-panel').classList.remove('open');
+  clearAddPhoto();
+  document.getElementById('new-goal-inp').value = '';
+  addDim = '';
+  var dimBtns = document.querySelectorAll('.dim-btn');
+  for (var i = 0; i < dimBtns.length; i++) { dimBtns[i].className = 'dim-btn'; }
+  document.getElementById('fw-panel').classList.remove('open');
+  document.getElementById('fw-link-check').checked = false;
+}
+
+function pickDim(el, dim) {
+  var dimBtns = document.querySelectorAll('.dim-btn');
+  for (var i = 0; i < dimBtns.length; i++) { dimBtns[i].className = 'dim-btn'; }
+  addDim = dim;
+  el.classList.add('sel-' + dim);
+}
+
+function toggleFrameworkPanel() {
+  document.getElementById('fw-panel').classList.toggle('open');
+}
+
+
+
+function clearAddPhoto() {
+  addPhoto = null;
+  document.getElementById('add-photo-row').style.display = 'none';
+  document.getElementById('add-photo-prev').style.display = 'none';
+  document.getElementById('goal-photo-inp').value = '';
+}
+
+function onFwCheckChange(cb) {
+  document.getElementById('fw-suggest-area').style.display = cb.checked ? 'block' : 'none';
+}
+
+async function suggestFrameworkGoal() {
+  var area = document.getElementById('fw-suggestions');
+  area.textContent = 'thinking…';
+  var p = PD.profile();
+  var dim = addDim || 'Delivery';
+  var sys = 'You are a professional development coach at Essense, a service design consultancy. Suggest 3 specific, practical development goals for a service designer based on their level and chosen dimension. Each goal should be a single sentence starting with a verb. Respond ONLY with a JSON array: ["goal 1", "goal 2", "goal 3"]';
+    var prompt = 'Role: ' + (p.role||'Service Designer') + ' | Level: ' + (p.level||'junior') + ' | Target: ' + (p.targetLevel||'next level') + ' | Dimension: ' + dim + '. Suggest 3 relevant development goals.';
+  var result = await callAI([{role:'user', content:prompt}], sys, 300);
+  if (result) {
+    var parsed = parseJSON(result);
+    if (Array.isArray(parsed)) {
+      area.innerHTML = parsed.map(function(g, i) {
+        return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-bottom:.3rem;font-size:.825rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
+          + '<span>' + esc(g) + '</span>'
+          + '<button onclick="useFrameworkGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--yellow);color:var(--forest);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;flex-shrink:0">use</button>'
+          + '</div>';
+      }).join('');
+      return;
+    }
+  }
+  // Fallback / demo: canned framework-based suggestions
+  var canned = ['Lead a client workshop end-to-end, from design to facilitation to synthesis',
+                'Build confidence in presenting research insights to senior stakeholders',
+                'Develop my systems thinking by mapping service ecosystems in current projects'];
+  area.innerHTML = canned.map(function(g) {
+    return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-bottom:.3rem;font-size:.825rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
+      + '<span>' + esc(g) + '</span>'
+      + '<button onclick="useFrameworkGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--yellow);color:var(--forest);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;flex-shrink:0">use</button>'
+      + '</div>';
+  }).join('');
+}
+
+function useFrameworkGoal(goalText) {
+  document.getElementById('new-goal-inp').value = goalText;
+  document.getElementById('fw-suggest-area').style.display = 'none';
+}
+
+async function previewAddPhoto(inp) {
+  var file = inp.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = async function(e) {
+    addPhoto = e.target.result;
+    document.getElementById('add-photo-prev').src = e.target.result;
+    document.getElementById('add-photo-row').style.display = 'block';
+    document.getElementById('photo-status').textContent = 'reading image…';
+    try {
+      var base64 = e.target.result.split(',')[1];
+      var mimeType = file.type || 'image/jpeg';
+      var resp = await fetch('/api/chat', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:500,
+          messages:[{ role:'user', content:[
+            {type:'image', source:{type:'base64', media_type:mimeType, data:base64}},
+            {type:'text', text:'Extract every goal, task, intention, or development idea written or visible in this image. Each should be a clear, actionable goal statement. Respond ONLY with a JSON array of strings. If nothing found, return []. No markdown, no explanation.'}
+          ]}]})
+      });
+      var data = await resp.json();
+      var txt = data.content && data.content[0] ? data.content[0].text : null;
+      var parsed = txt ? parseJSON(txt) : null;
+      if (Array.isArray(parsed) && parsed.length) { renderPhotoGoals(parsed); return; }
+    } catch(e) { console.warn('Vision error:', e); }
+    showPhotoGoalsFallback();
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderPhotoGoals(goals) {
+  document.getElementById('photo-goals-area').style.display = 'block';
+  document.getElementById('photo-status').textContent = goals.length + ' goal' + (goals.length!==1?'s':'') + ' found — all selected by default';
+  document.getElementById('photo-goals-list').innerHTML = goals.map(function(g,i){
+    return '<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;background:var(--bright);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .65rem;margin-bottom:.3rem">'
+      +'<input type="checkbox" checked id="pg-'+i+'" onchange="updatePhotoAddBtn()" style="margin-top:.2rem;accent-color:var(--forest);flex-shrink:0"/>'
+      +'<span style="font-size:.825rem;line-height:1.45">'+esc(g)+'</span></label>';
+  }).join('');
+  updatePhotoAddBtn();
+}
+
+function updatePhotoAddBtn() {
+  var n = document.querySelectorAll('#photo-goals-list input:checked').length;
+  var btn = document.getElementById('photo-add-btn');
+  if (!btn) return;
+  btn.style.display = n ? 'block' : 'none';
+  btn.textContent = '+ add ' + n + ' goal' + (n!==1?'s':'');
+}
+
+function addSelectedPhotoGoals() {
+  var labels = document.querySelectorAll('#photo-goals-list label');
+  var added = 0;
+  labels.forEach(function(label) {
+    var cb = label.querySelector('input[type="checkbox"]');
+    if (cb && cb.checked) {
+      var text = label.querySelector('span').textContent.trim();
+      if (text) { PD.saveGoal({title:text, subgoals:[]}); added++; }
+    }
+  });
+  if (added) {
+    render(); closeAddPanel();
+    var t = document.createElement('div');
+    t.style.cssText='position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--forest);color:#fff;padding:.5rem 1.25rem;border-radius:9px;font-family:var(--font-body);font-size:.825rem;z-index:999';
+    t.textContent = '✓ '+added+' goal'+(added!==1?'s':'')+' added';
+    document.body.appendChild(t);
+    setTimeout(function(){t.remove();}, 2200);
+  }
+}
+
+function showPhotoGoalsFallback() {
+  document.getElementById('photo-status').textContent = 'could not read image — check ANTHROPIC_API_KEY in Vercel, or type goals manually';
+  renderPhotoGoals(['Improve my facilitation skills in client workshops','Get comfortable presenting to senior stakeholders','Practice journey mapping on a real project']);
+}
+
+function usePhotoGoal(text) {
+  document.getElementById('new-goal-inp').value = text;
+}
+
+function addGoal() {
+  var title = document.getElementById('new-goal-inp').value.trim();
+  if (!title) { document.getElementById('new-goal-inp').focus(); return; }
+  var linked = document.getElementById('fw-link-check').checked;
+  PD.saveGoal({title: title, dimension: addDim || '', linkedToFramework: linked, photo: addPhoto, subgoals: []});
+  closeAddPanel();
+  render();
+}
+
+// ── Breakdown ─────────────────────────────────────────────────────
+function toggleBreakdown() {
+  var body = document.getElementById('bd-body');
+  var chev = document.getElementById('bd-chev');
+  var open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+function bdGo(n) {
+  var steps = document.querySelectorAll('.bd-step');
+  for (var i = 0; i < steps.length; i++) { steps[i].classList.remove('active'); }
+  document.getElementById('bd-s' + n).classList.add('active');
+}
+
+function bdReset() {
+  bdComfort = ''; bdGoalId = '';
+  var cBtns = document.querySelectorAll('.comfort-btn');
+  for (var i = 0; i < cBtns.length; i++) { cBtns[i].classList.remove('sel'); }
+  bdGo(1);
+}
+
+function populateBdSelect() {
+  var sel = document.getElementById('bd-goal-sel');
+  var goals = PD.goals();
+  if (!goals.length) {
+    sel.innerHTML = '<option value="">— add a goal first —</option>';
+    return;
+  }
+  var html = '<option value="">— pick a goal —</option>';
+  for (var i = 0; i < goals.length; i++) {
+    html += "<option value='" + goals[i].id + "'>" + esc(goals[i].title) + '</option>';
+  }
+  sel.innerHTML = html;
+  if (bdGoalId) sel.value = bdGoalId;
+}
+
+function selectGoalForBreakdown(id) {
+  var body = document.getElementById('bd-body');
+  if (!body.classList.contains('open')) toggleBreakdown();
+  setTimeout(function() {
+    document.getElementById('bd-goal-sel').value = id;
+    bdGoalId = id;
+    body.scrollIntoView({behavior: 'smooth', block: 'start'});
+  }, 100);
+}
+
+function pickComfort(el, val) {
+  bdComfort = val;
+  var cBtns = document.querySelectorAll('.comfort-btn');
+  for (var i = 0; i < cBtns.length; i++) { cBtns[i].classList.remove('sel'); }
+  el.classList.add('sel');
+}
+
+async function generateSubgoals() {
+  bdGoalId = document.getElementById('bd-goal-sel').value;
+  if (!bdGoalId) { alert('please pick a goal first'); return; }
+  if (!bdComfort) { alert('please select your comfort level'); return; }
+  var goal = PD.goalById(bdGoalId);
+  if (!goal) return;
+  var p = PD.profile();
+
+  // Show loading state
+  var list = document.getElementById('sug-list');
+  list.innerHTML = '<div style="font-size:.825rem;color:var(--muted);font-style:italic;padding:.5rem 0">generating sub-goals…</div>';
+  bdGo(2);
+
+  var sys = 'You are a professional development coach at Essense, a service design consultancy in the Netherlands. Generate 5 specific, actionable sub-goals for a service designer. Each sub-goal should be a concrete, doable action — not vague. Respond ONLY with a JSON array of strings (no markdown): ["sub-goal 1", "sub-goal 2", ...]';
+  var prompt = 'Goal: ' + goal.title + ' | Comfort level: ' + bdComfort + ' | Role: ' + (p.role||'Service Designer') + ' | Level: ' + (p.level||'Junior') + '. Generate 5 specific, actionable sub-goals for this goal.';
+  var result = await callAI([{role:'user', content:prompt}], sys, 500);
+
+  var adapted;
+  if (result) {
+    var parsed = parseJSON(result);
+    if (Array.isArray(parsed) && parsed.length) {
+      adapted = parsed.slice(0,5);
+    }
+  }
+  if (!adapted) {
+    // Fallback to sensible defaults
+    adapted = [
+      'find one specific resource about "' + goal.title + '" and spend 30 minutes with it',
+      'try applying this in a real piece of work and note what happened',
+      'ask a colleague or your coach for feedback on your approach',
+      'reflect on one situation where this skill made a difference',
+      'identify the next concrete step to deepen this skill'
+    ];
+  }
+
+  var html = '';
+  for (var j = 0; j < adapted.length; j++) {
+    html += "<div class='sug-item approved' id='si-sug-" + j + "' onclick='toggleSug(" + j + ")'>";
+    html += "<div class='sug-check'>&#10003;</div>";
+    html += "<span class='sug-text'>" + esc(adapted[j]) + "</span>";
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function toggleSug(i) {
+  var el = document.getElementById('si-sug-' + i);
+  if (el.classList.contains('dropped')) {
+    el.classList.remove('dropped'); el.classList.add('approved');
+  } else {
+    el.classList.remove('approved'); el.classList.add('dropped');
+  }
+}
+
+function saveSuggestedSubgoals() {
+  var nodes = document.querySelectorAll('.sug-item.approved .sug-text');
+  var approved = [];
+  for (var i = 0; i < nodes.length; i++) { approved.push(nodes[i].textContent.trim()); }
+  if (!approved.length) { alert('approve at least one sub-goal'); return; }
+  for (var j = 0; j < approved.length; j++) {
+    PD.saveSubgoal(bdGoalId, {title: approved[j], done: false});
+  }
+  bdGo(3);
+  render();
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+render();
+</script>
+</body>
+</html>

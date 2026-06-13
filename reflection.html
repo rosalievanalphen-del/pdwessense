@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Reflect — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 4rem;max-width:600px;margin:0 auto}
+.view{display:none}.view.active{display:block;animation:fadeup .28s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+.dots{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
+.dot.done{background:var(--essense)}.dot.cur{background:var(--forest)}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}.btn-p:disabled{opacity:.35;cursor:not-allowed}
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.7rem 1.4rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.7rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem;align-items:center}
+
+/* Format picker */
+.fmt-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.75rem}
+.fmt-btn{background:var(--egg);border:1.5px solid var(--border);border-radius:13px;padding:1.1rem 1rem;cursor:pointer;text-align:left;transition:all .2s;display:block;width:100%;font-family:var(--font-body)}
+.fmt-btn:hover{border-color:var(--essense);background:var(--bright)}
+.fmt-btn.sel{border-color:var(--forest);background:var(--bright)}
+.fmt-icon{font-size:1.3rem;margin-bottom:.4rem}
+.fmt-title{font-size:.875rem;font-weight:500;color:var(--forest);margin-bottom:.2rem}
+.fmt-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.fmt-time{font-size:.7rem;color:var(--essense);font-weight:500;margin-top:.35rem}
+.fmt-tag{font-size:.65rem;background:var(--forest);color:var(--bright);border-radius:99px;padding:.1rem .45rem;margin-top:.3rem;display:inline-block}
+
+/* Question cards */
+.q-card{background:var(--egg);border:1px solid var(--border);border-radius:13px;padding:1.25rem;margin-bottom:.875rem}
+.q-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--essense);font-weight:500;margin-bottom:.35rem}
+.q-text{font-family:var(--font-head);font-size:1rem;color:var(--forest);margin-bottom:.75rem;line-height:1.4}
+textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--white);resize:vertical;min-height:80px;line-height:1.6;outline:none;transition:border .2s}
+textarea:focus{border-color:var(--essense)}
+
+/* Energy */
+.energy-label{font-size:.875rem;font-weight:500;color:var(--charcoal);margin:.875rem 0 .5rem}
+.energy-row{display:flex;gap:.5rem}
+.e-btn{flex:1;padding:.55rem .2rem;border:1.5px solid var(--border);border-radius:9px;background:var(--egg);cursor:pointer;font-size:.75rem;text-align:center;transition:all .2s;color:var(--muted);font-family:var(--font-body)}
+.e-btn:hover{border-color:var(--essense);background:var(--bright)}
+.e-btn.sel{border-color:var(--forest);background:var(--bright);color:var(--forest);font-weight:500}
+.e-emoji{font-size:1rem;display:block;margin-bottom:.2rem}
+
+/* Walk banner */
+.walk-banner{background:var(--forest);color:#b7e4c7;border-radius:13px;padding:1rem 1.25rem;margin-bottom:1rem;font-size:.85rem;line-height:1.5}
+.walk-banner strong{color:var(--white);display:block;margin-bottom:.25rem;font-family:var(--font-head);font-size:.95rem}
+
+/* Audio */
+.audio-card{background:var(--egg);border:1px solid var(--border);border-radius:13px;padding:1.25rem;margin-bottom:.875rem;text-align:center}
+.rec-btn{background:var(--forest);color:var(--white);border:none;border-radius:99px;padding:.65rem 1.4rem;font-family:var(--font-body);font-size:.85rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
+.rec-btn.recording{background:#c0392b;animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.rec-status{font-size:.8rem;color:var(--muted);margin-top:.65rem}
+.rec-transcript{margin-top:.75rem;font-size:.82rem;color:var(--charcoal);background:var(--white);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;min-height:48px;text-align:left;line-height:1.6;display:none}
+
+/* Chat */
+.chat-area{border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:.875rem}
+.chat-messages{padding:1rem;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:.65rem;background:var(--white)}
+.msg{max-width:88%;font-size:.85rem;line-height:1.55;border-radius:10px;padding:.6rem .9rem}
+.msg.bot{background:var(--bright);color:var(--forest);align-self:flex-start;border-bottom-left-radius:2px}
+.msg.user{background:var(--forest);color:var(--white);align-self:flex-end;border-bottom-right-radius:2px}
+.chat-input-row{display:flex;gap:.4rem;padding:.65rem;border-top:1px solid var(--border);background:var(--egg)}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);outline:none}
+.chat-input:focus{border-color:var(--essense)}
+.chat-send{background:var(--forest);color:var(--white);border:none;border-radius:8px;padding:.5rem .9rem;font-family:var(--font-body);font-size:.82rem;font-weight:500;cursor:pointer}
+
+/* Info icon */
+.info-wrap{position:relative;display:inline-flex;align-items:center;vertical-align:middle;margin-left:.3rem}
+.info-icon{width:15px;height:15px;border-radius:50%;background:var(--bright);border:1px solid var(--border);color:var(--essense);font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-style:normal;line-height:1}
+.info-tip{display:none;position:absolute;bottom:calc(100%+6px);left:50%;transform:translateX(-50%);background:var(--forest);color:#b7e4c7;font-size:.74rem;line-height:1.5;padding:.6rem .875rem;border-radius:9px;width:240px;z-index:20;pointer-events:none}
+.info-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--forest)}
+.info-icon:hover + .info-tip{display:block}
+
+/* Time confirmation */
+.time-confirm{background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.875rem;flex-wrap:wrap;margin-bottom:.875rem}
+.tc-label{font-size:.825rem;color:var(--charcoal);flex:1}
+.tc-input{width:60px;border:1px solid var(--border);border-radius:7px;padding:.35rem .5rem;font-family:var(--font-body);font-size:.875rem;text-align:center;outline:none;background:var(--white)}
+.tc-input:focus{border-color:var(--essense)}
+.tc-unit{font-size:.8rem;color:var(--muted)}
+
+/* Done state */
+.done-card{background:var(--bright);border-radius:13px;padding:1.5rem;text-align:center}
+.done-icon{font-size:2rem;margin-bottom:.5rem}
+.done-title{font-family:var(--font-head);font-size:1.1rem;color:var(--forest);margin-bottom:.3rem}
+.done-sub{font-size:.825rem;color:var(--muted);line-height:1.5}
+
+@media(max-width:480px){.fmt-grid{grid-template-columns:1fr}}
+
+
+</style>
+</head>
+<body>
+
+<!-- ── VIEW 0: Format picker ─────────────────────────────────────── -->
+<div class="view active" id="v-pick">
+  <p class="label">reflection</p>
+  <h1 class="heading">how do you want to reflect today?</h1>
+  <p class="sub">pick a format. you can always come back and try a different one.</p>
+  <div class="fmt-grid">
+    <button class="fmt-btn" onclick="pickFmt('written')">
+      <div class="fmt-icon">✍️</div>
+      <div class="fmt-title">written</div>
+      <div class="fmt-desc">structured questions, write at your own pace</div>
+      <div class="fmt-time">5 questions · ~8 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('walk')">
+      <div class="fmt-icon">🚶</div>
+      <div class="fmt-title">walk-and-talk</div>
+      <div class="fmt-desc">2 prompts to think about on a walk, write back when you return</div>
+      <div class="fmt-time">2 prompts · ~15 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('quick')">
+      <div class="fmt-icon">⚡</div>
+      <div class="fmt-title">quick check-in</div>
+      <div class="fmt-desc">one question at a time, three minutes total</div>
+      <div class="fmt-time">2 questions · ~3 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('audio')">
+      <div class="fmt-icon">🎙️</div>
+      <div class="fmt-title">audio</div>
+      <div class="fmt-desc">speak your thoughts, add notes to go with your recording</div>
+      <div class="fmt-time">open · ~5 min</div>
+    </button>
+    <button class="fmt-btn" onclick="pickFmt('talk')" style="grid-column:span 2">
+      <div class="fmt-icon">🤖</div>
+      <div class="fmt-title">talk it through — guided</div>
+      <div class="fmt-desc">a conversational agent asks one question at a time, adapts to your answers, and helps you reach an insight you might not have found alone</div>
+      <div class="fmt-time">adaptive · ~10 min</div>
+      <div class="fmt-tag">AI-guided</div>
+    </button>
+  </div>
+</div>
+
+<!-- ── VIEW: Written ─────────────────────────────────────────────── -->
+<div class="view" id="v-written">
+  <div class="dots" id="dots-written"></div>
+  <p class="label">written reflection</p>
+  <div id="wr-steps"></div>
+</div>
+
+<!-- ── VIEW: Walk-and-talk ───────────────────────────────────────── -->
+<div class="view" id="v-walk">
+  <div class="dots" id="dots-walk"></div>
+  <p class="label">walk-and-talk</p>
+  <div id="wk-steps"></div>
+</div>
+
+<!-- ── VIEW: Quick check-in ─────────────────────────────────────── -->
+<div class="view" id="v-quick">
+  <div class="dots" id="dots-quick"></div>
+  <p class="label">quick check-in</p>
+  <div id="qk-steps"></div>
+</div>
+
+<!-- ── VIEW: Audio ───────────────────────────────────────────────── -->
+<div class="view" id="v-audio">
+  <div class="dots" id="dots-audio"></div>
+  <p class="label">audio reflection</p>
+  <div id="au-steps"></div>
+</div>
+
+<!-- ── VIEW: Talk it through ─────────────────────────────────────── -->
+<div class="view" id="v-talk">
+  <p class="label">guided reflection</p>
+  <h1 class="heading">talk it through</h1>
+  <p class="sub">answer one question at a time. the conversation adapts as you go.</p>
+  <div class="chat-area">
+    <div class="chat-messages" id="chat-msgs"></div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-in" placeholder="type your response…" onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send" onclick="sendChat()">send</button>
+    </div>
+  </div>
+  <button class="btn-y" id="btn-chat-save" onclick="saveChatReflection()" style="display:none">save reflection →</button>
+  <button class="btn-s" style="margin-top:.5rem" onclick="goTo('pick')">← change format</button>
+</div>
+
+<!-- ── VIEW: Time confirm ─────────────────────────────────────────── -->
+<div class="view" id="v-time">
+  <p class="label">almost done</p>
+  <h1 class="heading">how long did this take?</h1>
+  <p class="sub">we'll track this toward your weekly PD time. adjust if needed.</p>
+  <div class="time-confirm">
+    <span class="tc-label">this reflection took about</span>
+    <input class="tc-input" id="time-inp" type="number" min="1" max="120"/>
+    <span class="tc-unit">minutes</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn-y" onclick="saveAndDone()">save reflection</button>
+  </div>
+</div>
+
+<!-- ── VIEW: Done ─────────────────────────────────────────────────── -->
+<div class="view" id="v-done">
+  <div class="done-card">
+    <div class="done-icon">✦</div>
+    <div class="done-title">reflection saved</div>
+    <div class="done-sub" id="done-msg"></div>
+  </div>
+  <div class="btn-row" style="margin-top:1.25rem">
+    <button class="btn-s" onclick="startOver()">reflect again</button>
+  </div>
+</div>
+
+<script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo');
+    PD.reset(); // always empty — true first-usage state
+  }
+  // no param = real data, default namespace
+})();
+
+
+
+
+let fmt = '', energy = '', content = {}, pendingMinutes = 0;
+
+// ── Navigation ────────────────────────────────────────────────────
+function goTo(viewId) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+viewId).classList.add('active');
+}
+
+function pickFmt(f) {
+  fmt = f;
+  content = {};
+  energy  = '';
+  switch(f){
+    case 'written': buildWritten(); goTo('written'); break;
+    case 'walk':    buildWalk();    goTo('walk');    break;
+    case 'quick':   buildQuick();   goTo('quick');   break;
+    case 'audio':   buildAudio();   goTo('audio');   break;
+    case 'talk':    initChat();     goTo('talk');    break;
+  }
+}
+
+function startOver() { fmt=''; energy=''; content={}; goTo('pick'); }
+
+// ── Dots helper ───────────────────────────────────────────────────
+function makeDots(containerId, total, current) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = Array.from({length:total},(_,i)=>`<div class="dot ${i<current?'done':i===current?'cur':''}"></div>`).join('');
+}
+
+// ── Energy picker ─────────────────────────────────────────────────
+function energyHTML(key) {
+  return `<div class="energy-label">how are you feeling right now?</div>
+  <div class="energy-row">
+    <button class="e-btn" onclick="pickE('${key}','energised',this)"><span class="e-emoji">🔋</span>energised</button>
+    <button class="e-btn" onclick="pickE('${key}','neutral',this)"><span class="e-emoji">⚖️</span>neutral</button>
+    <button class="e-btn" onclick="pickE('${key}','drained',this)"><span class="e-emoji">🪫</span>drained</button>
+    <button class="e-btn" onclick="pickE('${key}','surprised',this)"><span class="e-emoji">✨</span>surprised</button>
+  </div>`;
+}
+function pickE(key, val, el) {
+  energy = val;
+  document.querySelectorAll(`#${key} .e-btn`).forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── Written ───────────────────────────────────────────────────────
+const writtenQs = [
+  {tag:'context',    q:'what happened recently that you want to reflect on?'},
+  {tag:'well',       q:'what went well — and what made it work?'},
+  {tag:'energy',     q:'what gave you energy, and what drained it?'},
+  {tag:'learned',    q:'what did you learn or realise?'},
+  {tag:'next',       q:'what\'s one thing you\'ll try differently or take forward?'},
+];
+let wrStep = 0;
+function buildWritten() { wrStep=0; renderWrStep(); }
+function renderWrStep() {
+  makeDots('dots-written', writtenQs.length+1, wrStep);
+  const q = writtenQs[wrStep];
+  document.getElementById('wr-steps').innerHTML = `
+    <div class="q-card">
+      <div class="q-tag">${q.tag}</div>
+      <div class="q-text">${q.q}</div>
+      <textarea id="wr-inp-${wrStep}" rows="4" placeholder="write freely…">${content['wr-'+wrStep]||''}</textarea>
+    </div>
+    <div class="btn-row">
+      ${wrStep===0?'<button class="btn-s" onclick="goTo(\'pick\')">← formats</button>':'<button class="btn-s" onclick="wrBack()">← back</button>'}
+      <button class="btn-p" onclick="wrNext()">next →</button>
+    </div>`;
+}
+function wrNext() {
+  content['wr-'+wrStep] = document.getElementById('wr-inp-'+wrStep)?.value||'';
+  if(wrStep < writtenQs.length-1){ wrStep++; renderWrStep(); }
+  else { renderWrEnergy(); }
+}
+function wrBack() { if(wrStep>0){ wrStep--; renderWrStep(); } }
+function renderWrEnergy() {
+  makeDots('dots-written', writtenQs.length+1, writtenQs.length);
+  document.getElementById('wr-steps').innerHTML = `
+    <div id="wr-energy">${energyHTML('wr-energy')}</div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn-s" onclick="wrBack()">← back</button>
+      <button class="btn-p" onclick="showTimeConfirm()">continue →</button>
+    </div>`;
+}
+
+// ── Walk-and-talk ─────────────────────────────────────────────────
+const walkQs = [
+  {tag:'on the walk',  q:'what moment or challenge from this week is on your mind?'},
+  {tag:'when you\'re back', q:'what did you notice, and what\'s one thing you\'ll take forward?'},
+];
+let wkStep = 0;
+function buildWalk() { wkStep=0; renderWkStep(); }
+function renderWkStep() {
+  makeDots('dots-walk', walkQs.length+1, wkStep);
+  if(wkStep===0) {
+    document.getElementById('wk-steps').innerHTML = `
+      <div class="walk-banner"><strong>before you go</strong>hold these two prompts in your mind while you walk. come back and write when you return.</div>
+      <div class="q-card">
+        <div class="q-tag">prompt 1</div>
+        <div class="q-text">${walkQs[0].q}</div>
+      </div>
+      <div class="q-card">
+        <div class="q-tag">prompt 2</div>
+        <div class="q-text">${walkQs[1].q}</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="wkNext()">I'm back — write my reflection →</button>
+        <button class="btn-s" onclick="goTo('pick')">← change format</button>
+      </div>`;
+  } else {
+    document.getElementById('wk-steps').innerHTML = walkQs.map((q,i)=>`
+      <div class="q-card">
+        <div class="q-tag">${q.tag}</div>
+        <div class="q-text">${q.q}</div>
+        <textarea id="wk-inp-${i}" rows="3" placeholder="write freely…">${content['wk-'+i]||''}</textarea>
+      </div>`).join('')+`
+      <div id="wk-energy">${energyHTML('wk-energy')}</div>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn-s" onclick="wkBack()">← back</button>
+        <button class="btn-p" onclick="wkSave()">continue →</button>
+      </div>`;
+  }
+}
+function wkNext() { wkStep=1; renderWkStep(); }
+function wkBack() { wkStep=0; renderWkStep(); }
+function wkSave() {
+  walkQs.forEach((_,i)=>{ content['wk-'+i]=document.getElementById('wk-inp-'+i)?.value||''; });
+  showTimeConfirm();
+}
+
+// ── Quick check-in ────────────────────────────────────────────────
+const quickQs = [
+  {tag:'what stood out', q:'what\'s one thing that stood out for you this week?'},
+  {tag:'what\'s next',   q:'what\'s one thing you\'ll do or try differently next week?'},
+];
+let qkStep = 0;
+function buildQuick() { qkStep=0; renderQkStep(); }
+function renderQkStep() {
+  makeDots('dots-quick', quickQs.length+1, qkStep);
+  if(qkStep < quickQs.length) {
+    const q=quickQs[qkStep];
+    document.getElementById('qk-steps').innerHTML=`
+      <div class="q-card">
+        <div class="q-tag">${q.tag}</div>
+        <div class="q-text">${q.q}</div>
+        <textarea id="qk-inp" rows="3" placeholder="just a sentence or two is enough…">${content['qk-'+qkStep]||''}</textarea>
+      </div>
+      <div class="btn-row">
+        ${qkStep>0?'<button class="btn-s" onclick="qkBack()">← back</button>':'<button class="btn-s" onclick="goTo(\'pick\')">← formats</button>'}
+        <button class="btn-p" onclick="qkNext()">next →</button>
+      </div>`;
+  } else {
+    document.getElementById('qk-steps').innerHTML=`
+      <div id="qk-energy">${energyHTML('qk-energy')}</div>
+      <div class="btn-row" style="margin-top:1.25rem">
+        <button class="btn-s" onclick="qkBack()">← back</button>
+        <button class="btn-p" onclick="showTimeConfirm()">continue →</button>
+      </div>`;
+  }
+}
+function qkNext() {
+  content['qk-'+qkStep]=document.getElementById('qk-inp')?.value||'';
+  qkStep++; renderQkStep();
+}
+function qkBack() { if(qkStep>0){ qkStep--; renderQkStep(); } }
+
+// ── Audio ─────────────────────────────────────────────────────────
+let isRec=false, recTimer=null, recSec=0;
+function buildAudio() {
+  makeDots('dots-audio',2,0);
+  document.getElementById('au-steps').innerHTML=`
+    <h1 class="heading">record your reflection</h1>
+    <p class="sub">speak your thoughts. add any notes to go with your recording.</p>
+    <div class="audio-card">
+      <button class="rec-btn" id="rec-btn" onclick="toggleRec()">🎙️ start recording</button>
+      <div class="rec-status" id="rec-status">tap to begin</div>
+      <div class="rec-transcript" id="rec-transcript"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-tag">notes</div>
+      <div class="q-text">anything to add or clarify?</div>
+      <textarea id="au-notes" rows="3" placeholder="add context or key points…"></textarea>
+    </div>
+    <div id="au-energy">${energyHTML('au-energy')}</div>
+    <div class="btn-row" style="margin-top:1.25rem">
+      <button class="btn-s" onclick="goTo('pick')">← formats</button>
+      <button class="btn-p" onclick="auSave()">continue →</button>
+    </div>`;
+}
+function toggleRec() {
+  const btn=document.getElementById('rec-btn');
+  const st=document.getElementById('rec-status');
+  const tr=document.getElementById('rec-transcript');
+  if(!isRec){
+    isRec=true; recSec=0;
+    btn.textContent='⏹ stop recording'; btn.classList.add('recording');
+    tr.style.display='block'; tr.textContent='Recording… speak your reflection.';
+    st.textContent='recording in progress';
+    recTimer=setInterval(()=>{ recSec++; st.textContent='recording — '+recSec+'s'; },1000);
+  } else {
+    isRec=false; clearInterval(recTimer);
+    btn.textContent='🎙️ record again'; btn.classList.remove('recording');
+    st.textContent='recording done · '+recSec+'s';
+    tr.textContent='[Audio captured — '+recSec+'s. Add any notes below.]';
+  }
+}
+function auSave() {
+  content.notes=document.getElementById('au-notes')?.value||'';
+  content.duration=recSec;
+  showTimeConfirm();
+}
+
+// ── AI chat ───────────────────────────────────────────────────────
+var chatHistory = [];
+var _fallbackMode = false;
+var _fbStep = 0;
+function fallbackCoachReply(userText) {
+  _fallbackMode = true;
+  var frag = (userText||'').split(/[.!?]/)[0].trim();
+  if (frag.length > 60) frag = frag.slice(0,60) + '…';
+  var steps = [
+    'You mentioned "' + frag + '" — what made that moment stand out for you?',
+    'That makes sense. What was the most challenging part of it for you personally?',
+    'And looking back at it now — what did you actually learn, even if it was uncomfortable?',
+    'Good. If a similar situation comes up next week, what is one thing you would do differently?',
+    'That sounds like a solid takeaway. How are you feeling now, having talked it through?'
+  ];
+  var r = steps[Math.min(_fbStep, steps.length-1)];
+  _fbStep++;
+  return r;
+}
+var REFL_SYSTEM = 'You are a thoughtful professional development coach at Essense, a service design consultancy in the Netherlands. Help the person reflect on their professional growth through natural conversation. Ask one focused question at a time. Start with an open question about something that happened recently in their work. Listen carefully and build on what they say — be specific, not generic. After 4-6 exchanges, help them land on one concrete insight or next step. Keep responses to 2-3 sentences. Warm but direct.';
+
+function initChat() {
+  chatHistory = [];
+  var msgs = document.getElementById('chat-msgs'); msgs.innerHTML = '';
+  document.getElementById('btn-chat-save').style.display = 'none';
+  startAIChat();
+}
+
+async function startAIChat() {
+  addTypingIndicator();
+  var resp = await callAI(
+    [{role:'user', content:'Start our reflection conversation. Ask me one opening question.'}],
+    REFL_SYSTEM
+  );
+  removeTypingIndicator();
+  var opening = resp || 'What has been on your mind lately — anything from your work this week that you want to think through?';
+  if (!resp) _fallbackMode = true;
+  addMsg('bot', opening);
+  chatHistory.push({role:'assistant', content:opening});
+}
+
+function addMsg(role, text) {
+  var msgs = document.getElementById('chat-msgs');
+  var m = document.createElement('div'); m.className = 'msg ' + role; m.textContent = text;
+  msgs.appendChild(m); msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addTypingIndicator() {
+  var msgs = document.getElementById('chat-msgs');
+  var t = document.createElement('div'); t.className = 'msg bot'; t.id = 'typing-ind';
+  t.style.opacity = '.5'; t.style.fontStyle = 'italic'; t.textContent = '...';
+  msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+}
+function removeTypingIndicator() {
+  var t = document.getElementById('typing-ind'); if (t) t.remove();
+}
+
+async function sendChat() {
+  var inp = document.getElementById('chat-in');
+  var val = inp.value.trim(); if (!val) return;
+  addMsg('user', val);
+  chatHistory.push({role:'user', content:val});
+  inp.value = '';
+  addTypingIndicator();
+  var resp = await callAI(chatHistory, REFL_SYSTEM);
+  removeTypingIndicator();
+  if (!resp) resp = fallbackCoachReply(val);
+  addMsg('bot', resp);
+  chatHistory.push({role:'assistant', content:resp});
+  if (chatHistory.filter(function(m){return m.role==='user';}).length >= 4) {
+    document.getElementById('btn-chat-save').style.display = 'inline-block';
+  }
+}
+
+function saveChatReflection() {
+  content.chat = chatHistory.filter(function(m){return m.role==='user';}).map(function(m){return m.content;});
+  fmt = 'talk'; showTimeConfirm();
+}
+
+// ── Time confirmation ─────────────────────────────────────────────
+function showTimeConfirm() {
+  pendingMinutes = PD.suggestedMinutes(fmt);
+  document.getElementById('time-inp').value = pendingMinutes;
+  goTo('time');
+}
+
+function saveAndDone() {
+  const mins = parseInt(document.getElementById('time-inp').value)||pendingMinutes;
+  PD.saveReflection({ format:fmt, energy, content, minutesSpent:mins });
+
+  const msgs={
+    written:  'your written reflection is saved and will feed into your insights.',
+    walk:     'walk-and-talk saved. walking while thinking is one of the best things you can do for creativity.',
+    quick:    'quick check-in done. two minutes of reflection goes further than you think.',
+    audio:    'audio reflection saved.',
+    talk:     'guided reflection saved. the conversation is stored and will feed into your insights.',
+  };
+  document.getElementById('done-msg').textContent = msgs[fmt]||'reflection saved.';
+  goTo('done');
+}
+
+function startOver() { fmt=''; energy=''; content={}; goTo('pick'); }
+</script>
+</body>
+</html>

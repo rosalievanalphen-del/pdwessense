@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Coach prep — Essense PD</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="./store.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;--yellow:#FFC502;--charcoal:#1c1c1c;--muted:#6b7280;--border:#c8dfd6;--white:#fff;--font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);padding:2rem 1.5rem 4rem;max-width:640px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.5rem}
+.heading{font-family:var(--font-head);font-size:1.5rem;color:var(--forest);margin-bottom:.4rem;line-height:1.25}
+.sub{font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.75rem}
+.btn-p{background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--essense)}
+.session-banner{border-radius:13px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:none}
+.session-banner.upcoming{background:var(--forest);color:var(--white)}
+.session-banner.plan{background:var(--egg);border:1.5px dashed var(--border)}
+.sb-head{font-family:var(--font-head);font-size:1rem;margin-bottom:.3rem}
+.sb-upcoming .sb-head{color:var(--white)}
+.sb-plan .sb-head{color:var(--forest)}
+.sb-meta{font-size:.8rem;line-height:1.5}
+.sb-upcoming .sb-meta{color:#b7e4c7}
+.sb-plan .sb-meta{color:var(--muted)}
+.sb-actions{margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap}
+.cal-link{display:inline-flex;align-items:center;gap:.35rem;background:var(--yellow);color:var(--forest);text-decoration:none;border-radius:8px;padding:.4rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600}
+.cal-link-ghost{display:inline-flex;align-items:center;gap:.35rem;background:transparent;color:var(--white);text-decoration:none;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:.4rem .875rem;font-family:var(--font-body);font-size:.78rem}
+.cal-link-ghost:hover{border-color:var(--white)}
+
+.btn-y{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.65rem 1.3rem;font-family:var(--font-body);font-size:.875rem;font-weight:600;cursor:pointer}
+.btn-s{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:9px;padding:.65rem 1.1rem;font-family:var(--font-body);font-size:.875rem;cursor:pointer;transition:all .2s}
+.btn-s:hover{border-color:var(--essense);color:var(--charcoal)}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;align-items:center}
+.ghost{background:transparent;border:none;font-family:var(--font-body);font-size:.8rem;cursor:pointer;padding:0;font-weight:500}
+
+/* Block card */
+.block{background:var(--white);border:1.5px solid var(--border);border-radius:14px;margin-bottom:.875rem;overflow:hidden}
+.block-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;cursor:pointer;gap:1rem;user-select:none;transition:background .15s}
+.block-header:hover{background:var(--bright)}
+.block-title{font-size:.875rem;font-weight:500;color:var(--charcoal)}
+.block-right{display:flex;align-items:center;gap:.65rem}
+.chevron{font-size:.7rem;color:var(--muted);transition:transform .25s}
+.chevron.open{transform:rotate(90deg)}
+.block-body{border-top:1px solid var(--border);padding:1.1rem 1.25rem;animation:fadedn .2s ease}
+.block-body.hidden{display:none}
+@keyframes fadedn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Since last session */
+.sls-item{border-left:2px solid var(--border);padding:.3rem 0 .3rem .75rem;margin-bottom:.5rem;font-size:.825rem;line-height:1.45;color:var(--charcoal)}
+.sls-date{font-size:.72rem;color:var(--muted);margin-bottom:.1rem}
+.sls-empty{font-size:.825rem;color:var(--muted);font-style:italic}
+.sls-tabs{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.sls-tab{padding:.3rem .8rem;border-radius:99px;font-size:.75rem;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;font-family:var(--font-body);transition:all .2s}
+.sls-tab.active{background:var(--forest);color:var(--white);border-color:var(--forest)}
+.sls-section{display:none}.sls-section.active{display:block}
+
+/* Topics */
+.topics-wrap{position:relative}
+textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.65rem .875rem;font-family:var(--font-body);font-size:.875rem;color:var(--charcoal);background:var(--egg);resize:vertical;min-height:100px;line-height:1.6;outline:none;transition:border .2s}
+textarea:focus{border-color:var(--essense);background:var(--white)}
+.save-inline{background:var(--yellow);color:var(--forest);border:none;border-radius:7px;padding:.35rem .8rem;font-family:var(--font-body);font-size:.78rem;font-weight:600;cursor:pointer;margin-top:.5rem}
+.saved-msg{font-size:.75rem;color:var(--essense);opacity:0;transition:opacity .3s;margin-left:.5rem}
+
+/* Commitments */
+.commit-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:1px solid rgba(0,0,0,.04)}
+.commit-item:last-of-type{border-bottom:none}
+.commit-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:transparent;transition:all .2s;margin-top:1px}
+.commit-item.done .commit-check{background:var(--essense);border-color:var(--essense);color:var(--white)}
+.commit-text{flex:1;font-size:.85rem;color:var(--charcoal);line-height:1.4}
+.commit-item.done .commit-text{text-decoration:line-through;color:var(--muted)}
+.commit-del{background:none;border:none;color:var(--border);cursor:pointer;font-size:.8rem;padding:.1rem;transition:color .15s}
+.commit-del:hover{color:var(--muted)}
+.commit-add-row{display:flex;gap:.5rem;margin-top:.75rem}
+.commit-inp{flex:1;border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.825rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
+.commit-inp:focus{border-color:var(--essense);background:var(--white)}
+
+/* Session details */
+.session-row{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:.875rem}
+.session-label{font-size:.78rem;color:var(--muted);min-width:80px}
+.sess-input{border:1px solid var(--border);border-radius:8px;padding:.45rem .65rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--egg);outline:none;transition:border .2s}
+.sess-input:focus{border-color:var(--essense);background:var(--white)}
+
+/* Share */
+.share-card{background:var(--forest);border-radius:13px;padding:1.25rem;margin-bottom:.875rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.share-text{flex:1}
+.share-title{font-family:var(--font-head);font-size:.95rem;color:var(--white);margin-bottom:.25rem}
+.share-desc{font-size:.78rem;color:#b7e4c7;line-height:1.4}
+.share-btn{background:var(--yellow);color:var(--forest);border:none;border-radius:9px;padding:.6rem 1.1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;flex-shrink:0;transition:opacity .2s}
+.share-btn.shared{opacity:.5;cursor:default}
+.share-status{font-size:.75rem;color:#b7e4c7;font-style:italic;margin-top:.25rem;display:none}
+.share-status.visible{display:block}
+
+
+</style>
+</head>
+<body>
+
+<p class="label">coaching</p>
+
+<!-- Session banner -->
+<div class="session-banner" id="session-banner"></div>
+
+<h1 class="heading" id="page-heading">prep for your session</h1>
+<p class="sub" id="page-sub">your coach is <strong id="coach-name">—</strong>. use this page to gather your thinking before you meet.</p>
+
+<!-- Session details -->
+<div class="block">
+  <div class="block-header" onclick="toggleBlock('sess')">
+    <span class="block-title">📅 &nbsp;session details</span>
+    <div class="block-right"><span class="chevron" id="chev-sess">▶</span></div>
+  </div>
+  <div class="block-body hidden" id="body-sess">
+    <div class="session-row">
+      <span class="session-label">next session</span>
+      <input class="sess-input" id="sess-date" type="date" onchange="saveSession()"/>
+    </div>
+    <div class="session-row">
+      <span class="session-label">duration</span>
+      <select class="sess-input" id="sess-dur" onchange="saveSession()">
+        <option value="30">30 min</option>
+        <option value="45">45 min</option>
+        <option value="60" selected>60 min</option>
+        <option value="90">90 min</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Since last session -->
+<div class="block">
+  <div class="block-header" onclick="toggleBlock('sls')">
+    <span class="block-title">since last session</span>
+    <div class="block-right">
+      <span class="chevron" id="chev-sls">▶</span>
+    </div>
+  </div>
+  <div class="block-body hidden" id="body-sls">
+    <div class="sls-tabs">
+      <button class="sls-tab active" onclick="slsTab('actions',this)">actions</button>
+      <button class="sls-tab" onclick="slsTab('reflections',this)">reflections</button>
+      <button class="sls-tab" onclick="slsTab('feedback',this)">feedback</button>
+    </div>
+    <div class="sls-section active" id="sls-actions"></div>
+    <div class="sls-section" id="sls-reflections"></div>
+    <div class="sls-section" id="sls-feedback"></div>
+  </div>
+</div>
+
+<!-- What to discuss -->
+<div class="block">
+  <div class="block-header" onclick="toggleBlock('topics')">
+    <span class="block-title">what I want to discuss</span>
+    <div class="block-right"><span class="chevron" id="chev-topics">▶</span></div>
+  </div>
+  <div class="block-body hidden" id="body-topics">
+    <p style="font-size:.825rem;color:var(--muted);margin-bottom:.75rem;line-height:1.5">what's on your mind going into this session? questions, wins, blockers — anything you want your coach to know.</p>
+    <textarea id="topics-inp" placeholder="e.g. I want to talk about the client workshop I ran last week. I'm not sure how to get better at facilitation when the group is resistant..."></textarea>
+    <div style="display:flex;align-items:center">
+      <button class="save-inline" onclick="saveTopics()">save</button>
+      <span class="saved-msg" id="topics-saved">saved ✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- Last session commitments -->
+<div class="block">
+  <div class="block-header" onclick="toggleBlock('commits')">
+    <span class="block-title">commitments from last time</span>
+    <div class="block-right"><span class="chevron" id="chev-commits">▶</span></div>
+  </div>
+  <div class="block-body hidden" id="body-commits">
+    <p style="font-size:.825rem;color:var(--muted);margin-bottom:.875rem;line-height:1.5">things you said you'd do before this session. tick them off as you go.</p>
+    <div id="commits-list"></div>
+    <div class="commit-add-row">
+      <input class="commit-inp" id="commit-inp" placeholder="add a commitment…" onkeydown="if(event.key==='Enter')addCommit()"/>
+      <button class="btn-s" style="padding:.4rem .8rem;font-size:.78rem" onclick="addCommit()">add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share with coach -->
+<div class="share-card">
+  <div class="share-text">
+    <div class="share-title">share this with your coach</div>
+    <div class="share-desc">sends your prep — topics and commitments — to the coach view so they can see it before the session.</div>
+    <div class="share-status" id="share-status"></div>
+  </div>
+  <button class="share-btn" id="share-btn" onclick="sharePrepWithCoach()">share with <span id="share-coach-name">coach</span> →</button>
+</div>
+
+<script>
+// ── Showcase mode via URL param ─────────────────────────────────
+// ?demo=inuse  → load filled sample data, no UI shown
+// ?demo=first  → show empty/onboarding state, no UI shown
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+(function(){
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo');
+    PD.reset(); // always empty — true first-usage state
+  }
+  // no param = real data, default namespace
+})();
+
+
+
+
+// ── Render ─────────────────────────────────────────────────────────
+function buildCalUrl(coachName, coaching) {
+  var title = encodeURIComponent('Coaching session — ' + coachName);
+  var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + title;
+  if (coaching && coaching.nextSessionDate) {
+    var d   = new Date(coaching.nextSessionDate);
+    var dur = parseInt(coaching.nextSessionDuration) || 60;
+    var end = new Date(d.getTime() + dur * 60000);
+    var fmt = function(dt) {
+      var pad = function(n){ return n < 10 ? '0'+n : ''+n; };
+      return dt.getFullYear() + pad(dt.getMonth()+1) + pad(dt.getDate()) + 'T' + pad(dt.getHours()) + pad(dt.getMinutes()) + '00';
+    };
+    url += '&dates=' + fmt(d) + '/' + fmt(end);
+  }
+  return url;
+}
+
+function render() {
+  var p = PD.profile();
+  var c = PD.coaching();
+
+  // Session banner
+  var banner = document.getElementById('session-banner');
+  var coachName = p.coach || 'your coach';
+  if (c.nextSessionDate) {
+    var d = new Date(c.nextSessionDate);
+    var now = new Date();
+    var daysUntil = Math.ceil((d - now) / 864e5);
+    var calUrl = buildCalUrl(coachName, c);
+    if (daysUntil >= 0) {
+      banner.style.display = 'block';
+      banner.className = 'session-banner upcoming';
+      var urgency = daysUntil === 0 ? 'today' : daysUntil === 1 ? 'tomorrow' : 'in ' + daysUntil + ' days';
+      banner.innerHTML = '<div class="sb-head">📅 Session ' + urgency + '</div>'
+        + '<div class="sb-meta">' + fmtDate(c.nextSessionDate) + ' · ' + (c.nextSessionDuration || 60) + ' min with ' + esc(coachName) + '</div>'
+        + '<div class="sb-actions"><a class="cal-link-ghost" href="' + calUrl + '" target="_blank">open in Google Calendar ↗</a></div>';
+    } else {
+      banner.style.display = 'none';
+    }
+  } else {
+    banner.style.display = 'block';
+    banner.className = 'session-banner plan';
+    var calUrl2 = buildCalUrl(coachName, c);
+    banner.innerHTML = '<div class="sb-head" style="color:var(--forest)">no session planned yet</div>'
+      + '<div class="sb-meta">set a date with ' + esc(coachName) + ' when you are ready.</div>'
+      + '<div class="sb-actions"><a class="cal-link" href="' + calUrl2 + '" target="_blank">📅 plan a session in Google Calendar ↗</a></div>';
+  }
+
+  document.getElementById('coach-name').textContent = p.coach||'your coach';
+  document.getElementById('share-coach-name').textContent = p.coach||'coach';
+
+  // Session details
+  if(c.nextSessionDate) document.getElementById('sess-date').value = c.nextSessionDate.slice(0,10);
+  document.getElementById('sess-dur').value = c.nextSessionDuration||60;
+
+  // Topics
+  document.getElementById('topics-inp').value = c.myTopics||'';
+
+  // Share state
+  if(c.prepShared && c.lastSharedAt) {
+    document.getElementById('share-btn').classList.add('shared');
+    document.getElementById('share-btn').disabled = true;
+    const st=document.getElementById('share-status');
+    st.classList.add('visible');
+    st.textContent='shared '+fmtDate(c.lastSharedAt);
+  }
+
+  // Since last session
+  renderSls();
+  renderCommits();
+}
+
+// ── Since last session tabs ─────────────────────────────────────────
+function slsTab(tab, el) {
+  document.querySelectorAll('.sls-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sls-section').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sls-'+tab).classList.add('active');
+}
+
+const FMT_ICONS={written:'✍️',walk:'🚶',quick:'⚡',audio:'🎙️',talk:'🤖'};
+const FMT_LABELS={written:'written',walk:'walk-and-talk',quick:'quick check-in',audio:'audio',talk:'guided'};
+
+function renderSls() {
+  const actions  = PD.actions();
+  const refls    = PD.reflections();
+  const feedbs   = PD.feedback();
+
+  // Actions: show last 5 done
+  const doneActions=actions.filter(a=>a.done).slice(0,5);
+  const slsAct=document.getElementById('sls-actions');
+  slsAct.innerHTML = doneActions.length
+    ? doneActions.map(a=>`<div class="sls-item"><div class="sls-date">done ${fmtDate(a.doneAt)}</div>${esc(a.title)}${a.minutesSpent?' · '+a.minutesSpent+' min':''}</div>`).join('')
+    : '<div class="sls-empty">no completed actions yet</div>';
+
+  // Reflections: last 5
+  const slsRefl=document.getElementById('sls-reflections');
+  slsRefl.innerHTML = refls.length
+    ? refls.slice(0,5).map(r=>`<div class="sls-item"><div class="sls-date">${fmtDate(r.date)}</div>${FMT_ICONS[r.format]||'✍️'} ${FMT_LABELS[r.format]||'reflection'}${r.minutesSpent?' · '+r.minutesSpent+' min':''}</div>`).join('')
+    : '<div class="sls-empty">no reflections yet</div>';
+
+  // Feedback: last 5
+  const slsFb=document.getElementById('sls-feedback');
+  slsFb.innerHTML = feedbs.length
+    ? feedbs.slice(0,5).map(f=>`<div class="sls-item"><div class="sls-date">${fmtDate(f.date)}</div>${f.type==='positive'?'👍':f.type==='improve'?'↑':'⚖️'} ${esc(f.from||'feedback')}${f.text?' — "'+esc(f.text.slice(0,60))+(f.text.length>60?'…':'')+'"':''}</div>`).join('')
+    : '<div class="sls-empty">no feedback logged yet</div>';
+}
+
+// ── Commitments ────────────────────────────────────────────────────
+function renderCommits() {
+  const c=PD.coaching();
+  const commits=c.commitments||[];
+  const el=document.getElementById('commits-list');
+  if(!commits.length){
+    el.innerHTML='<div class="sls-empty" style="margin-bottom:.5rem">no commitments yet — add one below</div>'; return;
+  }
+  el.innerHTML=commits.map(item=>`
+    <div class="commit-item ${item.done?'done':''}" id="ci-${item.id}">
+      <div class="commit-check" onclick="toggleCommit('${item.id}')">✓</div>
+      <span class="commit-text">${esc(item.text)}</span>
+      <button class="commit-del" onclick="deleteCommit('${item.id}')">✕</button>
+    </div>`).join('');
+}
+function addCommit() {
+  const inp=document.getElementById('commit-inp');
+  const val=inp.value.trim(); if(!val) return;
+  const c=PD.coaching();
+  const commits=c.commitments||[];
+  commits.push({id:Date.now().toString(36),text:val,done:false});
+  PD.saveCoaching({commitments});
+  inp.value=''; renderCommits();
+}
+function toggleCommit(id) {
+  const c=PD.coaching();
+  const commit=c.commitments.find(ci=>ci.id===id); if(!commit) return;
+  commit.done=!commit.done;
+  PD.saveCoaching({commitments:c.commitments}); renderCommits();
+}
+function deleteCommit(id) {
+  const c=PD.coaching();
+  PD.saveCoaching({commitments:(c.commitments||[]).filter(ci=>ci.id!==id)});
+  renderCommits();
+}
+
+// ── Save handlers ──────────────────────────────────────────────────
+function saveSession() {
+  PD.saveCoaching({
+    nextSessionDate:     document.getElementById('sess-date').value||'',
+    nextSessionDuration: parseInt(document.getElementById('sess-dur').value)||60,
+  });
+}
+function saveTopics() {
+  PD.saveCoaching({myTopics:document.getElementById('topics-inp').value});
+  const msg=document.getElementById('topics-saved'); msg.style.opacity='1'; setTimeout(()=>msg.style.opacity='0',2200);
+}
+function sharePrepWithCoach() {
+  const topics=document.getElementById('topics-inp').value;
+  PD.saveCoaching({myTopics:topics}); // ensure latest is saved
+  PD.sharePrepWithCoach();
+  document.getElementById('share-btn').classList.add('shared');
+  document.getElementById('share-btn').disabled=true;
+  const st=document.getElementById('share-status');
+  st.classList.add('visible');
+  st.textContent='shared '+fmtDate(new Date().toISOString());
+}
+
+// ── Collapsibles ───────────────────────────────────────────────────
+function toggleBlock(key) {
+  const body=document.getElementById('body-'+key);
+  const chev=document.getElementById('chev-'+key);
+  const nowHidden=body.classList.toggle('hidden');
+  chev.classList.toggle('open',!nowHidden);
+}
+
+// ── Utils ──────────────────────────────────────────────────────────
+function fmtDate(iso) {
+  if(!iso) return '—';
+  try{ return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+  catch(e){ return '—'; }
+}
+function esc(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+render();
+</script>
+</body>
+</html>

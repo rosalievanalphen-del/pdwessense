@@ -143,61 +143,6 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 
 <script>
 
-async function callAI(messages, system, maxTokens) {
-  try {
-    var body={model:'claude-sonnet-4-20250514',max_tokens:maxTokens||800,messages:messages};
-    if(system) body.system=system;
-    var resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    var data=await resp.json();
-    if(data.content&&data.content[0]) return data.content[0].text;
-    return null;
-  } catch(e){return null;}
-}
-function parseJSON(text){try{return JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){return null;}}
-
-async function findResourcesForGoals(){
-  var st=document.getElementById('ai-search-status');
-  var res=document.getElementById('ai-search-results');
-  st.textContent='searching…'; res.innerHTML='';
-  var goals=typeof PD!=='undefined'?PD.goals():[];
-  var goalText=goals.map(function(g){
-    var subs=(g.subgoals||[]).filter(function(s){return !s.done;}).map(function(s){return s.title;});
-    return g.title+(subs.length?' (sub-goals: '+subs.join(', ')+')':'');
-  }).join(' | ')||'improve facilitation skills and systems thinking as a junior service designer';
-  var catalogue=[
-    {title:'This is Service Design Doing',type:'book',dimension:'Delivery',desc:'Practical service design methods'},
-    {title:'IDEO U — Systems Thinking',type:'course',dimension:'Delivery',desc:'Systems thinking for designers'},
-    {title:'NN/g — Facilitation Skills',type:'video',dimension:'People',desc:'Workshop facilitation video series'},
-    {title:'The Design of Everyday Things',type:'book',dimension:'Delivery',desc:'Foundational design thinking'},
-    {title:'Creative Confidence',type:'book',dimension:'Added value',desc:'Building creative courage in teams'},
-    {title:'WorkshopBank Facilitation',type:'course',dimension:'People',desc:'Practical facilitation techniques'},
-    {title:'Sense & Respond',type:'book',dimension:'Added value',desc:'Adapting to uncertainty'},
-    {title:'Leading Complex Conversations',type:'workshop',dimension:'People',desc:'Stakeholder handling skills'},
-    {title:'Rosenfeld Media — Research Methods',type:'course',dimension:'Delivery',desc:'User research methods'},
-    {title:'Harvard ManageMentor',type:'course',dimension:'Added value',desc:'Business and professional skills'},
-  ];
-  var sys="You are a PD advisor at Essense. Given the person's goals, recommend 3 resources from the catalogue. Respond ONLY with JSON: [{"title":"exact title","reason":"1 sentence why"}]";
-  var prompt='Goals: '+goalText+' | Catalogue: '+catalogue.map(function(c){return c.title+' ('+c.type+')';}).join(', ');
-  var result=await callAI([{role:'user',content:prompt}],sys,300);
-  var picks=result?parseJSON(result):null;
-  if(!picks||!picks.length){
-    picks=[
-      {title:'NN/g — Facilitation Skills',reason:'Directly relevant to facilitation goals.'},
-      {title:'IDEO U — Systems Thinking',reason:'Matches your systems thinking goal.'},
-      {title:'WorkshopBank Facilitation',reason:'Practical workshop techniques for client sessions.'}
-    ];
-  }
-  st.textContent=picks.length+' resources found for your goals';
-  var catMap={}; catalogue.forEach(function(c){catMap[c.title]=c;});
-  res.innerHTML=picks.map(function(p){
-    var item=catMap[p.title]||{type:'resource',dimension:''};
-    return '<div class="ai-res-card"><div><div class="ai-res-title">'+esc(p.title)+'</div>'
-      +'<div class="ai-res-meta">'+(item.type||'')+(item.dimension?' · '+item.dimension:'')+' — '+esc(p.reason)+'</div></div>'
-      +'<button class="ai-res-add" onclick="addAsAction('+JSON.stringify(p.title).replace(/"/g,'&quot;')+', this)">+ add as action</button></div>';
-  }).join('');
-}
-
-
 // ── AI helper ─────────────────────────────────────────────────────
 async function callAI(messages, system, maxTokens) {
   try {
@@ -212,6 +157,11 @@ async function callAI(messages, system, maxTokens) {
 function parseJSON(text) {
   try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
   catch(e) { return null; }
+}
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
 }
 
 // ── Find resources for goals ───────────────────────────────────────
@@ -244,10 +194,8 @@ async function findResourcesForGoals() {
     {title:'Harvard ManageMentor', type:'course', dimension:'Added value', desc:'Business fundamentals and professional skills'},
   ];
 
-  var sys = 'You are a professional development advisor at Essense, a service design consultancy. Given the person's current goals, recommend 3-4 resources from the provided catalogue that would most help them progress. Respond ONLY with a JSON array: [{"title":"exact title","reason":"1 sentence why it fits this person's goals"}]';
-  var prompt = 'Current goals: ' + goalText + '
-
-Catalogue: ' + JSON.stringify(catalogue.map(function(c){return c.title+' ('+c.type+', '+c.dimension+')';}));
+  var sys = "You are a professional development advisor at Essense, a service design consultancy. Given the person's current goals, recommend 3-4 resources from the provided catalogue that would most help them progress. Respond ONLY with a JSON array: [{\"title\":\"exact title\",\"reason\":\"1 sentence why it fits this person's goals\"}]";
+  var prompt = 'Current goals: ' + goalText + '\n\nCatalogue: ' + JSON.stringify(catalogue.map(function(c){return c.title+' ('+c.type+', '+c.dimension+')';}));
 
   var result = await callAI([{role:'user', content:prompt}], sys, 400);
   var picks = null;
@@ -439,7 +387,7 @@ render();
 // ── Showcase mode via URL param ─────────────────────────────────
 // ?demo=inuse  → load filled sample data, no UI shown
 // ?demo=first  → show empty/onboarding state, no UI shown
-var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-9*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-8*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-9*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-8*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
 (function(){
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {

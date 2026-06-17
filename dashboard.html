@@ -389,7 +389,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
     </div>
   </div>
 
-  <!-- Block 4: Time Sanctity -->
+  <!-- Block 4: Calendar Sanctity — two-view design -->
   <div class="block">
     <div class="block-header" onclick="toggleBlock('sanc')">
       <span class="block-title">📅 &nbsp;calendar sanctity</span>
@@ -400,47 +400,45 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
       </div>
     </div>
     <div class="block-body hidden" id="body-sanc">
-      <div class="sanc-top">
-        <div class="sanc-icon">📅</div>
-        <div>
-          <div class="sanc-title">protect your PD time</div>
-          <div class="sanc-desc">reserve a recurring slot in your calendar so PD time doesn't get crowded out. the system marks the intention — what you do with it is tracked through your actions, reflections and sessions.</div>
+
+      <!-- VIEW 1: Preference settings -->
+      <div id="sanc-view-prefs">
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:.875rem;line-height:1.5">protect your PD time. set your preference once — every week the system finds a free slot in that window, so your PD block fits around what is already in your calendar.</p>
+
+        <div class="sc-label" style="margin-bottom:.3rem">when in the day?</div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.75rem">
+          <button class="sanc-pref-btn active" id="pref-morning" onclick="setSancPref('morning')">🌅 morning</button>
+          <button class="sanc-pref-btn" id="pref-noon" onclick="setSancPref('noon')">☀️ midday</button>
+          <button class="sanc-pref-btn" id="pref-afternoon" onclick="setSancPref('afternoon')">🌤 afternoon</button>
         </div>
-      </div>
-      <div class="sc-grid" id="sanc-fields" style="grid-template-columns:1fr 1fr;gap:.5rem">
-        <div><span class="sc-label">day</span>
-          <select class="sc-select" id="sanc-day" onchange="saveSanctity()">
-            <option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option>
-          </select>
+
+        <div class="sc-label" style="margin-bottom:.3rem">how long?</div>
+        <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.875rem">
+          <button class="sanc-pref-btn" id="dur-30" onclick="setSancDur('30 min')">30 min</button>
+          <button class="sanc-pref-btn active" id="dur-45" onclick="setSancDur('45 min')">45 min</button>
+          <button class="sanc-pref-btn" id="dur-60" onclick="setSancDur('60 min')">60 min</button>
+          <button class="sanc-pref-btn" id="dur-90" onclick="setSancDur('90 min')">90 min</button>
         </div>
-        <div><span class="sc-label">duration</span>
-          <select class="sc-select" id="sanc-dur" onchange="saveSanctity()">
-            <option>30 min</option><option>45 min</option><option>60 min</option><option>90 min</option>
-          </select>
+
+        <button onclick="searchWeeklySlot()" style="width:100%;background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:.6rem 1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;transition:opacity .2s">save preference →</button>
+        <div class="sanc-note" style="margin-top:.6rem">📌 time registration stays in Teamleader. sanctity is about intention — protecting the space.</div>
+      </div>
+
+      <!-- VIEW 2: This week's slot -->
+      <div id="sanc-view-slot" style="display:none">
+        <div class="sanc-slot-card" id="sanc-slot-card">
+          <div class="sanc-slot-label">this week's PD slot</div>
+          <div class="sanc-slot-day" id="slot-day-text">—</div>
+          <div class="sanc-slot-meta" id="slot-meta-text">—</div>
+          <div class="sanc-slot-source" id="slot-source-text"></div>
         </div>
-      </div>
-      <div style="margin:.6rem 0 .35rem">
-        <div class="sc-label" style="margin-bottom:.3rem">time preference</div>
-        <div style="display:flex;gap:.3rem;flex-wrap:wrap">
-          <button class="sanc-tod-btn active" id="tod-morning" onclick="setTod('morning')">morning</button>
-          <button class="sanc-tod-btn" id="tod-noon" onclick="setTod('noon')">midday</button>
-          <button class="sanc-tod-btn" id="tod-afternoon" onclick="setTod('afternoon')">afternoon</button>
-          <button class="sanc-tod-btn" id="tod-custom" onclick="setTod('custom')">custom</button>
+        <div style="display:flex;gap:.4rem;margin-top:.6rem;flex-wrap:wrap">
+          <a id="sanc-cal-btn" href="#" target="_blank" style="flex:1;display:flex;align-items:center;justify-content:center;background:var(--yellow);color:var(--forest);text-decoration:none;border-radius:9px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.78rem;font-weight:700;gap:.3rem">📅 open in Google Calendar</a>
+          <button onclick="findAnotherSlot()" style="flex:1;background:transparent;border:1.5px solid var(--border);border-radius:9px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.78rem;color:var(--muted);cursor:pointer">find another</button>
         </div>
-        <select class="sc-select" id="sanc-time-custom" style="display:none;margin-top:.4rem;max-width:120px">
-          <option>08:00</option><option>09:00</option><option>10:00</option><option>11:00</option>
-          <option>12:00</option><option>13:00</option><option>14:00</option><option>15:00</option><option>16:00</option>
-        </select>
+        <button onclick="showSancPrefs()" style="margin-top:.5rem;background:none;border:none;font-family:var(--font-body);font-size:.75rem;color:var(--muted);cursor:pointer;text-decoration:underline;padding:0">← change preference</button>
       </div>
-      <button class="sanc-tod-btn" style="background:var(--bright);color:var(--forest);border-color:var(--essense);margin:.35rem 0;padding:.4rem .9rem;font-size:.75rem" onclick="searchFreeSlot()">🔍 search a free slot</button>
-      <div id="sanc-slot-results" style="margin-top:.35rem"></div>
-      <div class="sanc-preview" id="sanc-preview"></div>
-      <div style="margin-top:.75rem">
-        <a id="sanc-cal-link" href="#" target="_blank" style="display:none;align-items:center;gap:.4rem;background:var(--yellow);color:var(--forest);text-decoration:none;border-radius:8px;padding:.45rem .875rem;font-family:var(--font-body);font-size:.78rem;font-weight:600;width:fit-content">
-          📅 open in Google Calendar ↗
-        </a>
-      </div>
-      <div class="sanc-note">📌 PD time registration stays in Teamleader. calendar sanctity is about your <em>intention</em> — reserving the slot.</div>
+
     </div>
   </div>
 
@@ -726,60 +724,112 @@ function saveTimeTarget() {
 
 // ── Time Sanctity ─────────────────────────────────────────────────
 function toggleSanctity() {
-  const tog = document.getElementById('sanc-tog');
-  const on  = tog.classList.toggle('on');
-  document.getElementById('sanc-lbl').textContent = on?'on':'off';
-  const sc = PD.profile().calendarSanctity||{};
-  PD.saveProfile({calendarSanctity:{...sc,enabled:on}});
-  if(on){ const b=document.getElementById('body-sanc'); if(b.classList.contains('hidden'))toggleBlock('sanc'); renderSanctityPreview(); }
-  else { document.getElementById('sanc-preview').classList.remove('visible'); }
+  var tog = document.getElementById('sanc-tog');
+  var on  = tog.classList.toggle('on');
+  document.getElementById('sanc-lbl').textContent = on ? 'on' : 'off';
+  var sc = PD.profile().calendarSanctity || {};
+  PD.saveProfile({calendarSanctity: Object.assign({}, sc, {enabled: on})});
+  if (on) {
+    var b = document.getElementById('body-sanc');
+    if (b && b.classList.contains('hidden')) toggleBlock('sanc');
+    renderSancBlock(sc);
+  }
 }
-function saveSanctity() {
-  const sc=PD.profile().calendarSanctity||{};
-  const day=document.getElementById('sanc-day').value;
-  const time=document.getElementById('sanc-time').value;
-  const dur=document.getElementById('sanc-dur').value;
-  PD.saveProfile({calendarSanctity:{...sc,day,time,duration:dur}});
-  if(sc.enabled||document.getElementById('sanc-tog').classList.contains('on')) renderSanctityPreview();
+
+// ── Sanctity preference state ─────────────────────────────────────
+var _sancPref = 'morning';
+var _sancDur  = '45 min';
+
+function setSancPref(p) {
+  _sancPref = p;
+  ['morning','noon','afternoon'].forEach(function(k) {
+    var btn = document.getElementById('pref-' + k);
+    if (btn) btn.classList.toggle('active', k === p);
+  });
+  saveSancPrefs();
 }
-var _tod='morning';
-function setTod(t){_tod=t;document.querySelectorAll('.sanc-tod-btn').forEach(function(b){b.classList.remove('active');});var btn=document.getElementById('tod-'+t);if(btn)btn.classList.add('active');var c=document.getElementById('sanc-time-custom');if(c)c.style.display=t==='custom'?'block':'none';}
-function searchFreeSlot() {
-  var res=document.getElementById('sanc-slot-results');
-  res.innerHTML='<div style="font-size:.75rem;color:var(--muted);font-style:italic">checking your calendar…</div>';
-  var slots={morning:[['Tuesday','09:00'],['Thursday','09:30'],['Wednesday','10:00']],
-             noon:[['Tuesday','12:00'],['Wednesday','12:30'],['Friday','12:00']],
-             afternoon:[['Thursday','14:00'],['Tuesday','15:00'],['Friday','14:30']],
-             custom:[['Tuesday','09:00'],['Thursday','11:00'],['Friday','15:00']]};
-  var pick=slots[(typeof _tod!=='undefined')?_tod:'morning']||slots.morning;
-  setTimeout(function(){
-    res.innerHTML='<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin-bottom:.3rem">free slots found</div>'
-      + pick.map(function(s){
-          return '<button type="button" class="sanc-tod-btn" style="margin:.15rem .25rem .15rem 0" onclick="useSlot(\''+s[0]+'\',\''+s[1]+'\')">'+s[0]+' '+s[1]+'</button>';
-        }).join('');
-  },700);
+function setSancDur(d) {
+  _sancDur = d;
+  ['30 min','45 min','60 min','90 min'].forEach(function(k) {
+    var btn = document.getElementById('dur-' + k.replace(' ',''));
+    if (btn) btn.classList.toggle('active', k === d);
+  });
+  saveSancPrefs();
 }
-function useSlot(day,time){
-  document.getElementById('sanc-day').value=day;
-  if(typeof _tod!=='undefined'){_tod='custom';}
-  var c=document.getElementById('sanc-time-custom');
-  if(c){c.style.display='block';c.value=time;}
-  document.getElementById('sanc-slot-results').innerHTML='<div style="font-size:.75rem;color:var(--essense)">✓ slot selected — '+day+' at '+time+'</div>';
-  renderSanctityPreview();
+function saveSancPrefs() {
+  var sc = PD.profile().calendarSanctity || {};
+  PD.saveProfile({calendarSanctity: Object.assign({}, sc, {preference: _sancPref, duration: _sancDur})});
 }
-function renderSanctityPreview() {
-  var day=document.getElementById('sanc-day').value;
-  var dur=document.getElementById('sanc-dur').value;
-  var todMap={morning:'09:00',noon:'12:00',afternoon:'14:00'};
-  var time=(typeof _tod!=='undefined'&&_tod==='custom')?(document.getElementById('sanc-time-custom')?document.getElementById('sanc-time-custom').value:'09:00'):(todMap[(typeof _tod!=='undefined')?_tod:'morning']||'09:00');
-  var p=document.getElementById('sanc-preview');
-  p.classList.add('visible');
-  p.innerHTML='<strong>next block:</strong> '+day+' at '+time+' · '+dur+' · repeating weekly';
-  var dayMap={Monday:'MO',Tuesday:'TU',Wednesday:'WE',Thursday:'TH',Friday:'FR'};
-  var calUrl='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('PD Time - Essense')+'&recur=RRULE:FREQ%3DWEEKLY;BYDAY%3D'+(dayMap[day]||'TU');
-  var calLink=document.getElementById('sanc-cal-link');
-  if(calLink){calLink.href=calUrl;calLink.style.display='inline-flex';}
+
+// ── Weekly slot logic ─────────────────────────────────────────────
+var SLOT_POOL = {
+  morning:   [['Monday','09:00'],['Tuesday','09:30'],['Wednesday','10:00'],['Thursday','09:00'],['Friday','10:30'],['Monday','10:00'],['Thursday','10:30'],['Wednesday','09:30']],
+  noon:      [['Monday','12:00'],['Tuesday','12:30'],['Wednesday','12:00'],['Thursday','13:00'],['Friday','12:30'],['Monday','13:00'],['Tuesday','13:30'],['Wednesday','13:30']],
+  afternoon: [['Monday','14:00'],['Tuesday','15:00'],['Wednesday','14:30'],['Thursday','14:00'],['Friday','14:30'],['Monday','15:30'],['Thursday','15:30'],['Tuesday','16:00']],
+};
+var _slotOffset = 0; // incremented by "find another"
+
+function getThisWeeksSlot(pref, extra) {
+  var pool = SLOT_POOL[pref] || SLOT_POOL.morning;
+  var wk   = weekNum(new Date());
+  var idx  = (wk + (extra || 0)) % pool.length;
+  return pool[idx];
 }
+
+function searchWeeklySlot() {
+  _slotOffset = 0;
+  showSlotResult(getThisWeeksSlot(_sancPref, 0));
+}
+
+function findAnotherSlot() {
+  _slotOffset++;
+  showSlotResult(getThisWeeksSlot(_sancPref, _slotOffset));
+}
+
+function showSlotResult(slot) {
+  var day  = slot[0], time = slot[1];
+  var pref = {morning:'morning window (7–12)', noon:'midday window (12–15)', afternoon:'afternoon window (15–18)'};
+  document.getElementById('sanc-view-prefs').style.display = 'none';
+  document.getElementById('sanc-view-slot').style.display  = 'block';
+  document.getElementById('slot-day-text').textContent   = day + ' at ' + time;
+  document.getElementById('slot-meta-text').textContent  = _sancDur + ' \u00b7 week ' + weekNum(new Date());
+  document.getElementById('slot-source-text').textContent = 'found in your ' + (pref[_sancPref] || 'morning window');
+  // Build Google Calendar link
+  var dayMap = {Monday:'MO',Tuesday:'TU',Wednesday:'WE',Thursday:'TH',Friday:'FR'};
+  var calUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='
+    + encodeURIComponent('PD Time \u2014 Essense')
+    + '&details=' + encodeURIComponent('Weekly PD slot found by PD Wessense for ' + day + ' at ' + time);
+  var btn = document.getElementById('sanc-cal-btn');
+  if (btn) btn.href = calUrl;
+  // Save to profile
+  var sc = PD.profile().calendarSanctity || {};
+  PD.saveProfile({calendarSanctity: Object.assign({}, sc, {day: day, time: time, duration: _sancDur, preference: _sancPref})});
+}
+
+function showSancPrefs() {
+  document.getElementById('sanc-view-slot').style.display  = 'none';
+  document.getElementById('sanc-view-prefs').style.display = 'block';
+}
+
+function renderSancBlock(sc) {
+  sc = sc || {};
+  _sancPref = sc.preference || 'morning';
+  _sancDur  = sc.duration   || '45 min';
+  // Restore preference button state
+  setSancPref(_sancPref);
+  setSancDur(_sancDur);
+  // If preference has been set before, auto-show this week's slot — no button needed
+  if (sc.preference) {
+    showSlotResult(getThisWeeksSlot(_sancPref, _slotOffset));
+  }
+  // Otherwise stays on View 1 (first-time setup)
+}
+
+// Keep renderSanctityPreview as no-op to avoid errors from old render() calls
+function renderSanctityPreview() {}
+function saveSanctity() {} // replaced by saveSancPrefs
+
+
 
 // ── Utilities ────────────────────────────────────────────────────
 function weekNum(d) {

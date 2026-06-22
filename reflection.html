@@ -407,7 +407,7 @@ function buildAudio() {
   document.getElementById('au-steps').innerHTML =
     '<h1 class="heading">record your reflection</h1>'
     + '<p class="sub">' + (hasMedia
-        ? 'speak your thoughts \u2014 transcribed and structured automatically. works in all browsers.'
+        ? 'record your spoken reflection, then add notes to go with it. works in all browsers.'
         : 'audio not available in this browser. type your reflection in the notes below.') + '</p>'
     + '<div class="audio-card">'
     + '<button class="rec-btn" id="rec-btn" onclick="toggleRec()"' + (hasMedia?'':' disabled style="opacity:.4"') + '>\ud83c\udf99\ufe0f start recording</button>'
@@ -454,27 +454,14 @@ function toggleRec() {
   }
 }
 
-async function transcribeAndAnalyse(blob) {
+function transcribeAndAnalyse(blob) {
   var st=document.getElementById('rec-status');
   var tr=document.getElementById('rec-transcript');
-  var transcript=null;
-  try {
-    var base64=await new Promise(function(resolve,reject){
-      var r=new FileReader(); r.onload=function(e){resolve(e.target.result.split(',')[1]);}; r.onerror=reject; r.readAsDataURL(blob);
-    });
-    var resp=await fetch('/api/transcribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:base64,mimeType:recMimeType})});
-    var data=await resp.json();
-    transcript=data.transcript||null;
-    if(transcript){tr.style.fontStyle='normal';tr.style.color='var(--charcoal)';tr.textContent=transcript;}
-  } catch(e){ console.warn('Transcription error:',e); }
-
-  if(transcript&&transcript.length>20){
-    st.textContent='analysing\u2026';
-    await analyzeAudioReflection(transcript,st);
-  } else {
-    st.textContent='done \u00b7 '+recSec+'s'+(transcript?'':' \u00b7 add OPENAI_API_KEY to Vercel to enable transcription');
-    if(!transcript) tr.textContent='Transcription unavailable \u2014 add your notes below, or add OPENAI_API_KEY to Vercel.';
-  }
+  // Testing build: no transcription backend. Keep the recording and
+  // prompt for notes (audio + notes is the captured reflection).
+  st.textContent='recorded \u00b7 '+recSec+'s';
+  tr.style.fontStyle='italic'; tr.style.color='var(--muted)';
+  tr.textContent='recording saved \u2014 add the key points in your notes below.';
 }
 
 function auSave() {
@@ -484,37 +471,13 @@ function auSave() {
 }
 
 // ── AI helpers ────────────────────────────────────────────────────
-async function callAI(messages, system, maxTokens) {
-  try {
-    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||800, messages:messages };
-    if (system) body.system = system;
-    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    var data = await resp.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return null;
-  } catch(e) { return null; }
-}
-
-async function analyzeAudioReflection(transcript, st) {
-  var pointsEl = document.getElementById('au-points');
-  var card = document.getElementById('au-structured');
-  var sys = 'You structure a spoken professional-development reflection into clear points. Given the transcript, return 3-5 short bullet points capturing: what happened, what went well, what was challenging, and one next step. Respond ONLY with a JSON array of short strings. No markdown.';
-  var resp = await callAI([{role:'user', content:transcript}], sys, 400);
-  var points = null;
-  if (resp) { try { points = JSON.parse(resp.replace(/```json|```/g,'').trim()); } catch(e){ points = null; } }
-  if (Array.isArray(points) && points.length) {
-    pointsEl.innerHTML = points.map(function(p){
-      var d=document.createElement('div'); d.textContent='• '+p; return d.outerHTML;
-    }).join('');
-    if (card) card.style.display = 'block';
-    if (st) st.textContent = 'structured \u00b7 review and add notes below';
-  } else {
-    // Fallback: show the transcript itself as a single point
-    var d=document.createElement('div'); d.textContent = transcript;
-    pointsEl.innerHTML = d.outerHTML;
-    if (card) card.style.display = 'block';
-    if (st) st.textContent = 'transcript ready \u00b7 add notes below';
-  }
+// Testing build: no live API. Returns null after a short, believable
+// delay so the typing indicator reads naturally; the scripted coach
+// (fallbackCoachReply) then provides the adaptive-sounding reply.
+function callAI(messages, system, maxTokens) {
+  return new Promise(function(resolve){
+    setTimeout(function(){ resolve(null); }, 650 + Math.floor(Math.random()*500));
+  });
 }
 
 // ── AI chat ───────────────────────────────────────────────────────

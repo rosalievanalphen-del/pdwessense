@@ -137,6 +137,9 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 .sanc-preview{margin-top:.875rem;background:var(--bright);border-radius:9px;padding:.65rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.6;display:none}
 .sanc-preview.visible{display:block}
 .sanc-note{font-size:.7rem;color:var(--muted);font-style:italic;margin-top:.875rem;line-height:1.5;border-top:1px solid var(--border);padding-top:.75rem}
+.sanc-pref-btn{background:var(--white);border:1.5px solid var(--border);border-radius:9px;padding:.45rem .8rem;font-family:var(--font-body);font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .15s}
+.sanc-pref-btn:hover{border-color:var(--forest);color:var(--forest)}
+.sanc-pref-btn.active{background:var(--forest);border-color:var(--forest);color:var(--white);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 
 /* ── Over time ── */
 .ot-dim{margin-bottom:.875rem}
@@ -670,13 +673,34 @@ function renderOverTime(goals) {
     el.innerHTML='<div class="ot-empty">add goals and complete actions to see your growth trajectory here.</div>';
     return;
   }
+  // Work out the time window this progress covers.
+  let earliest = null, lastActivity = null;
+  goals.forEach(g=>{ if(g.createdAt){ const t=new Date(g.createdAt); if(!earliest||t<earliest) earliest=t; } });
+  PD.actions().forEach(a=>{ if(a.done&&a.doneAt){ const t=new Date(a.doneAt); if(!lastActivity||t>lastActivity) lastActivity=t; } });
+  PD.reflections().forEach(r=>{ if(r.date){ const t=new Date(r.date); if(!lastActivity||t>lastActivity) lastActivity=t; } });
+  let windowLabel = '';
+  if(earliest){
+    const months = Math.max(1, Math.round((Date.now()-earliest.getTime())/(30*864e5)));
+    windowLabel = 'over the past ' + (months===1?'month':months+' months');
+  }
+  let sinceLabel = '';
+  if(lastActivity){
+    const days = Math.round((Date.now()-lastActivity.getTime())/864e5);
+    sinceLabel = days<=0 ? 'last activity: today'
+               : days===1 ? 'last activity: yesterday'
+               : 'last activity: ' + days + ' days ago';
+  }
+
   const dims={Delivery:{t:0,d:0},People:{t:0,d:0},'Added value':{t:0,d:0}};
   goals.forEach(g=>{
     const dim=g.dimension&&dims[g.dimension]?g.dimension:'Delivery';
     (g.subgoals||[]).forEach(sg=>{dims[dim].t++;if(sg.done)dims[dim].d++;});
   });
   const colors={Delivery:'#044524',People:'#579B7A','Added value':'#b7994a'};
-  el.innerHTML=Object.entries(dims).map(([dim,v])=>{
+  const header = (windowLabel||sinceLabel)
+    ? `<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem;font-size:.72rem;color:var(--muted)"><span>${windowLabel}</span><span>${sinceLabel}</span></div>`
+    : '';
+  el.innerHTML = header + Object.entries(dims).map(([dim,v])=>{
     const pct=v.t?Math.round(v.d/v.t*100):0;
     return `<div class="ot-dim">
       <div class="ot-dim-head"><span class="ot-dim-label">${dim}</span><span class="ot-dim-pct">${v.d}/${v.t} · ${pct}%</span></div>

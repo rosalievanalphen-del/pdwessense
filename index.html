@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PD Wessense — system overview</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --forest:#044524;--essense:#579B7A;--bright:#EAF5F2;--egg:#FAF0DB;
+  --charcoal:#2b2b2b;--muted:#6b7d75;--border:#d8e3de;--white:#fff;--yellow:#F5C518;
+  --font-head:'DM Serif Display',serif;--font-body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);min-height:100vh;padding:3rem 1.5rem 4rem;max-width:760px;margin:0 auto}
+.label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin-bottom:.6rem}
+.heading{font-family:var(--font-head);font-size:2.1rem;color:var(--forest);line-height:1.15;margin-bottom:.5rem}
+.intro{font-size:.95rem;color:var(--muted);line-height:1.6;max-width:54ch;margin-bottom:2.25rem}
+.section-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--essense);font-weight:500;margin:2rem 0 .85rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+.card{display:block;text-decoration:none;background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:1.15rem 1.2rem;transition:all .18s;color:inherit}
+.card:hover{border-color:var(--essense);transform:translateY(-2px);box-shadow:0 6px 18px rgba(4,69,36,.08)}
+.card-icon{font-size:1.5rem;margin-bottom:.55rem;display:block}
+.card-title{font-family:var(--font-head);font-size:1.1rem;color:var(--forest);margin-bottom:.25rem}
+.card-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.card.wide{grid-column:span 2}
+.foot{margin-top:2.5rem;border-top:1px solid var(--border);padding-top:1.1rem;font-size:.75rem;color:var(--muted);line-height:1.6}
+.pill{display:inline-block;background:var(--bright);color:var(--forest);font-size:.68rem;font-weight:500;padding:.18rem .55rem;border-radius:99px;margin-left:.4rem;vertical-align:middle}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.card.wide{grid-column:span 1}.heading{font-size:1.7rem}}
+</style>
+</head>
+<body>
+
+<div class="label">Essense · professional development</div>
+<h1 class="heading">PD Wessense</h1>
+<p class="intro">A professional-development companion for service designers — making growth feel like a natural part of the work rather than an extra task. This page is the entry point to the system; open any area below.</p>
+
+<div class="section-label">start here</div>
+<div class="grid">
+  <a class="card wide" href="./dashboard.html">
+    <span class="card-icon">🏠</span>
+    <div class="card-title">Dashboard</div>
+    <div class="card-desc">Your home base — profile, weekly PD time, calendar sanctity, goal roadmap, and development over time. New here? The dashboard walks you through setup.</div>
+  </a>
+</div>
+
+<div class="section-label">the core loop</div>
+<div class="grid">
+  <a class="card" href="./goals.html">
+    <span class="card-icon">🎯</span>
+    <div class="card-title">Goals</div>
+    <div class="card-desc">Set development goals, link them to the career framework, and break them into doable sub-goals.</div>
+  </a>
+  <a class="card" href="./reflection.html">
+    <span class="card-icon">📝</span>
+    <div class="card-title">Reflection</div>
+    <div class="card-desc">Capture a reflection in the format that suits the moment — written, quick, walk-and-talk, audio, or guided.</div>
+  </a>
+  <a class="card" href="./insights.html">
+    <span class="card-icon">💡</span>
+    <div class="card-title">Insights</div>
+    <div class="card-desc">A short guided reflection that uses your reflections and feedback to help you name an insight.</div>
+  </a>
+  <a class="card" href="./tracker.html">
+    <span class="card-icon">📊</span>
+    <div class="card-title">Action tracker</div>
+    <div class="card-desc">Log the small actions you take toward your goals, with time and energy.</div>
+  </a>
+</div>
+
+<div class="section-label">grow &amp; connect</div>
+<div class="grid">
+  <a class="card" href="./training.html">
+    <span class="card-icon">📚</span>
+    <div class="card-title">Training menu</div>
+    <div class="card-desc">A curated library of resources, searchable and matched to your goals.</div>
+  </a>
+  <a class="card" href="./coach.html">
+    <span class="card-icon">🤝</span>
+    <div class="card-title">Coach prep</div>
+    <div class="card-desc">Prepare for your next coaching session and share what you want to discuss.</div>
+  </a>
+  <a class="card" href="./coach-overview.html">
+    <span class="card-icon">👥</span>
+    <div class="card-title">Coach overview</div>
+    <div class="card-desc">For coaches — a view across the people you support. <span class="pill">coach view</span></div>
+  </a>
+  <a class="card" href="./showcase.html">
+    <span class="card-icon">✨</span>
+    <div class="card-title">Showcase</div>
+    <div class="card-desc">The two-state demo entry point used in research sessions.</div>
+  </a>
+</div>
+
+<div class="foot">
+  PD Wessense — graduation research prototype, TU Delft × Essense.<br>
+  Testing build. Some integrations are simulated for research; the experience reflects the intended system.
+</div>
+
+</body>
+</html>

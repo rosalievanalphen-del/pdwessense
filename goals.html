@@ -157,40 +157,17 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
       <button class="add-option-btn" onclick="toggleFrameworkPanel()">
         📘 suggest from career framework
       </button>
-      <button class="add-option-btn" onclick="document.getElementById('goal-photo-inp').click()">
-        📷 add a photo
-      </button>
-      <input type="file" id="goal-photo-inp" accept="image/*" style="display:none" onchange="previewAddPhoto(this)"/>
     </div>
 
     <div class="framework-panel" id="fw-panel">
-      <p class="fw-note">tick to link this goal to the Essense career framework. turn on to get an AI-suggested goal based on your level and dimension.</p>
+      <p class="fw-note">tick to link this goal to the Essense career framework, and see example goals for your level and dimension.</p>
       <label style="display:flex;align-items:center;gap:.5rem;font-size:.825rem;cursor:pointer;margin-bottom:.65rem">
         <input type="checkbox" id="fw-link-check" style="accent-color:var(--forest)" onchange="onFwCheckChange(this)"/>
         link to career framework
       </label>
       <div id="fw-suggest-area" style="display:none">
-        <button class="btn-s" style="font-size:.78rem;padding:.4rem .8rem;margin-bottom:.5rem" onclick="suggestFrameworkGoal()">✦ suggest a goal from my level</button>
+        <button class="btn-s" style="font-size:.78rem;padding:.4rem .8rem;margin-bottom:.5rem" onclick="suggestFrameworkGoal()">show example goals for my level</button>
         <div id="fw-suggestions" style="font-size:.8rem;color:var(--muted);font-style:italic"></div>
-      </div>
-    </div>
-
-    <div id="add-photo-row" style="display:none;margin-top:.75rem">
-      <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.5rem">
-        <img class="photo-preview" id="add-photo-prev" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0"/>
-        <div style="flex:1;min-width:0">
-          <div id="photo-status" style="font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:.25rem">reading image\u2026</div>
-          <button class="btn-ghost" style="font-size:.72rem;padding:.2rem .5rem" onclick="clearAddPhoto()">remove photo</button>
-        </div>
-      </div>
-      <div id="photo-goals-area" style="display:none">
-        <div style="font-size:.72rem;color:var(--essense);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem">
-          goals found in photo \u2014 <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted)">tick the ones to add</span>
-        </div>
-        <div id="photo-goals-list" style="margin-bottom:.5rem"></div>
-        <button id="photo-add-btn" onclick="addSelectedPhotoGoals()" style="display:none;background:var(--forest);color:var(--white);border:none;border-radius:9px;padding:.45rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;width:100%">
-          + add goals
-        </button>
       </div>
     </div>
 
@@ -223,8 +200,9 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
         <button class="comfort-btn" onclick="pickComfort(this,'fairly confident')">fairly confident</button>
         <button class="comfort-btn" onclick="pickComfort(this,'ready to lead')">ready to lead</button>
       </div>
-      <div style="display:flex;gap:.6rem;margin-top:.875rem">
+      <div style="display:flex;gap:.6rem;margin-top:.875rem;flex-wrap:wrap">
         <button class="btn-p" onclick="generateSubgoals()">suggest sub-goals →</button>
+        <button class="btn-s" onclick="autoGenerateSubgoals()">✨ auto-generate with AI</button>
       </div>
     </div>
 
@@ -272,23 +250,7 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
 
 
 
-// ── AI helper ─────────────────────────────────────────────────────
-async function callAI(messages, system, maxTokens) {
-  try {
-    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
-    if (system) body.system = system;
-    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    var data = await resp.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return null;
-  } catch(e) { return null; }
-}
-function parseJSON(text) {
-  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
-  catch(e) { return null; }
-}
-
-var addOpen = false, addDim = '', addPhoto = null;
+var addOpen = false, addDim = '';
 var bdComfort = '', bdGoalId = '';
 
 // ── Render goals list ─────────────────────────────────────────────
@@ -414,7 +376,6 @@ function openAddPanel() {
 function closeAddPanel() {
   addOpen = false;
   document.getElementById('add-panel').classList.remove('open');
-  clearAddPhoto();
   document.getElementById('new-goal-inp').value = '';
   addDim = '';
   var dimBtns = document.querySelectorAll('.dim-btn');
@@ -436,42 +397,34 @@ function toggleFrameworkPanel() {
 
 
 
-function clearAddPhoto() {
-  addPhoto = null;
-  document.getElementById('add-photo-row').style.display = 'none';
-  document.getElementById('add-photo-prev').style.display = 'none';
-  document.getElementById('goal-photo-inp').value = '';
-}
-
 function onFwCheckChange(cb) {
   document.getElementById('fw-suggest-area').style.display = cb.checked ? 'block' : 'none';
 }
 
-async function suggestFrameworkGoal() {
+// Curated example goals from the Essense career framework, by dimension.
+// No AI — these are reference examples to adapt, not generated text.
+var FRAMEWORK_EXAMPLES = {
+  'People': [
+    'Lead a client workshop end-to-end, from design to facilitation to synthesis',
+    'Build confidence presenting research insights to senior stakeholders',
+    'Coach a junior colleague through their first research session'
+  ],
+  'Delivery': [
+    'Develop my systems thinking by mapping service ecosystems in a current project',
+    'Own a full discovery phase from research plan to synthesis',
+    'Improve my journey-mapping craft on a live client project'
+  ],
+  'Added value': [
+    'Connect a design decision to a measurable business outcome',
+    'Translate research findings into a clear value story for stakeholders',
+    'Identify and propose one process improvement on a project'
+  ]
+};
+function suggestFrameworkGoal() {
   var area = document.getElementById('fw-suggestions');
-  area.textContent = 'thinking…';
-  var p = PD.profile();
   var dim = addDim || 'Delivery';
-  var sys = 'You are a professional development coach at Essense, a service design consultancy. Suggest 3 specific, practical development goals for a service designer based on their level and chosen dimension. Each goal should be a single sentence starting with a verb. Respond ONLY with a JSON array: ["goal 1", "goal 2", "goal 3"]';
-    var prompt = 'Role: ' + (p.role||'Service Designer') + ' | Level: ' + (p.level||'junior') + ' | Target: ' + (p.targetLevel||'next level') + ' | Dimension: ' + dim + '. Suggest 3 relevant development goals.';
-  var result = await callAI([{role:'user', content:prompt}], sys, 300);
-  if (result) {
-    var parsed = parseJSON(result);
-    if (Array.isArray(parsed)) {
-      area.innerHTML = parsed.map(function(g, i) {
-        return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-bottom:.3rem;font-size:.825rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
-          + '<span>' + esc(g) + '</span>'
-          + '<button onclick="useFrameworkGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--yellow);color:var(--forest);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;flex-shrink:0">use</button>'
-          + '</div>';
-      }).join('');
-      return;
-    }
-  }
-  // Fallback / demo: canned framework-based suggestions
-  var canned = ['Lead a client workshop end-to-end, from design to facilitation to synthesis',
-                'Build confidence in presenting research insights to senior stakeholders',
-                'Develop my systems thinking by mapping service ecosystems in current projects'];
-  area.innerHTML = canned.map(function(g) {
+  var list = FRAMEWORK_EXAMPLES[dim] || FRAMEWORK_EXAMPLES['Delivery'];
+  area.innerHTML = list.map(function(g) {
     return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-bottom:.3rem;font-size:.825rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem">'
       + '<span>' + esc(g) + '</span>'
       + '<button onclick="useFrameworkGoal(' + JSON.stringify(g).replace(/"/g,'&quot;') + ')" style="background:var(--yellow);color:var(--forest);border:none;border-radius:6px;padding:.2rem .6rem;font-family:var(--font-body);font-size:.72rem;font-weight:600;cursor:pointer;flex-shrink:0">use</button>'
@@ -484,89 +437,11 @@ function useFrameworkGoal(goalText) {
   document.getElementById('fw-suggest-area').style.display = 'none';
 }
 
-async function previewAddPhoto(inp) {
-  var file = inp.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = async function(e) {
-    addPhoto = e.target.result;
-    document.getElementById('add-photo-prev').src = e.target.result;
-    document.getElementById('add-photo-row').style.display = 'block';
-    document.getElementById('photo-status').textContent = 'reading image…';
-    try {
-      var base64 = e.target.result.split(',')[1];
-      var mimeType = file.type || 'image/jpeg';
-      var resp = await fetch('/api/chat', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:500,
-          messages:[{ role:'user', content:[
-            {type:'image', source:{type:'base64', media_type:mimeType, data:base64}},
-            {type:'text', text:'Extract every goal, task, intention, or development idea written or visible in this image. Each should be a clear, actionable goal statement. Respond ONLY with a JSON array of strings. If nothing found, return []. No markdown, no explanation.'}
-          ]}]})
-      });
-      var data = await resp.json();
-      var txt = data.content && data.content[0] ? data.content[0].text : null;
-      var parsed = txt ? parseJSON(txt) : null;
-      if (Array.isArray(parsed) && parsed.length) { renderPhotoGoals(parsed); return; }
-    } catch(e) { console.warn('Vision error:', e); }
-    showPhotoGoalsFallback();
-  };
-  reader.readAsDataURL(file);
-}
-
-function renderPhotoGoals(goals) {
-  document.getElementById('photo-goals-area').style.display = 'block';
-  document.getElementById('photo-status').textContent = goals.length + ' goal' + (goals.length!==1?'s':'') + ' found — all selected by default';
-  document.getElementById('photo-goals-list').innerHTML = goals.map(function(g,i){
-    return '<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;background:var(--bright);border:1.5px solid var(--border);border-radius:8px;padding:.45rem .65rem;margin-bottom:.3rem">'
-      +'<input type="checkbox" checked id="pg-'+i+'" onchange="updatePhotoAddBtn()" style="margin-top:.2rem;accent-color:var(--forest);flex-shrink:0"/>'
-      +'<span style="font-size:.825rem;line-height:1.45">'+esc(g)+'</span></label>';
-  }).join('');
-  updatePhotoAddBtn();
-}
-
-function updatePhotoAddBtn() {
-  var n = document.querySelectorAll('#photo-goals-list input:checked').length;
-  var btn = document.getElementById('photo-add-btn');
-  if (!btn) return;
-  btn.style.display = n ? 'block' : 'none';
-  btn.textContent = '+ add ' + n + ' goal' + (n!==1?'s':'');
-}
-
-function addSelectedPhotoGoals() {
-  var labels = document.querySelectorAll('#photo-goals-list label');
-  var added = 0;
-  labels.forEach(function(label) {
-    var cb = label.querySelector('input[type="checkbox"]');
-    if (cb && cb.checked) {
-      var text = label.querySelector('span').textContent.trim();
-      if (text) { PD.saveGoal({title:text, subgoals:[]}); added++; }
-    }
-  });
-  if (added) {
-    render(); closeAddPanel();
-    var t = document.createElement('div');
-    t.style.cssText='position:fixed;top:1rem;left:50%;transform:translateX(-50%);background:var(--forest);color:#fff;padding:.5rem 1.25rem;border-radius:9px;font-family:var(--font-body);font-size:.825rem;z-index:999';
-    t.textContent = '✓ '+added+' goal'+(added!==1?'s':'')+' added';
-    document.body.appendChild(t);
-    setTimeout(function(){t.remove();}, 2200);
-  }
-}
-
-function showPhotoGoalsFallback() {
-  document.getElementById('photo-status').textContent = 'could not read image — check ANTHROPIC_API_KEY in Vercel, or type goals manually';
-  renderPhotoGoals(['Improve my facilitation skills in client workshops','Get comfortable presenting to senior stakeholders','Practice journey mapping on a real project']);
-}
-
-function usePhotoGoal(text) {
-  document.getElementById('new-goal-inp').value = text;
-}
-
 function addGoal() {
   var title = document.getElementById('new-goal-inp').value.trim();
   if (!title) { document.getElementById('new-goal-inp').focus(); return; }
   var linked = document.getElementById('fw-link-check').checked;
-  PD.saveGoal({title: title, dimension: addDim || '', linkedToFramework: linked, photo: addPhoto, subgoals: []});
+  PD.saveGoal({title: title, dimension: addDim || '', linkedToFramework: linked, subgoals: []});
   closeAddPanel();
   render();
 }
@@ -624,49 +499,98 @@ function pickComfort(el, val) {
   el.classList.add('sel');
 }
 
-async function generateSubgoals() {
+// Rule-based sub-goal builder. No AI — templates adapt to comfort level
+// so the steps genuinely differ depending on where the person is starting.
+function subgoalTemplates(goalTitle, comfort) {
+  var g = goalTitle;
+  var byComfort = {
+    'new to this': [
+      'find one good resource (article, video, or book) about "' + g + '" and spend 30 minutes with it',
+      'watch or shadow someone more experienced doing this, and note what they do',
+      'write down the three things that feel most unclear to you right now',
+      'try one small, low-stakes version of this and see how it goes',
+      'book a short check-in with your coach to talk through where to start'
+    ],
+    'some experience': [
+      'apply this in one real piece of current work this week',
+      'ask a colleague for feedback on how you approached it',
+      'read up on one specific part you find hardest about "' + g + '"',
+      'reflect on a past situation where this skill mattered, and what you would change',
+      'set one concrete measure of what "better" looks like for you here'
+    ],
+    'fairly confident': [
+      'take ownership of a task involving "' + g + '" end-to-end',
+      'find a moderately challenging situation to stretch this skill',
+      'ask for feedback specifically on the parts you find hardest',
+      'document your approach so a colleague could learn from it',
+      'identify what would take you from confident to leading on this'
+    ],
+    'ready to lead': [
+      'lead a piece of work involving "' + g + '" that others depend on',
+      'coach or mentor a colleague who is newer to this',
+      'create a reusable resource or guideline from your approach',
+      'seek feedback from someone more senior to keep growing',
+      'set a stretch challenge that pushes beyond your current comfort'
+    ]
+  };
+  return byComfort[comfort] || byComfort['some experience'];
+}
+
+function renderSugList(items) {
+  var list = document.getElementById('sug-list');
+  var html = '';
+  for (var j = 0; j < items.length; j++) {
+    html += "<div class='sug-item approved' id='si-sug-" + j + "' onclick='toggleSug(" + j + ")'>";
+    html += "<div class='sug-check'>&#10003;</div>";
+    html += "<span class='sug-text'>" + esc(items[j]) + "</span>";
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function generateSubgoals() {
   bdGoalId = document.getElementById('bd-goal-sel').value;
   if (!bdGoalId) { alert('please pick a goal first'); return; }
   if (!bdComfort) { alert('please select your comfort level'); return; }
   var goal = PD.goalById(bdGoalId);
   if (!goal) return;
-  var p = PD.profile();
-
-  // Show loading state
-  var list = document.getElementById('sug-list');
-  list.innerHTML = '<div style="font-size:.825rem;color:var(--muted);font-style:italic;padding:.5rem 0">generating sub-goals…</div>';
   bdGo(2);
+  renderSugList(subgoalTemplates(goal.title, bdComfort));
+}
 
-  var sys = 'You are a professional development coach at Essense, a service design consultancy in the Netherlands. Generate 5 specific, actionable sub-goals for a service designer. Each sub-goal should be a concrete, doable action — not vague. Respond ONLY with a JSON array of strings (no markdown): ["sub-goal 1", "sub-goal 2", ...]';
-  var prompt = 'Goal: ' + goal.title + ' | Comfort level: ' + bdComfort + ' | Role: ' + (p.role||'Service Designer') + ' | Level: ' + (p.level||'Junior') + '. Generate 5 specific, actionable sub-goals for this goal.';
+// Tries the real Claude API (if ANTHROPIC_API_KEY is set); returns null
+// on any failure so the caller falls back to the template version.
+async function callAI(messages, system, maxTokens) {
+  try {
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||500, messages:messages };
+    if (system) body.system = system;
+    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    var data = await resp.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    return null;
+  } catch(e) { return null; }
+}
+function parseJSON(text){ try { return JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e){ return null; } }
+
+// Auto-generate: try real Claude, else fall back to comfort-based templates.
+async function autoGenerateSubgoals() {
+  bdGoalId = document.getElementById('bd-goal-sel').value;
+  if (!bdGoalId) { alert('please pick a goal first'); return; }
+  if (!bdComfort) { alert('please select your comfort level'); return; }
+  var goal = PD.goalById(bdGoalId);
+  if (!goal) return;
+  bdGo(2);
+  var list = document.getElementById('sug-list');
+  list.innerHTML = '<div style="font-size:.825rem;color:var(--muted);font-style:italic;padding:.5rem 0">✨ generating sub-goals for "' + esc(goal.title) + '"…</div>';
+
+  var sys = 'You are a professional development coach at Essense, a service design consultancy. Generate 5 specific, actionable sub-goals. Respond ONLY with a JSON array of strings.';
+  var prompt = 'Goal: ' + goal.title + ' | Comfort level: ' + bdComfort;
   var result = await callAI([{role:'user', content:prompt}], sys, 500);
-
-  var adapted;
   if (result) {
     var parsed = parseJSON(result);
-    if (Array.isArray(parsed) && parsed.length) {
-      adapted = parsed.slice(0,5);
-    }
+    if (Array.isArray(parsed) && parsed.length) { renderSugList(parsed.slice(0,5)); return; }
   }
-  if (!adapted) {
-    // Fallback to sensible defaults
-    adapted = [
-      'find one specific resource about "' + goal.title + '" and spend 30 minutes with it',
-      'try applying this in a real piece of work and note what happened',
-      'ask a colleague or your coach for feedback on your approach',
-      'reflect on one situation where this skill made a difference',
-      'identify the next concrete step to deepen this skill'
-    ];
-  }
-
-  var html = '';
-  for (var j = 0; j < adapted.length; j++) {
-    html += "<div class='sug-item approved' id='si-sug-" + j + "' onclick='toggleSug(" + j + ")'>";
-    html += "<div class='sug-check'>&#10003;</div>";
-    html += "<span class='sug-text'>" + esc(adapted[j]) + "</span>";
-    html += '</div>';
-  }
-  list.innerHTML = html;
+  setTimeout(function(){ renderSugList(subgoalTemplates(goal.title, bdComfort)); }, 700);
 }
 
 function toggleSug(i) {
@@ -697,6 +621,18 @@ function esc(s) {
 }
 
 render();
+
+// If arriving from the guided reflection, prefill a new goal with the insight.
+(function(){
+  var seed = null;
+  try { seed = sessionStorage.getItem('pd_insight_seed'); } catch(e) {}
+  if (seed) {
+    try { sessionStorage.removeItem('pd_insight_seed'); } catch(e) {}
+    openAddPanel();
+    var inp = document.getElementById('new-goal-inp');
+    if (inp) { inp.value = seed; inp.focus(); }
+  }
+})();
 </script>
 </body>
 </html>

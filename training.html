@@ -143,91 +143,46 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 
 <script>
 
-// ── AI helper ─────────────────────────────────────────────────────
-async function callAI(messages, system, maxTokens) {
-  try {
-    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||800, messages:messages };
-    if (system) body.system = system;
-    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    var data = await resp.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return null;
-  } catch(e) { return null; }
-}
-function parseJSON(text) {
-  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
-  catch(e) { return null; }
-}
 function esc(s) {
   var d = document.createElement('div');
   d.textContent = s || '';
   return d.innerHTML;
 }
 
-// ── Find resources for goals ───────────────────────────────────────
-async function findResourcesForGoals() {
+// ── Find resources for goals (matches the browse-menu format) ──────
+function findResourcesForGoals() {
   var st = document.getElementById('ai-search-status');
   var res = document.getElementById('ai-search-results');
-  st.textContent = 'searching…';
+  st.textContent = 'analysing your goals…';
   res.innerHTML = '';
 
-  // Build goal context from PD store
+  // Build goal text from the PD store.
   var goals = typeof PD !== 'undefined' ? PD.goals() : [];
   var goalText = goals.map(function(g) {
     var subs = (g.subgoals||[]).filter(function(s){return !s.done;}).map(function(s){return s.title;});
-    return g.title + (subs.length ? ' (sub-goals: ' + subs.join(', ') + ')' : '');
-  }).join(' | ');
+    return g.title + ' ' + subs.join(' ');
+  }).join(' ');
+  if (!goalText) goalText = 'facilitation workshops systems thinking research stakeholder';
 
-  if (!goalText) goalText = 'improve facilitation skills and systems thinking as a junior service designer';
+  // Derive search words from the goals, then score the real catalogue.
+  var stop = {'the':1,'and':1,'for':1,'with':1,'a':1,'an':1,'to':1,'of':1,'in':1,'on':1,'my':1,'me':1,'get':1,'better':1,'at':1,'as':1,'build':1,'improve':1,'skills':1,'skill':1};
+  var words = goalText.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(function(w){ return w.length>3 && !stop[w]; });
+  var scored = trainings.map(function(t){
+    var hay = (t.title+' '+t.provider+' '+t.competence+' '+t.note+' '+t.type).toLowerCase();
+    var score = 0;
+    words.forEach(function(w){ if(hay.indexOf(w.slice(0,5))!==-1) score++; });
+    return {t:t, score:score};
+  }).sort(function(a,b){ return b.score - a.score; });
 
-  // Training catalogue to match against
-  var catalogue = [
-    {title:'This is Service Design Doing', type:'book', dimension:'Delivery', desc:'Practical methods and tools for service design'},
-    {title:'IDEO U — Systems Thinking', type:'course', dimension:'Delivery', desc:'Online course on systems thinking for designers'},
-    {title:'NN/g — Facilitation Skills', type:'video', dimension:'People', desc:'Video series on workshop facilitation from Nielsen Norman Group'},
-    {title:'The Design of Everyday Things', type:'book', dimension:'Delivery', desc:'Foundational design thinking by Don Norman'},
-    {title:'Creative Confidence', type:'book', dimension:'Added value', desc:'Building creative courage in teams and organisations'},
-    {title:'WorkshopBank Facilitation', type:'course', dimension:'People', desc:'Practical facilitation techniques for design workshops'},
-    {title:'Sense & Respond', type:'book', dimension:'Added value', desc:'How companies can adapt to uncertainty'},
-    {title:'Leading Complex Conversations', type:'workshop', dimension:'People', desc:'Handling conflict and misalignment in stakeholder sessions'},
-    {title:'Rosenfeld Media — Research Methods', type:'course', dimension:'Delivery', desc:'User research methods for service designers'},
-    {title:'Harvard ManageMentor', type:'course', dimension:'Added value', desc:'Business fundamentals and professional skills'},
-  ];
+  var hits = scored.filter(function(x){ return x.score>0; });
+  if (!hits.length) hits = scored.slice(0,4);
+  var picks = hits.slice(0,4).map(function(x){ return x.t; });
 
-  var sys = "You are a professional development advisor at Essense, a service design consultancy. Given the person's current goals, recommend 3-4 resources from the provided catalogue that would most help them progress. Respond ONLY with a JSON array: [{\"title\":\"exact title\",\"reason\":\"1 sentence why it fits this person's goals\"}]";
-  var prompt = 'Current goals: ' + goalText + '\n\nCatalogue: ' + JSON.stringify(catalogue.map(function(c){return c.title+' ('+c.type+', '+c.dimension+')';}));
-
-  var result = await callAI([{role:'user', content:prompt}], sys, 400);
-  var picks = null;
-  if (result) picks = parseJSON(result);
-
-  // Fallback: pick top 3 by keyword matching
-  if (!picks || !picks.length) {
-    var fallbackGoal = goalText.toLowerCase();
-    var scored = catalogue.map(function(c) {
-      var score = 0;
-      ['facilitat','workshop','systems','research','present','stakeholder','storytell'].forEach(function(kw) {
-        if (fallbackGoal.includes(kw) && (c.title.toLowerCase().includes(kw) || c.desc.toLowerCase().includes(kw))) score++;
-      });
-      return {c:c, score:score};
-    }).sort(function(a,b){return b.score-a.score;});
-    picks = scored.slice(0,3).map(function(x){
-      return {title:x.c.title, reason:'Relevant to your current goals based on topic overlap.'};
-    });
-  }
-
-  st.textContent = picks.length + ' resources found';
-  var catMap = {};
-  catalogue.forEach(function(c){ catMap[c.title]=c; });
-
-  res.innerHTML = picks.map(function(p) {
-    var item = catMap[p.title] || {type:'resource', dimension:''};
-    return '<div class="ai-res-card">'
-      + '<div><div class="ai-res-title">' + esc(p.title) + '</div>'
-      + '<div class="ai-res-meta">' + (item.type||'') + (item.dimension?' · '+item.dimension:'') + ' — ' + esc(p.reason) + '</div></div>'
-      + '<button class="ai-res-add" onclick="addAsAction(' + JSON.stringify(p.title).replace(/"/g,'&quot;') + ', this)">+ add as action</button>'
-      + '</div>';
-  }).join('');
+  // Brief delay so it reads as "the system analysed your goals".
+  setTimeout(function(){
+    st.textContent = picks.length + ' resource' + (picks.length!==1?'s':'') + ' matched to your goals';
+    res.innerHTML = picks.map(trainingCardHTML).join('');
+  }, 450);
 }
 const trainings=[
   {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. ',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
@@ -268,15 +223,9 @@ const trainings=[
 
 let filtered=[...trainings];
 
-function render(){
-  const list=document.getElementById('training-list');
-  list.innerHTML='';
-  if(filtered.length===0){list.innerHTML='<div class="empty">no resources match your filters. try clearing search or broadening the type filter.</div>';return;}
-  filtered.forEach(t=>{
-    const card=document.createElement('div');
-    card.className='training-card';
-    const costClass=t.cost.toLowerCase().includes('free')?'free':'paid';
-    card.innerHTML=`
+function trainingCardHTML(t){
+  const costClass=t.cost.toLowerCase().includes('free')?'free':'paid';
+  return `<div class="training-card">
       <div class="tc-head">
         <div class="tc-icon">${t.icon}</div>
         <div class="tc-info">
@@ -295,9 +244,14 @@ function render(){
         <a class="tc-btn yellow" href="${t.url}" target="_blank">open ↗</a>
         <button class="tc-btn" onclick="addAsAction('${t.title.replace(/'/g,'\\\'')}', this)">+ add as action</button>
       </div>
-    `;
-    list.appendChild(card);
-  });
+    </div>`;
+}
+
+function render(){
+  const list=document.getElementById('training-list');
+  list.innerHTML='';
+  if(filtered.length===0){list.innerHTML='<div class="empty">no resources match your filters. try clearing search or broadening the type filter.</div>';return;}
+  filtered.forEach(t=>{ list.insertAdjacentHTML('beforeend', trainingCardHTML(t)); });
   document.getElementById('results-info').textContent=`showing ${filtered.length} resources · ${filtered.filter(t=>t.cost.toLowerCase().includes('free')).length} free · ${filtered.filter(t=>t.endorsements>=4).length} highly endorsed`;
 }
 

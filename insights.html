@@ -120,7 +120,7 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 <div class="view active" id="v-main">
   <p class="label">insights</p>
   <h1 class="heading">what your reflections are telling you</h1>
-  <p class="sub">patterns from your reflections and feedback, pulled together automatically.</p>
+  <p class="sub">a short guided reflection that uses your reflections and feedback to help you name an insight.</p>
 
   <!-- Insight cards -->
   <div class="insight-grid" id="insight-cards"></div>
@@ -184,6 +184,18 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 </div><!-- /v-main -->
 
 <!-- ═══════════════════════════════════════════════
+     GUIDED REFLECTION FLOW
+════════════════════════════════════════════════ -->
+<div class="view" id="v-guided">
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+    <p class="label" style="margin:0">guided reflection</p>
+    <button class="btn-s" style="margin-left:auto;padding:.4rem .9rem;font-size:.78rem" onclick="show('v-main');renderMain()">← back</button>
+  </div>
+  <div id="guided-body"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
      DETAIL VIEW — reflection
 ════════════════════════════════════════════════ -->
 <div class="view" id="v-refl-det">
@@ -236,10 +248,47 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
 
 
 
-// ── AI helper ─────────────────────────────────────────────────────
+// ── Navigation ─────────────────────────────────────────────────────
+function show(id) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+var IS_DEMO = !!(new URLSearchParams(window.location.search).get('demo'));
+
+function renderMain() {
+  renderGuidedIntro();
+  renderReflections();
+  renderFeedbackList();
+}
+
+// ── Guided reflection intro card ───────────────────────────────────
+function renderGuidedIntro() {
+  var grid = document.getElementById('insight-cards');
+  var refls = PD.reflections();
+  var feedbs = PD.feedback();
+  document.getElementById('insight-action-row').innerHTML = '';
+  if (!refls.length && !feedbs.length) {
+    grid.innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add a few reflections and some feedback first — the guided reflection uses them as a starting point</div></div>';
+    return;
+  }
+  grid.innerHTML = '<div class="insight-card good" style="grid-column:span 2">'
+    + '<div class="ic-tag good-tag"><div class="ic-dot good"></div>guided reflection</div>'
+    + '<div class="ic-text">Work through a few short questions, using your recent reflections and feedback as a starting point, to name one insight about your development.</div>'
+    + '<div class="ic-src">' + refls.length + ' reflection' + (refls.length!==1?'s':'') + ' · ' + feedbs.length + ' feedback item' + (feedbs.length!==1?'s':'') + ' to draw on</div>'
+    + '<div style="display:flex;gap:.6rem;margin-top:.75rem;flex-wrap:wrap">'
+    + '<button class="ia-btn" onclick="startGuided()">start guided reflection →</button>'
+    + '<button class="ia-btn" style="background:var(--bright);color:var(--forest);border:1.5px solid var(--forest)" onclick="autoGenerateInsights()">✨ auto-generate with AI</button>'
+    + '</div>'
+    + '</div>'
+    + '<div id="auto-insight-out" style="grid-column:span 2"></div>';
+}
+
+// Tries the real Claude API (if ANTHROPIC_API_KEY is set in Vercel);
+// returns null on any failure so callers fall back to the as-if version.
 async function callAI(messages, system, maxTokens) {
   try {
-    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||800, messages:messages };
     if (system) body.system = system;
     var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
     var data = await resp.json();
@@ -247,182 +296,155 @@ async function callAI(messages, system, maxTokens) {
     return null;
   } catch(e) { return null; }
 }
-function parseJSON(text) {
-  try { return JSON.parse(text.replace(/```json|```/g,'').trim()); }
-  catch(e) { return null; }
+function parseJSON(text){ try { return JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e){ return null; } }
+
+// Build insight cards from the person's own reflections/feedback (as-if).
+function asIfInsightCards() {
+  var refls = PD.reflections(), feedbs = PD.feedback();
+  var good = null, improve = null;
+  feedbs.forEach(function(f){ if(!good && f.type==='positive' && f.text) good = {text:f.text, src:(f.from||'feedback')}; });
+  refls.forEach(function(r){ var c=r.content||{}; var t=c['wr-3']||c['wk-1']||c['wk-0']||c.insight||''; if(!good && t) good = {text:t, src:(FMT_LABELS[r.format]||'reflection')}; });
+  feedbs.forEach(function(f){ if(!improve && f.type==='improve' && f.text) improve = {text:f.text, src:(f.from||'feedback')}; });
+  refls.forEach(function(r){ var c=r.content||{}; var n=c['wr-4']||c['qk-1']||''; if(!improve && n) improve = {text:n, src:(FMT_LABELS[r.format]||'reflection')}; });
+  return {good:good, improve:improve};
 }
 
-// ── Navigation ─────────────────────────────────────────────────────
-function show(id) {
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+function renderAutoInsights(good, improve) {
+  var out = document.getElementById('auto-insight-out');
+  var cards = '';
+  if (good) cards += '<div class="insight-card good"><div class="ic-tag good-tag"><div class="ic-dot good"></div>strength</div><div class="ic-text">' + esc(good.text) + '</div><div class="ic-src">' + esc(good.src||'') + '</div></div>';
+  if (improve) cards += '<div class="insight-card improve"><div class="ic-tag improve-tag"><div class="ic-dot improve"></div>growth area</div><div class="ic-text">' + esc(improve.text) + '</div><div class="ic-src">' + esc(improve.src||'') + '</div></div>';
+  if (!cards) cards = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">not enough in your reflections yet — try the guided reflection instead</div></div>';
+  out.innerHTML = '<div class="insight-grid" style="margin-top:.5rem">' + cards + '</div>'
+    + (improve ? '<button class="ia-btn" style="margin-top:.75rem" onclick="seedBreakdownFrom(' + JSON.stringify(improve.text).replace(/"/g,'&quot;') + ')">turn the growth area into goals →</button>' : '');
 }
 
-// ── AI-generated insights ──────────────────────────────────────────
-function renderMain() {
-  generateAIInsights();
-  renderReflections();
-  renderFeedbackList();
-}
+// Auto-generate: try real Claude; if unavailable, fall back to the as-if
+// synthesis built from the person's own reflections and feedback.
+async function autoGenerateInsights() {
+  var out = document.getElementById('auto-insight-out');
+  out.innerHTML = '<div style="padding:.75rem 0;color:var(--muted);font-style:italic;font-size:.85rem">✨ analysing your reflections and feedback…</div>';
 
-var IS_DEMO = !!(new URLSearchParams(window.location.search).get('demo'));
-var DEMO_INSIGHTS = {
-  good: [
-    {insight:'Structure is your engine: across three reflections you perform best — and feel most confident — when you have designed clear transitions and a firm agenda in advance.', source:'pattern across written + walk reflections'},
-    {insight:'Your synthesis work lands: you turn raw research into a story rather than a data dump, which Giusivelia explicitly called out.', source:'coach feedback + reflection on Woonplus session'}
-  ],
-  improve: [
-    {insight:'Pacing under complexity: both the client and your own blueprint reflection point the same way — when you introduce a complex artefact, you move faster than your audience can follow.', source:'client feedback + quick check-in, same week'},
-    {insight:'You collect feedback reactively rather than asking for it in the moment — your own reflection notes you should ask right after a session, not a week later.', source:'written reflection, Woonplus'}
-  ]
-};
-async function generateAIInsights() {
-  if (IS_DEMO) {
-    var refls0 = PD.reflections(), feedbs0 = PD.feedback();
-    if (!refls0.length && !feedbs0.length) {
-      document.getElementById('insight-cards').innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add reflections and feedback to see your insights here</div></div>';
-      document.getElementById('insight-action-row').innerHTML = '';
-      return;
-    }
-    renderInsightCards(DEMO_INSIGHTS.good, DEMO_INSIGHTS.improve);
-    renderActionRow(DEMO_INSIGHTS.improve[0]);
-    return;
-  }
-  var grid = document.getElementById('insight-cards');
-  var refls = PD.reflections();
-  var feedbs = PD.feedback();
+  var refls = PD.reflections(), feedbs = PD.feedback();
+  var reflTexts = refls.slice(0,10).map(function(r){ var c=r.content||{}; return {format:r.format, text:Object.keys(c).map(function(k){return c[k];}).filter(function(v){return typeof v==='string' && v.length>5;}).join(' | ').slice(0,250)}; });
+  var fbTexts = feedbs.slice(0,8).map(function(f){ return {from:f.from, type:f.type, text:(f.text||'').slice(0,180)}; });
+  var sys = "You are an experienced professional development coach. Analyse this service designer's reflections and feedback to find genuine patterns. Be specific. Respond ONLY with JSON: {\"good\":{\"text\":\"...\",\"src\":\"...\"},\"improve\":{\"text\":\"...\",\"src\":\"...\"}}";
+  var prompt = 'REFLECTIONS: ' + JSON.stringify(reflTexts) + ' FEEDBACK: ' + JSON.stringify(fbTexts);
 
-  if (!refls.length && !feedbs.length) {
-    grid.innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add reflections and feedback to see your insights here</div></div>';
-    document.getElementById('insight-action-row').innerHTML = '';
-    return;
-  }
-
-  grid.innerHTML = '<div style="grid-column:span 2;padding:.75rem 0;color:var(--muted);font-style:italic;font-size:.825rem">analysing your reflections…</div>';
-
-  // Build data summary for Claude
-  var reflTexts = refls.slice(0, 10).map(function(r) {
-    var c = r.content || {};
-    var texts = Object.values(c).filter(function(v) { return typeof v === 'string' && v.length > 5; });
-    return { date: r.date, format: r.format, energy: r.energy, text: texts.join(' | ').slice(0, 250) };
-  });
-  var fbTexts = feedbs.slice(0, 8).map(function(f) {
-    return { from: f.from, type: f.type, text: (f.text || '').slice(0, 180) };
-  });
-
-  var sys = "You are an experienced professional development coach. Analyze this service designer's reflections and feedback to find genuine patterns. Be specific — reference actual things you see in the data, not generic praise. Be honest about growth areas.";
-  var prompt = 'Reflections and feedback data: REFLECTIONS: ' + JSON.stringify(reflTexts) + ' FEEDBACK: ' + JSON.stringify(fbTexts) + ' Find 2 genuine strengths (Good!) and 2 growth areas (Improve!). Respond ONLY with valid JSON: {"good":[{"insight":"...","source":"..."}],"improve":[{"insight":"...","source":"..."}]}';
-  var result = await callAI([{ role: 'user', content: prompt }], sys, 600);
-
+  var result = await callAI([{role:'user', content:prompt}], sys, 500);
   if (result) {
     var parsed = parseJSON(result);
-    if (parsed && (parsed.good || parsed.improve)) {
-      renderInsightCards(parsed.good || [], parsed.improve || []);
-      var topImprove = parsed.improve && parsed.improve[0];
-      renderActionRow(topImprove || null);
-      return;
-    }
+    if (parsed && (parsed.good || parsed.improve)) { renderAutoInsights(parsed.good, parsed.improve); return; }
   }
+  // Fallback: as-if synthesis from real data, with a brief delay.
+  setTimeout(function(){ var r = asIfInsightCards(); renderAutoInsights(r.good, r.improve); }, 900);
+}
 
-  // Fallback: use raw text from reflections/feedback
-  var good = null, improve = null;
-  feedbs.forEach(function(f) { if (f.text && f.type === 'positive' && !good) good = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
-  feedbs.forEach(function(f) { if (f.text && f.type === 'improve' && !improve) improve = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
-  refls.forEach(function(r) {
+function seedBreakdownFrom(text) {
+  try { sessionStorage.setItem('pd_insight_seed', text); } catch(e) {}
+  window.location.href = './goals.html';
+}
+
+// ── Guided reflection flow (no AI) ─────────────────────────────────
+// Questions are reflective prompts; the flow surfaces the person's own
+// recent reflections and feedback as material to think with.
+var guidedStep = 0;
+var guidedAnswers = [];
+var GUIDED_QUESTIONS = [
+  'Looking back at your recent reflections and feedback below, what stands out most to you right now?',
+  'When did your work feel like it was going well — and what were you doing in those moments?',
+  'Where did you feel stuck, stretched, or unsure? What was going on there?',
+  'Putting that together: what is one insight about how you work or want to grow?'
+];
+
+function recentMaterialHTML() {
+  var refls = PD.reflections().slice(0, 4);
+  var feedbs = PD.feedback().slice(0, 4);
+  var html = '<div style="background:var(--bright);border:1px solid var(--border);border-radius:10px;padding:.65rem .8rem;margin-bottom:1rem;font-size:.8rem;line-height:1.5">';
+  html += '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin-bottom:.4rem">your recent material</div>';
+  refls.forEach(function(r){
     var c = r.content || {};
-    var t = c['wr-3'] || c['wk-0'] || c['qk-0'] || '';
-    if (t.length > 10 && !good) good = { insight: t.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
-    var n = c['wr-4'] || c['wk-1'] || c['qk-1'] || '';
-    if (n.length > 10 && !improve) improve = { insight: n.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
+    var texts = Object.keys(c).map(function(k){return c[k];}).filter(function(v){return typeof v==='string' && v.length>5;});
+    if (texts.length) html += '<div style="margin-bottom:.3rem">📝 ' + esc(texts.join(' · ').slice(0,140)) + '</div>';
   });
-  renderInsightCards(good ? [good] : [], improve ? [improve] : []);
-  renderActionRow(improve);
+  feedbs.forEach(function(f){
+    if (f.text) html += '<div style="margin-bottom:.3rem">💬 <strong>' + esc(f.from||'feedback') + ':</strong> ' + esc(f.text.slice(0,140)) + '</div>';
+  });
+  html += '</div>';
+  return html;
 }
 
-function renderInsightCards(goods, improves) {
-  var grid = document.getElementById('insight-cards');
-  var makeCard = function(item, type) {
-    if (!item) return '<div class="insight-card empty-card"><div class="ic-empty-msg">not enough data yet</div></div>';
-    return '<div class="insight-card ' + type + '">'
-      + '<div class="ic-tag ' + type + '-tag"><div class="ic-dot ' + type + '"></div>' + (type === 'good' ? 'Good!' : 'Improve!') + '</div>'
-      + '<div class="ic-text">' + esc(item.insight) + '</div>'
-      + '<div class="ic-src">' + esc(item.source || '') + '</div>'
-      + '</div>';
-  };
-  grid.innerHTML = makeCard(goods[0] || null, 'good') + makeCard(improves[0] || null, 'improve');
+function startGuided() {
+  guidedStep = 0;
+  guidedAnswers = [];
+  show('v-guided');
+  renderGuidedStep();
 }
 
-function renderActionRow(topImprove) {
-  var actionRow = document.getElementById('insight-action-row');
-  if (!topImprove) { actionRow.innerHTML = ''; return; }
-  var igJson = JSON.stringify(topImprove).replace(/"/g, '&quot;');
-  actionRow.innerHTML = '<div class="insight-action-row"><div class="ia-text">This growth area could become a goal. Want to shape it into one?</div><button class="ia-btn" onclick="openInsightGoalPanel(' + igJson + ')">shape into goal →</button></div>';
+function renderGuidedStep() {
+  var wrap = document.getElementById('guided-body');
+  var q = GUIDED_QUESTIONS[guidedStep];
+  var material = guidedStep === 0 ? recentMaterialHTML() : '';
+  wrap.innerHTML = material
+    + '<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem">question ' + (guidedStep+1) + ' of ' + GUIDED_QUESTIONS.length + '</div>'
+    + '<div style="font-family:var(--font-head);font-size:1.15rem;color:var(--charcoal);margin-bottom:.875rem;line-height:1.35">' + esc(q) + '</div>'
+    + '<textarea id="guided-answer" rows="4" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.9rem;resize:vertical" placeholder="take your time…">' + esc(guidedAnswers[guidedStep] || '') + '</textarea>'
+    + '<div style="display:flex;gap:.6rem;margin-top:.875rem">'
+    + (guidedStep > 0 ? '<button class="btn-s" onclick="guidedBack()">← back</button>' : '')
+    + (guidedStep < GUIDED_QUESTIONS.length - 1
+        ? '<button class="btn-p" onclick="guidedNext()">next →</button>'
+        : '<button class="btn-y" onclick="guidedFinish()">save this insight →</button>')
+    + '</div>';
+  document.getElementById('guided-answer').focus();
 }
 
-function openInsight() {} // placeholder
-
-// Insight → goal panel
-var igItem = null, igMode = 'subgoal';
-
-async function openInsightGoalPanel(item) {
-  igItem = item; igMode = 'subgoal';
-  var goals = PD.goals();
-  var panel = document.getElementById('ig-panel');
-
-  // Build insight chooser: all current insights, pick one to shape
-  var all = [];
-  if (IS_DEMO) { all = DEMO_INSIGHTS.improve.concat(DEMO_INSIGHTS.good); }
-  else if (item) { all = [item]; }
-  var chooser = document.getElementById('ig-insight-chooser');
-  if (!chooser) {
-    chooser = document.createElement('div');
-    chooser.id = 'ig-insight-chooser';
-    panel.insertBefore(chooser, panel.firstChild);
-  }
-  chooser.innerHTML = '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin:.25rem 0 .4rem">1 · choose an insight</div>'
-    + all.map(function(it, i) {
-        return '<div class="ig-ins-opt" data-i="'+i+'" onclick="igChooseInsight('+i+', this)" style="border:1.5px solid var(--border);border-radius:9px;padding:.5rem .7rem;margin-bottom:.3rem;font-size:.8rem;cursor:pointer;background:var(--white)">'+esc(it.insight)+'</div>';
-      }).join('')
-    + '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin:.6rem 0 .3rem">2 · shape it into a goal</div>';
-  window._igAll = all;
-  var ta = document.getElementById('ig-text');
-  ta.value = ''; ta.placeholder = 'pick an insight above, then edit the goal here…';
-
-  var sel = document.getElementById('ig-goal-sel');
-  sel.innerHTML = '<option value="">— pick a goal to add as sub-goal —</option>';
-  goals.forEach(function(g) { sel.innerHTML += '<option value="' + g.id + '">' + esc(g.title) + '</option>'; });
-  panel.classList.add('open');
-  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
-  if (all.length === 1) igChooseInsight(0, null);
+function guidedNext() {
+  guidedAnswers[guidedStep] = document.getElementById('guided-answer').value.trim();
+  guidedStep++;
+  renderGuidedStep();
+}
+function guidedBack() {
+  guidedAnswers[guidedStep] = document.getElementById('guided-answer').value.trim();
+  guidedStep--;
+  renderGuidedStep();
 }
 
-async function igChooseInsight(i, el) {
-  document.querySelectorAll('.ig-ins-opt').forEach(function(o){ o.style.borderColor='var(--border)'; o.style.background='var(--white)'; });
-  if (el) { el.style.borderColor='var(--essense)'; el.style.background='var(--bright)'; }
-  var it = window._igAll[i];
-  var ta = document.getElementById('ig-text');
-  ta.value = ''; ta.placeholder = 'shaping into a goal…';
-  var canned = {
-    'Pacing under complexity': 'Get better at pacing when presenting complex artefacts — build in orientation moments and check understanding before moving on.',
-    'You collect feedback reactively': 'Build the habit of asking for feedback immediately after sessions, while impressions are fresh.',
-    'Structure is your engine': 'Use my strength in structure deliberately — design every workshop around clear transitions and share the agenda upfront.',
-    'Your synthesis work lands': 'Develop my synthesis storytelling further — turn it into a repeatable approach I can apply to any research project.'
-  };
-  var hit = Object.keys(canned).find(function(k){ return (it.insight||'').indexOf(k) === 0; });
-  if (hit) { ta.value = canned[hit]; ta.placeholder=''; return; }
-  var sys = 'You are a professional development coach. Transform this insight into a clear, specific, first-person development goal (1-2 sentences, starting with a verb). Return ONLY the goal statement.';
-  var result = await callAI([{role:'user', content:'Insight: ' + (it.insight || '')}], sys, 150);
-  ta.value = result || ('Get better at: ' + (it.insight || '').split('—')[0].trim());
-  ta.placeholder = '';
+function guidedFinish() {
+  guidedAnswers[guidedStep] = document.getElementById('guided-answer').value.trim();
+  var insight = guidedAnswers[GUIDED_QUESTIONS.length - 1] || '';
+  if (!insight) { document.getElementById('guided-answer').focus(); return; }
+  // Save as a reflection of format 'insight' so it lives with the rest.
+  var content = {};
+  GUIDED_QUESTIONS.forEach(function(q, i){ content['q'+i] = q + ' — ' + (guidedAnswers[i]||''); });
+  content.insight = insight;
+  PD.saveReflection({ format:'insight', energy:'', content:content, minutesSpent:5 });
+  // Show the result + offer to break it into goals.
+  var wrap = document.getElementById('guided-body');
+  wrap.innerHTML = '<div style="background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem">'
+    + '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin-bottom:.4rem">your insight, saved</div>'
+    + '<div style="font-size:.95rem;line-height:1.5;color:var(--charcoal)">' + esc(insight) + '</div></div>'
+    + '<p style="font-size:.85rem;color:var(--muted);margin-bottom:.875rem">want to turn this into something concrete?</p>'
+    + '<div style="display:flex;gap:.6rem;flex-wrap:wrap">'
+    + '<button class="btn-y" onclick="guidedToGoals()">break this into goals →</button>'
+    + '<button class="btn-s" onclick="show(\'v-main\');renderMain()">done</button>'
+    + '</div>';
 }
 
+// Hand off to the goals page breakdown wizard, carrying the insight text.
+function guidedToGoals() {
+  var insight = guidedAnswers[GUIDED_QUESTIONS.length - 1] || '';
+  try { sessionStorage.setItem('pd_insight_seed', insight); } catch(e) {}
+  window.location.href = './goals.html';
+}
+
+// ── Insight → goal panel (kept, no AI) ─────────────────────────────
+var igMode = 'subgoal';
 function igPickMode(mode, el) {
   igMode = mode;
   document.querySelectorAll('.ig-type-btn').forEach(function(b){ b.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('ig-goal-sel').className = 'ig-sel' + (mode === 'newgoal' ? ' hidden' : '');
 }
-
 function igConfirm() {
   var text = document.getElementById('ig-text').value.trim();
   if (!text) { document.getElementById('ig-text').focus(); return; }
@@ -434,19 +456,12 @@ function igConfirm() {
     PD.saveGoal({title:text, subgoals:[]});
   }
   document.getElementById('ig-panel').classList.remove('open');
-  document.getElementById('insight-action-row').innerHTML = '<div style="background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;font-size:.825rem;color:var(--forest)">✓ ' + (igMode==='subgoal'?'added as a sub-goal':'added as a new goal') + '</div>';
 }
 function igCancel() { document.getElementById('ig-panel').classList.remove('open'); }
 
-function openInsight(item, type) {
-  // Just scroll to the relevant section for now
-  const target = type==='good'?'refl-list':'refl-list';
-  document.getElementById(target)?.scrollIntoView({behavior:'smooth',block:'start'});
-}
-
 // ── Reflections list ────────────────────────────────────────────────
-const FMT_ICONS = {written:'✍️', walk:'🚶', quick:'⚡', audio:'🎙️', talk:'🤖'};
-const FMT_LABELS= {written:'Written', walk:'Walk-and-talk', quick:'Quick check-in', audio:'Audio', talk:'Guided'};
+const FMT_ICONS = {written:'✍️', walk:'🚶', quick:'⚡', audio:'🎙️', insight:'💡'};
+const FMT_LABELS= {written:'Written', walk:'Walk-and-talk', quick:'Quick check-in', audio:'Audio', insight:'Guided insight'};
 const ENERGY_ICONS = {energised:'🔋', neutral:'⚖️', drained:'🪫', surprised:'✨'};
 
 function renderReflections() {

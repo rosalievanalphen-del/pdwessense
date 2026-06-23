@@ -40,7 +40,13 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 .ic-dot.good{background:var(--essense)}
 .ic-dot.improve{background:#d4a800}
 .ic-text{font-size:.875rem;color:var(--charcoal);line-height:1.45;font-style:italic}
-.ic-src{font-size:.7rem;color:var(--muted);margin-top:.5rem}
+.ic-heading{font-family:var(--font-head);font-size:1.05rem;color:var(--charcoal);line-height:1.3;margin-bottom:.6rem}
+.ic-bullets{list-style:none;padding:0;margin:0 0 .5rem}
+.ic-bullets li{font-size:.825rem;color:var(--charcoal);line-height:1.5;padding:.15rem 0 .15rem 1rem;position:relative}
+.ic-bullets li::before{content:'';width:6px;height:6px;border-radius:50%;position:absolute;left:0;top:.55rem}
+.insight-card.good .ic-bullets li::before{background:var(--essense)}
+.insight-card.improve .ic-bullets li::before{background:#d4a800}
+.ic-src{font-size:.7rem;color:var(--muted);margin-top:.5rem;font-style:italic}
 .ic-empty-msg{font-size:.78rem;color:var(--muted);text-align:center;font-style:italic;padding:.5rem}
 
 /* Insight → goal action row */
@@ -288,8 +294,8 @@ function renderGuidedIntro() {
     return;
   }
 
-  // Build the strength + improve boxes to show immediately.
-  // Priority: (1) saved insights (format:'insight'), (2) derived from feedback/reflections.
+  // Build strength + improve cards immediately.
+  // Priority: saved insights (format:'insight') first, then derived from raw data.
   var savedInsights = refls.filter(function(r){ return r.format==='insight'; });
   var strengthHTML = '', growthHTML = '';
 
@@ -299,14 +305,13 @@ function renderGuidedIntro() {
       var strength = c['strength']||'';
       var growth   = c['growth']||'';
       var source   = c['source']||'';
-      if (strength) strengthHTML += '<div class="insight-card good"><div class="ic-tag good-tag"><div class="ic-dot good"></div>strength</div><div class="ic-text">' + esc(strength) + '</div>' + (source?'<div class="ic-src">'+esc(source)+'</div>':'') + '</div>';
-      if (growth)   growthHTML   += '<div class="insight-card improve"><div class="ic-tag improve-tag"><div class="ic-dot improve"></div>growth area</div><div class="ic-text">' + esc(growth) + '</div>' + (source?'<div class="ic-src">'+esc(source)+'</div>':'') + '<button class="ia-btn" style="margin-top:.6rem;font-size:.76rem" onclick="makeGoalFromInsight(' + JSON.stringify(growth).replace(/"/g,'&quot;') + ')">make this a goal →</button></div>';
+      if (strength) strengthHTML += insightCardHTML('good',    {heading:'your strengths from feedback + reflection', bullets:[strength], src:source}, false);
+      if (growth)   growthHTML   += insightCardHTML('improve', {heading:'where feedback says you have room',          bullets:[growth],   src:source}, true);
     });
   } else {
-    // No saved insights yet — derive from feedback and reflections directly.
     var r = asIfInsightCards();
-    if (r.good)    strengthHTML = '<div class="insight-card good"><div class="ic-tag good-tag"><div class="ic-dot good"></div>strength</div><div class="ic-text">' + esc(r.good.text) + '</div><div class="ic-src">' + esc(r.good.src||'') + '</div></div>';
-    if (r.improve) growthHTML   = '<div class="insight-card improve"><div class="ic-tag improve-tag"><div class="ic-dot improve"></div>growth area</div><div class="ic-text">' + esc(r.improve.text) + '</div><div class="ic-src">' + esc(r.improve.src||'') + '</div><button class="ia-btn" style="margin-top:.6rem;font-size:.76rem" onclick="makeGoalFromInsight(' + JSON.stringify(r.improve.text).replace(/"/g,'&quot;') + ')">make this a goal →</button></div>';
+    if (r.good)    strengthHTML = insightCardHTML('good',    r.good,    false);
+    if (r.improve) growthHTML   = insightCardHTML('improve', r.improve, true);
   }
 
   var actionCard = '<div class="insight-card" style="grid-column:span 2;background:var(--bright);border:1.5px solid var(--border)">'
@@ -323,6 +328,7 @@ function renderGuidedIntro() {
     ? strengthHTML + growthHTML + actionCard
     : actionCard;
 }
+
 
 // Tries the real Claude API (if ANTHROPIC_API_KEY is set in Vercel);
 // returns null on any failure so callers fall back to the as-if version.
@@ -358,14 +364,38 @@ function makeGoalFromInsight(text) {
   }
 }
 
+// ── Shared card builder (v7 format: heading + bullets + source) ────
+function insightCardHTML(type, data, withGoalBtn) {
+  var tag;
+  if (type === 'good') { tag = '<div class="ic-tag good-tag"><div class="ic-dot good"></div>what you\u2019re good at</div>'; }
+  else { tag = '<div class="ic-tag improve-tag"><div class="ic-dot improve"></div>what to grow</div>'; }
+  var bullets = (data.bullets||[data.text||'']).map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('');
+  var growBullet = (data.bullets && data.bullets[0]) || data.text || '';
+  var goalBtn = withGoalBtn && growBullet
+    ? '<button class="ia-btn" style="margin-top:.75rem;font-size:.76rem" onclick="makeGoalFromInsight(' + JSON.stringify(growBullet).replace(/"/g,'&quot;') + ')">make this a goal →</button>'
+    : '';
+  return '<div class="insight-card ' + type + '">'
+    + tag
+    + '<div class="ic-heading">' + esc(data.heading||'') + '</div>'
+    + '<ul class="ic-bullets">' + bullets + '</ul>'
+    + (data.src ? '<div class="ic-src">' + esc(data.src) + '</div>' : '')
+    + goalBtn + '</div>';
+}
+
 // ── Auto-generate with AI ──────────────────────────────────────────
 function asIfInsightCards() {
   var refls = PD.reflections(), feedbs = PD.feedback();
-  var good = null, improve = null;
-  feedbs.forEach(function(f){ if(!good && f.type==='positive' && f.text) good = {text:f.text, src:(f.from||'feedback')}; });
-  refls.forEach(function(r){ var c=r.content||{}; var t=c['wr-3']||c['wk-1']||c['wk-0']||c.insight||c['strength']||''; if(!good && t) good = {text:t, src:(FMT_LABELS[r.format]||'reflection')}; });
-  feedbs.forEach(function(f){ if(!improve && f.type==='improve' && f.text) improve = {text:f.text, src:(f.from||'feedback')}; });
-  refls.forEach(function(r){ var c=r.content||{}; var n=c['wr-4']||c['qk-1']||c['growth']||''; if(!improve && n) improve = {text:n, src:(FMT_LABELS[r.format]||'reflection')}; });
+  var strengthBullets = [], growthBullets = [];
+  feedbs.forEach(function(f){ if(f.type==='positive' && f.text && strengthBullets.length<3) strengthBullets.push(f.text); });
+  refls.forEach(function(r){ var c=r.content||{}; var t=c['wr-3']||c['wk-1']||c['strength']||''; if(t && strengthBullets.length<3) strengthBullets.push(t); });
+  feedbs.forEach(function(f){ if(f.type==='improve' && f.text && growthBullets.length<3) growthBullets.push(f.text); });
+  refls.forEach(function(r){ var c=r.content||{}; var n=c['wr-4']||c['qk-1']||c['growth']||''; if(n && growthBullets.length<3) growthBullets.push(n); });
+  var posFb=feedbs.filter(function(f){return f.type==='positive';}).length;
+  var hiEn=refls.filter(function(r){return r.energy==='energised';}).length;
+  var conFb=feedbs.filter(function(f){return f.type==='improve';}).length;
+  var tryDiff=refls.filter(function(r){return r.energy==='drained';}).length;
+  var good=strengthBullets.length?{heading:'your strengths from feedback + reflection',bullets:strengthBullets.slice(0,3),src:'based on '+(posFb||1)+' positive feedback item'+(posFb!==1?'s':'')+' + '+(hiEn||1)+' reflection'+(hiEn!==1?'s':'')+' marked high energy'}:null;
+  var improve=growthBullets.length?{heading:'where feedback says you have room',bullets:growthBullets.slice(0,3),src:'based on '+(conFb||1)+' constructive item'+(conFb!==1?'s':'')+' + '+(tryDiff||1)+' reflection marked “try differently”'}:null;
   return {good:good, improve:improve};
 }
 
@@ -373,25 +403,24 @@ function renderAutoInsights(good, improve) {
   var out = document.getElementById('auto-insight-out');
   if (!out) return;
   var cards = '';
-  if (good) cards += '<div class="insight-card good"><div class="ic-tag good-tag"><div class="ic-dot good"></div>strength</div><div class="ic-text">' + esc(good.text) + '</div><div class="ic-src">' + esc(good.src||'') + '</div></div>';
-  if (improve) cards += '<div class="insight-card improve"><div class="ic-tag improve-tag"><div class="ic-dot improve"></div>growth area</div><div class="ic-text">' + esc(improve.text) + '</div><div class="ic-src">' + esc(improve.src||'') + '</div>'
-    + '<button class="ia-btn" style="margin-top:.6rem;font-size:.76rem" onclick="makeGoalFromInsight(' + JSON.stringify(improve.text).replace(/"/g,'&quot;') + ')">make this a goal →</button></div>';
+  if (good)    cards += insightCardHTML('good', good, false);
+  if (improve) cards += insightCardHTML('improve', improve, true);
   if (!cards) cards = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">not enough in your reflections yet — try creating an insight manually</div></div>';
-  var saveBtn = (good||improve) ? '<button class="ia-btn" style="margin-top:.75rem;grid-column:span 2" onclick="saveInsightAndReturn(' + JSON.stringify((good||{}).text||'').replace(/"/g,'&quot;') + ',' + JSON.stringify((improve||{}).text||'').replace(/"/g,'&quot;') + ',\'auto-generated\')">save these insights →</button>' : '';
+  var g0 = (good && good.bullets && good.bullets[0]) || (good && good.text) || '';
+  var i0 = (improve && improve.bullets && improve.bullets[0]) || (improve && improve.text) || '';
+  var saveBtn = (good||improve) ? '<button class="ia-btn" style="margin-top:.75rem;grid-column:span 2" onclick="saveInsightAndReturn(' + JSON.stringify(g0).replace(/"/g,'&quot;') + ',' + JSON.stringify(i0).replace(/"/g,'&quot;') + ',\'auto-generated\')">save these insights →</button>' : '';
   out.innerHTML = '<div class="insight-grid" style="margin-top:.5rem">' + cards + '</div>' + saveBtn;
 }
 
 async function autoGenerateInsights() {
   var out = document.getElementById('auto-insight-out');
   out.innerHTML = '<div style="padding:.75rem 0;color:var(--muted);font-style:italic;font-size:.85rem">✨ analysing your reflections and feedback…</div>';
-
   var refls = PD.reflections(), feedbs = PD.feedback();
   var reflTexts = refls.slice(0,10).map(function(r){ var c=r.content||{}; return {format:r.format, text:Object.values(c).filter(function(v){return typeof v==='string'&&v.length>5;}).join(' | ').slice(0,250)}; });
   var fbTexts = feedbs.slice(0,8).map(function(f){ return {from:f.from, type:f.type, text:(f.text||'').slice(0,180)}; });
-  var sys = 'You are a professional development coach. Analyse these reflections and feedback items from a service designer and identify one genuine strength and one genuine growth area. Be specific — reference the actual content, not vague generalities. Respond ONLY with valid JSON: {"good":{"text":"...","src":"..."},"improve":{"text":"...","src":"..."}}. No markdown, no explanation.';
+  var sys = 'You are a professional development coach. Analyse these reflections and feedback from a service designer. Identify 2-3 genuine strengths and 2-3 genuine growth areas as short bullet points. Be specific — use actual content. Respond ONLY with valid JSON: {"good":{"heading":"your strengths from feedback + reflection","bullets":["...","..."],"src":"based on X positive feedback items + Y reflections marked high energy"},"improve":{"heading":"where feedback says you have room","bullets":["...","..."],"src":"based on X constructive items + Y reflections"}}. No markdown.';
   var prompt = 'REFLECTIONS: ' + JSON.stringify(reflTexts) + '\nFEEDBACK: ' + JSON.stringify(fbTexts);
-
-  var result = await callAI([{role:'user', content:prompt}], sys, 600);
+  var result = await callAI([{role:'user', content:prompt}], sys, 800);
   if (result) {
     var parsed = parseJSON(result);
     if (parsed && (parsed.good || parsed.improve)) { renderAutoInsights(parsed.good, parsed.improve); return; }

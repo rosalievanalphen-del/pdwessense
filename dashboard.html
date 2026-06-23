@@ -841,7 +841,7 @@ function setSancPref(p) {
 function setSancDur(d) {
   _sancDur = d;
   ['30 min','45 min','60 min','90 min'].forEach(function(k) {
-    var btn = document.getElementById('dur-' + k.replace(' ',''));
+    var btn = document.getElementById('dur-' + k.replace(' min',''));
     if (btn) btn.classList.toggle('active', k === d);
   });
   saveSancPrefs();

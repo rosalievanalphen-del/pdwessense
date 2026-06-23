@@ -204,6 +204,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
         <button class="btn-p" onclick="generateSubgoals()">suggest sub-goals →</button>
         <button class="btn-s" onclick="autoGenerateSubgoals()">✨ auto-generate with AI</button>
       </div>
+      <div id="bd-error" style="font-size:.78rem;color:#c0392b;margin-top:.5rem;display:none"></div>
     </div>
 
     <!-- BD step 2: approve sub-goals -->
@@ -238,10 +239,24 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
     PD.init('demo');
-    PD.save(SC_DEMO); // always refresh demo data — never stale
+    // Smart re-save: only refresh demo data if user hasn't added anything yet.
+    // This preserves goals/insights/etc. created during the demo session.
+    var existing = null;
+    try { existing = PD.get(); } catch(e){}
+    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
+    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
+    if (existingTotal <= demoBaseline) {
+      PD.save(SC_DEMO); // first load, or no user additions yet
+    }
+    // else: preserve user-added content from this session
   } else if (p === 'first') {
     PD.init('demo');
-    PD.reset(); // always empty — true first-usage state
+    // First-usage: only reset if no user content yet
+    var existing2 = null;
+    try { existing2 = PD.get(); } catch(e){}
+    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
+      PD.reset();
+    }
   }
   // no param = real data, default namespace
 })();
@@ -548,12 +563,20 @@ function renderSugList(items) {
   list.innerHTML = html;
 }
 
+function showBdError(msg) {
+  var el = document.getElementById('bd-error');
+  if (!el) return;
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(function(){ el.style.display='none'; }, 3000);
+}
+
 function generateSubgoals() {
   bdGoalId = document.getElementById('bd-goal-sel').value;
-  if (!bdGoalId) { alert('please pick a goal first'); return; }
-  if (!bdComfort) { alert('please select your comfort level'); return; }
+  if (!bdGoalId) { showBdError('please pick a goal first'); return; }
+  if (!bdComfort) { showBdError('please select a comfort level'); return; }
   var goal = PD.goalById(bdGoalId);
   if (!goal) return;
+  document.getElementById('bd-error').style.display='none';
   bdGo(2);
   renderSugList(subgoalTemplates(goal.title, bdComfort));
 }
@@ -562,7 +585,7 @@ function generateSubgoals() {
 // on any failure so the caller falls back to the template version.
 async function callAI(messages, system, maxTokens) {
   try {
-    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||500, messages:messages };
+    var body = { model:'claude-sonnet-4-6', max_tokens:maxTokens||500, messages:messages };
     if (system) body.system = system;
     var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
     var data = await resp.json();
@@ -575,22 +598,23 @@ function parseJSON(text){ try { return JSON.parse(text.replace(/```json|```/g,''
 // Auto-generate: try real Claude, else fall back to comfort-based templates.
 async function autoGenerateSubgoals() {
   bdGoalId = document.getElementById('bd-goal-sel').value;
-  if (!bdGoalId) { alert('please pick a goal first'); return; }
-  if (!bdComfort) { alert('please select your comfort level'); return; }
+  if (!bdGoalId) { showBdError('please pick a goal first'); return; }
+  if (!bdComfort) { showBdError('please select a comfort level'); return; }
   var goal = PD.goalById(bdGoalId);
   if (!goal) return;
+  document.getElementById('bd-error').style.display='none';
   bdGo(2);
   var list = document.getElementById('sug-list');
   list.innerHTML = '<div style="font-size:.825rem;color:var(--muted);font-style:italic;padding:.5rem 0">✨ generating sub-goals for "' + esc(goal.title) + '"…</div>';
 
-  var sys = 'You are a professional development coach at Essense, a service design consultancy. Generate 5 specific, actionable sub-goals. Respond ONLY with a JSON array of strings.';
-  var prompt = 'Goal: ' + goal.title + ' | Comfort level: ' + bdComfort;
+  var sys = 'You are a professional development coach at Essense. Generate 5 specific, actionable sub-goals for a service designer. Each should be a concrete action, not vague. Respond ONLY with a JSON array of strings, no markdown, no explanation.';
+  var prompt = 'Goal: "' + goal.title + '" | Comfort level with this goal: ' + bdComfort + '. Generate 5 specific, doable sub-goals tailored to this exact goal and comfort level.';
   var result = await callAI([{role:'user', content:prompt}], sys, 500);
   if (result) {
     var parsed = parseJSON(result);
     if (Array.isArray(parsed) && parsed.length) { renderSugList(parsed.slice(0,5)); return; }
   }
-  setTimeout(function(){ renderSugList(subgoalTemplates(goal.title, bdComfort)); }, 700);
+  renderSugList(subgoalTemplates(goal.title, bdComfort));
 }
 
 function toggleSug(i) {
@@ -606,7 +630,7 @@ function saveSuggestedSubgoals() {
   var nodes = document.querySelectorAll('.sug-item.approved .sug-text');
   var approved = [];
   for (var i = 0; i < nodes.length; i++) { approved.push(nodes[i].textContent.trim()); }
-  if (!approved.length) { alert('approve at least one sub-goal'); return; }
+  if (!approved.length) { showBdError('approve at least one sub-goal first'); return; }
   for (var j = 0; j < approved.length; j++) {
     PD.saveSubgoal(bdGoalId, {title: approved[j], done: false});
   }

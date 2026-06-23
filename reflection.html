@@ -221,10 +221,24 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
     PD.init('demo');
-    PD.save(SC_DEMO); // always refresh demo data — never stale
+    // Smart re-save: only refresh demo data if user hasn't added anything yet.
+    // This preserves goals/insights/etc. created during the demo session.
+    var existing = null;
+    try { existing = PD.get(); } catch(e){}
+    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
+    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
+    if (existingTotal <= demoBaseline) {
+      PD.save(SC_DEMO); // first load, or no user additions yet
+    }
+    // else: preserve user-added content from this session
   } else if (p === 'first') {
     PD.init('demo');
-    PD.reset(); // always empty — true first-usage state
+    // First-usage: only reset if no user content yet
+    var existing2 = null;
+    try { existing2 = PD.get(); } catch(e){}
+    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
+      PD.reset();
+    }
   }
   // no param = real data, default namespace
 })();
@@ -471,13 +485,16 @@ function auSave() {
 }
 
 // ── AI helpers ────────────────────────────────────────────────────
-// Testing build: no live API. Returns null after a short, believable
-// delay so the typing indicator reads naturally; the scripted coach
-// (fallbackCoachReply) then provides the adaptive-sounding reply.
-function callAI(messages, system, maxTokens) {
-  return new Promise(function(resolve){
-    setTimeout(function(){ resolve(null); }, 650 + Math.floor(Math.random()*500));
-  });
+// Tries the real Claude API; falls back to scripted coach on failure.
+async function callAI(messages, system, maxTokens) {
+  try {
+    var body = { model:'claude-sonnet-4-6', max_tokens:maxTokens||800, messages:messages };
+    if (system) body.system = system;
+    var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    var data = await resp.json();
+    if (data.content && data.content[0]) return data.content[0].text;
+    return null;
+  } catch(e) { return null; }
 }
 
 // ── AI chat ───────────────────────────────────────────────────────

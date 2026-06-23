@@ -181,10 +181,24 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
     PD.init('demo');
-    PD.save(SC_DEMO); // always refresh demo data — never stale
+    // Smart re-save: only refresh demo data if user hasn't added anything yet.
+    // This preserves goals/insights/etc. created during the demo session.
+    var existing = null;
+    try { existing = PD.get(); } catch(e){}
+    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
+    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
+    if (existingTotal <= demoBaseline) {
+      PD.save(SC_DEMO); // first load, or no user additions yet
+    }
+    // else: preserve user-added content from this session
   } else if (p === 'first') {
     PD.init('demo');
-    PD.reset(); // always empty — true first-usage state
+    // First-usage: only reset if no user content yet
+    var existing2 = null;
+    try { existing2 = PD.get(); } catch(e){}
+    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
+      PD.reset();
+    }
   }
   // no param = real data, default namespace
 })();

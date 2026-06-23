@@ -99,10 +99,14 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 <p class="sub">curated trainings, podcasts, articles, books — tagged to career framework competences. browse the full menu or search.</p>
 
 <div class="ai-search-bar" id="ai-search-bar">
-  <div class="ai-search-title">find resources for your goals</div>
-  <div class="ai-search-sub">the system looks at your current goals and sub-goals and suggests the most relevant resources.</div>
-  <button style="background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.45rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;margin-bottom:.5rem" onclick="findResourcesForGoals()">✦ search for my goals</button>
-  <span id="ai-search-status" style="font-size:.75rem;color:#b7e4c7;font-style:italic;margin-left:.5rem"></span>
+  <div class="ai-search-title">find resources for a goal</div>
+  <div class="ai-search-sub">pick one of your goals first — resources are matched specifically to it.</div>
+  <select id="training-goal-sel" style="width:100%;border:1.5px solid var(--border);border-radius:9px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.85rem;color:var(--charcoal);background:var(--white);margin-bottom:.6rem;cursor:pointer" onchange="onTrainingGoalChange()">
+    <option value="">— select a goal —</option>
+  </select>
+  <div id="training-goal-error" style="font-size:.78rem;color:#c0392b;display:none;margin-bottom:.4rem"></div>
+  <button id="training-search-btn" style="background:var(--yellow);color:var(--forest);border:none;border-radius:8px;padding:.45rem 1rem;font-family:var(--font-body);font-size:.8rem;font-weight:600;cursor:pointer;margin-bottom:.5rem" onclick="findResourcesForGoals()">find resources for this goal</button>
+  <span id="ai-search-status" style="font-size:.75rem;color:var(--essense);font-style:italic;margin-left:.5rem"></span>
   <div id="ai-search-results" style="margin-top:.5rem"></div>
 </div>
 
@@ -149,40 +153,142 @@ function esc(s) {
   return d.innerHTML;
 }
 
-// ── Find resources for goals (matches the browse-menu format) ──────
+// Populate goal selector on load. If no goals, disable search and show a hint.
+function populateTrainingGoalSel() {
+  var sel = document.getElementById('training-goal-sel');
+  if (!sel) return;
+  var goals = typeof PD !== 'undefined' ? PD.goals() : [];
+  var btn = document.getElementById('training-search-btn');
+  var sub = document.querySelector('.ai-search-sub');
+  if (!goals.length) {
+    sel.innerHTML = '<option value="">no goals yet — set one on the goals page first</option>';
+    sel.disabled = true;
+    if (btn) { btn.disabled = true; btn.style.opacity = '.5'; btn.style.cursor = 'not-allowed'; }
+    if (sub) sub.textContent = 'add a goal first, then come back here to find resources matched to it.';
+    return;
+  }
+  sel.disabled = false;
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer'; }
+  sel.innerHTML = '<option value="">— select a goal —</option>';
+  goals.forEach(function(g) {
+    var opt = document.createElement('option');
+    opt.value = g.id;
+    opt.textContent = g.title;
+    sel.appendChild(opt);
+  });
+}
+
+function onTrainingGoalChange() {
+  document.getElementById('training-goal-error').style.display = 'none';
+  document.getElementById('ai-search-status').textContent = '';
+  document.getElementById('ai-search-results').innerHTML = '';
+}
+
+// Find resources for the specifically selected goal.
 function findResourcesForGoals() {
+  var sel = document.getElementById('training-goal-sel');
+  var errEl = document.getElementById('training-goal-error');
   var st = document.getElementById('ai-search-status');
   var res = document.getElementById('ai-search-results');
-  st.textContent = 'analysing your goals…';
+
+  if (!sel.value) {
+    errEl.textContent = 'please select a goal first';
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  st.textContent = 'searching…';
   res.innerHTML = '';
 
-  // Build goal text from the PD store.
   var goals = typeof PD !== 'undefined' ? PD.goals() : [];
-  var goalText = goals.map(function(g) {
-    var subs = (g.subgoals||[]).filter(function(s){return !s.done;}).map(function(s){return s.title;});
-    return g.title + ' ' + subs.join(' ');
-  }).join(' ');
-  if (!goalText) goalText = 'facilitation workshops systems thinking research stakeholder';
+  var selectedGoal = goals.find(function(g){ return g.id === sel.value; });
+  if (!selectedGoal) { st.textContent = 'goal not found'; return; }
 
-  // Derive search words from the goals, then score the real catalogue.
-  var stop = {'the':1,'and':1,'for':1,'with':1,'a':1,'an':1,'to':1,'of':1,'in':1,'on':1,'my':1,'me':1,'get':1,'better':1,'at':1,'as':1,'build':1,'improve':1,'skills':1,'skill':1};
+  // Build search text from this specific goal + its sub-goals.
+  var goalText = selectedGoal.title + ' ' + (selectedGoal.subgoals||[]).map(function(s){ return s.title; }).join(' ');
+
+  // Keyword scoring against the real catalogue.
+  var stop = {'the':1,'and':1,'for':1,'with':1,'a':1,'an':1,'to':1,'of':1,'in':1,'on':1,'my':1,'me':1,'get':1,'better':1,'at':1,'as':1,'build':1,'improve':1,'skills':1,'skill':1,'more':1,'this':1};
   var words = goalText.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(function(w){ return w.length>3 && !stop[w]; });
+
   var scored = trainings.map(function(t){
     var hay = (t.title+' '+t.provider+' '+t.competence+' '+t.note+' '+t.type).toLowerCase();
     var score = 0;
     words.forEach(function(w){ if(hay.indexOf(w.slice(0,5))!==-1) score++; });
+    // boost endorsed resources
+    score += t.endorsements * 0.1;
     return {t:t, score:score};
   }).sort(function(a,b){ return b.score - a.score; });
 
-  var hits = scored.filter(function(x){ return x.score>0; });
-  if (!hits.length) hits = scored.slice(0,4);
-  var picks = hits.slice(0,4).map(function(x){ return x.t; });
+  // Ensure variety: pick top result per type first, then fill to 4.
+  var seen = {}, picks = [];
+  scored.forEach(function(x){
+    if (picks.length >= 4) return;
+    var type = x.t.type;
+    if (!seen[type] || picks.length < 3) { picks.push(x.t); seen[type] = true; }
+  });
+  if (picks.length < 4) picks = scored.slice(0,4).map(function(x){ return x.t; });
 
-  // Brief delay so it reads as "the system analysed your goals".
   setTimeout(function(){
-    st.textContent = picks.length + ' resource' + (picks.length!==1?'s':'') + ' matched to your goals';
-    res.innerHTML = picks.map(trainingCardHTML).join('');
-  }, 450);
+    st.textContent = picks.length + ' resource' + (picks.length!==1?'s':'') + ' for "' + selectedGoal.title + '"';
+    res.innerHTML = picks.map(function(t){ return trainingCardHTMLForGoal(t, selectedGoal.id); }).join('');
+  }, 400);
+}
+
+// Card format for goal-search results — includes "add to this goal" instead of generic action.
+function trainingCardHTMLForGoal(t, goalId) {
+  const costClass = t.cost.toLowerCase().includes('free') ? 'free' : 'paid';
+  const safeTitle = t.title.replace(/'/g, "\\'");
+  const safeGoalId = goalId ? goalId.replace(/'/g, "\\'") : '';
+  return `<div class="training-card">
+      <div class="tc-head">
+        <div class="tc-icon">${t.icon}</div>
+        <div class="tc-info">
+          <div class="tc-title">${t.title}</div>
+          <div class="tc-provider">${t.provider} ${t.endorsements>=4?'<span class="tc-endorsements">★ '+t.endorsements+' endorsed</span>':''}</div>
+        </div>
+      </div>
+      <div class="tc-meta">
+        <span class="tc-pill">${t.type}</span>
+        <span class="tc-pill">${t.time}</span>
+        <span class="tc-pill ${costClass}">${t.cost}</span>
+        <span class="tc-pill competence">${t.competence}</span>
+      </div>
+      <div class="tc-note">${t.note}</div>
+      <div class="tc-actions">
+        <a class="tc-btn yellow" href="${t.url}" target="_blank">open ↗</a>
+        <button class="tc-btn" onclick="addToGoal('${safeTitle}', '${safeGoalId}', this)">+ add to goal</button>
+      </div>
+    </div>`;
+}
+
+function addToGoal(title, goalId, btn) {
+  if (typeof PD !== 'undefined') {
+    if (goalId) {
+      PD.saveSubgoal(goalId, {title: 'study: ' + title, done: false});
+    } else {
+      PD.saveGoal({title: 'study: ' + title, subgoals: []});
+    }
+  }
+  if (btn) {
+    btn.textContent = '✓ added to goal';
+    btn.style.background = 'var(--essense)';
+    btn.style.color = 'var(--white)';
+    btn.disabled = true;
+  }
+}
+
+function addAsAction(title, btn) {
+  if (typeof PD !== 'undefined') {
+    PD.saveAction({title:'Do: ' + title, done:false});
+  }
+  if (btn) {
+    btn.textContent = '✓ added';
+    btn.style.background = 'var(--essense)';
+    btn.style.color = 'var(--white)';
+    btn.style.borderColor = 'var(--essense)';
+    btn.disabled = true;
+  }
 }
 const trainings=[
   {icon:'📰',title:'Service Blueprints: Definition',provider:'Nielsen Norman Group',type:'Article',time:'< 30 min',timeCat:'short',cost:'Free',competence:'Journey & Blueprinting',note:'The definitive intro to service blueprints. ',endorsements:4,url:'https://www.nngroup.com/articles/service-blueprints/'},
@@ -269,7 +375,11 @@ function filter(){
 }
 
 function suggest(){
-  if(!goal){alert('pick a goal first');return;}
+  if(!goal){
+    var e=document.getElementById('training-goal-error');
+    if(e){e.textContent='pick a goal first';e.style.display='block';}
+    return;
+  }
   const goalCompetences={
     journey:['Journey & Blueprinting','CX & Journey Thinking','Service Design — general'],
     comm:['Communication & Collaboration','Workshop Facilitation','Feedback & Coaching'],
@@ -319,6 +429,7 @@ function addAsAction(title, btn) {
 // shareIt replaced by openShareModal
 
 render();
+populateTrainingGoalSel();
 </script>
 
 <div class="modal-overlay" id="approval-modal">
@@ -346,10 +457,24 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
     PD.init('demo');
-    PD.save(SC_DEMO); // always refresh demo data — never stale
+    // Smart re-save: only refresh demo data if user hasn't added anything yet.
+    // This preserves goals/insights/etc. created during the demo session.
+    var existing = null;
+    try { existing = PD.get(); } catch(e){}
+    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
+    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
+    if (existingTotal <= demoBaseline) {
+      PD.save(SC_DEMO); // first load, or no user additions yet
+    }
+    // else: preserve user-added content from this session
   } else if (p === 'first') {
     PD.init('demo');
-    PD.reset(); // always empty — true first-usage state
+    // First-usage: only reset if no user content yet
+    var existing2 = null;
+    try { existing2 = PD.get(); } catch(e){}
+    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
+      PD.reset();
+    }
   }
   // no param = real data, default namespace
 })();

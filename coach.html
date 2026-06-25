@@ -105,6 +105,29 @@ textarea:focus{border-color:var(--essense);background:var(--white)}
 <h1 class="heading" id="page-heading">prep for your session</h1>
 <p class="sub" id="page-sub">your coach is <strong id="coach-name">—</strong>. use this page to gather your thinking before you meet.</p>
 
+<!-- Session details -->
+<div class="block">
+  <div class="block-header" onclick="toggleBlock('sess')">
+    <span class="block-title">📅 &nbsp;session details</span>
+    <div class="block-right"><span class="chevron" id="chev-sess">▶</span></div>
+  </div>
+  <div class="block-body hidden" id="body-sess">
+    <div class="session-row">
+      <span class="session-label">next session</span>
+      <input class="sess-input" id="sess-date" type="date" onchange="saveSession()"/>
+    </div>
+    <div class="session-row">
+      <span class="session-label">duration</span>
+      <select class="sess-input" id="sess-dur" onchange="saveSession()">
+        <option value="30">30 min</option>
+        <option value="45">45 min</option>
+        <option value="60" selected>60 min</option>
+        <option value="90">90 min</option>
+      </select>
+    </div>
+  </div>
+</div>
+
 <!-- Since last session -->
 <div class="block">
   <div class="block-header" onclick="toggleBlock('sls')">
@@ -171,29 +194,15 @@ textarea:focus{border-color:var(--essense);background:var(--white)}
 // ── Showcase mode via URL param ─────────────────────────────────
 // ?demo=inuse  → load filled sample data, no UI shown
 // ?demo=first  → show empty/onboarding state, no UI shown
-var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-9*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-8*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-9*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-8*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
+var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
 (function(){
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
-    PD.init('demo');
-    // Smart re-save: only refresh demo data if user hasn't added anything yet.
-    // This preserves goals/insights/etc. created during the demo session.
-    var existing = null;
-    try { existing = PD.get(); } catch(e){}
-    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
-    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
-    if (existingTotal <= demoBaseline) {
-      PD.save(SC_DEMO); // first load, or no user additions yet
-    }
-    // else: preserve user-added content from this session
+    PD.init('demo-inuse');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
   } else if (p === 'first') {
-    PD.init('demo');
-    // First-usage: only reset if no user content yet
-    var existing2 = null;
-    try { existing2 = PD.get(); } catch(e){}
-    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
-      PD.reset();
-    }
+    PD.init('demo-first');
+    PD.reset(); // always empty — true first-usage state
   }
   // no param = real data, default namespace
 })();
@@ -236,7 +245,7 @@ function render() {
       var urgency = daysUntil === 0 ? 'today' : daysUntil === 1 ? 'tomorrow' : 'in ' + daysUntil + ' days';
       banner.innerHTML = '<div class="sb-head">📅 Session ' + urgency + '</div>'
         + '<div class="sb-meta">' + fmtDate(c.nextSessionDate) + ' · ' + (c.nextSessionDuration || 60) + ' min with ' + esc(coachName) + '</div>'
-        + '<div class="sb-actions"><a class="cal-link" href="' + calUrl + '" target="_blank">plan a meeting in Google Calendar ↗</a></div>';
+        + '<div class="sb-actions"><a class="cal-link-ghost" href="' + calUrl + '" target="_blank">open in Google Calendar ↗</a></div>';
     } else {
       banner.style.display = 'none';
     }
@@ -252,7 +261,11 @@ function render() {
   document.getElementById('coach-name').textContent = p.coach||'your coach';
   document.getElementById('share-coach-name').textContent = p.coach||'coach';
 
-  // Topics — load saved value only (not prefilled from demo)
+  // Session details
+  if(c.nextSessionDate) document.getElementById('sess-date').value = c.nextSessionDate.slice(0,10);
+  document.getElementById('sess-dur').value = c.nextSessionDuration||60;
+
+  // Topics
   document.getElementById('topics-inp').value = c.myTopics||'';
 
   // Share state
@@ -342,6 +355,12 @@ function deleteCommit(id) {
 }
 
 // ── Save handlers ──────────────────────────────────────────────────
+function saveSession() {
+  PD.saveCoaching({
+    nextSessionDate:     document.getElementById('sess-date').value||'',
+    nextSessionDuration: parseInt(document.getElementById('sess-dur').value)||60,
+  });
+}
 function saveTopics() {
   PD.saveCoaching({myTopics:document.getElementById('topics-inp').value});
   const msg=document.getElementById('topics-saved'); msg.style.opacity='1'; setTimeout(()=>msg.style.opacity='0',2200);

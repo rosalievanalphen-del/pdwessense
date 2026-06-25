@@ -137,9 +137,6 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
 .sanc-preview{margin-top:.875rem;background:var(--bright);border-radius:9px;padding:.65rem .875rem;font-size:.78rem;color:var(--forest);line-height:1.6;display:none}
 .sanc-preview.visible{display:block}
 .sanc-note{font-size:.7rem;color:var(--muted);font-style:italic;margin-top:.875rem;line-height:1.5;border-top:1px solid var(--border);padding-top:.75rem}
-.sanc-pref-btn{background:var(--white);border:1.5px solid var(--border);border-radius:9px;padding:.45rem .8rem;font-family:var(--font-body);font-size:.8rem;color:var(--muted);cursor:pointer;transition:all .15s}
-.sanc-pref-btn:hover{border-color:var(--forest);color:var(--forest)}
-.sanc-pref-btn.active{background:var(--forest);border-color:var(--forest);color:var(--white);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 
 /* ── Over time ── */
 .ot-dim{margin-bottom:.875rem}
@@ -252,31 +249,10 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
         <div class="toggle" id="ob-cal-tog" onclick="obCalToggle()"><div class="toggle-dot"></div></div>
       </div>
       <div id="ob-cal-fields" style="display:none">
-        <div style="display:flex;gap:.5rem;margin-bottom:.875rem">
-          <button class="sanc-pref-btn active" id="ob-mode-set" onclick="obSetCalMode('set')">set a specific time</button>
-          <button class="sanc-pref-btn" id="ob-mode-find" onclick="obSetCalMode('find')">find a slot for me</button>
-        </div>
-        <div id="ob-cal-set-fields">
-          <div class="sc-grid">
-            <div><span class="sc-label">day</span><select class="sc-select" id="ob-cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
-            <div><span class="sc-label">time</span><select class="sc-select" id="ob-cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select></div>
-            <div><span class="sc-label">duration</span><select class="sc-select" id="ob-cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
-          </div>
-        </div>
-        <div id="ob-cal-find-fields" style="display:none">
-          <p style="font-size:.78rem;color:var(--muted);margin-bottom:.6rem;line-height:1.5">the system will scan your calendar each week and reserve the first free slot matching your preference.</p>
-          <div class="sc-grid">
-            <div><span class="sc-label">preference</span>
-              <select class="sc-select" id="ob-cal-pref">
-                <option value="morning" selected>🌅 morning (9–12)</option>
-                <option value="midday">☀️ midday (12–14)</option>
-                <option value="afternoon">🌤 afternoon (14–17)</option>
-                <option value="any">any time</option>
-              </select>
-            </div>
-            <div><span class="sc-label">duration</span><select class="sc-select" id="ob-cal-find-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
-            <div></div>
-          </div>
+        <div class="sc-grid">
+          <div><span class="sc-label">day</span><select class="sc-select" id="ob-cal-day"><option>Monday</option><option selected>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option></select></div>
+          <div><span class="sc-label">time</span><select class="sc-select" id="ob-cal-time"><option>09:00</option><option>10:00</option><option selected>11:00</option><option>13:00</option><option>14:00</option><option>15:00</option></select></div>
+          <div><span class="sc-label">duration</span><select class="sc-select" id="ob-cal-dur"><option>30 min</option><option selected>45 min</option><option>60 min</option><option>90 min</option></select></div>
         </div>
       </div>
 
@@ -289,16 +265,18 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
     <!-- Step 3 -->
     <div class="ob-step" id="ob-s3">
       <p class="label">step 3 of 3</p>
-      <h1 class="ob-heading">what do you want to grow in this year?</h1>
-      <p class="ob-sub">add one or more goals to get started. you can break them down into sub-goals and link them to the career framework later.</p>
-      <div id="ob-goals-list"></div>
-      <div class="ob-field" style="margin-top:.6rem">
-        <div style="display:flex;gap:.5rem;align-items:center">
-          <input class="ob-input" id="ob-goal" placeholder="e.g. get better at running stakeholder workshops" onkeydown="if(event.key==='Enter')obAddGoal()" style="flex:1"/>
-          <button class="btn-s" style="padding:.45rem .85rem;font-size:.8rem" onclick="obAddGoal()">+ add</button>
-        </div>
+      <h1 class="ob-heading">what's one thing you want to grow in this year?</h1>
+      <p class="ob-sub">add one goal to get started. you can set more, break them down into sub-goals, and link them to the career framework later.</p>
+      <div class="ob-field">
+        <label class="ob-label">your first goal</label>
+        <input class="ob-input" id="ob-goal" placeholder="e.g. get better at running stakeholder workshops"/>
       </div>
-      <p style="font-size:.75rem;color:var(--muted);margin-top:.875rem;font-style:italic">add as many as you'd like, or skip — you can always add more later from the goals page.</p>
+      <div class="photo-row">
+        <button class="photo-btn" onclick="document.getElementById('ob-photo-inp').click()">📷 add a photo</button>
+        <input type="file" id="ob-photo-inp" accept="image/*" style="display:none" onchange="previewPhoto(this)"/>
+        <img class="photo-preview" id="ob-photo-prev"/>
+      </div>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:.875rem;font-style:italic">skip this if you're not ready — you can always add goals from the goals page.</p>
       <div class="ob-row">
         <button class="btn-s" onclick="obGo(2)">← back</button>
         <button class="btn-y" onclick="obComplete()">let's go →</button>
@@ -443,6 +421,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--egg);mi
         </div>
 
         <button onclick="searchWeeklySlot()" style="width:100%;background:var(--forest);color:var(--white);border:none;border-radius:10px;padding:.6rem 1rem;font-family:var(--font-body);font-size:.825rem;font-weight:600;cursor:pointer;transition:opacity .2s">save preference →</button>
+        <div class="sanc-note" style="margin-top:.6rem">📌 time registration stays in Teamleader. sanctity is about intention — protecting the space.</div>
       </div>
 
       <!-- VIEW 2: This week's slot -->
@@ -485,21 +464,11 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
 (function(){
   var p = new URLSearchParams(window.location.search).get('demo');
   if (p === 'inuse') {
-    PD.init('demo');
-    var existing = null;
-    try { existing = PD.get(); } catch(e){}
-    var demoBaseline = SC_DEMO.goals.length + SC_DEMO.reflections.length + SC_DEMO.feedback.length;
-    var existingTotal = existing ? ((existing.goals||[]).length + (existing.reflections||[]).length + (existing.feedback||[]).length) : 0;
-    if (existingTotal <= demoBaseline) {
-      PD.save(SC_DEMO);
-    }
+    PD.init('demo-inuse');
+    PD.save(SC_DEMO);
   } else if (p === 'first') {
-    PD.init('demo');
-    var existing2 = null;
-    try { existing2 = PD.get(); } catch(e){}
-    if (!existing2 || ((existing2.goals||[]).length === 0 && !(existing2.meta||{}).firstRunComplete)) {
-      PD.reset();
-    }
+    PD.init('demo-first');
+    PD.reset();
   }
   // no param = real data, default namespace
 })();
@@ -508,8 +477,7 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
 
 
 // ── Onboarding ───────────────────────────────────────────────────
-let obTimeOn = false, obCalOn = false, obCalMode = 'set';
-let obGoalsList = []; // collected during onboarding before saving
+let obTimeOn = false, obCalOn = false, obPhoto = null;
 
 function obInitDots() {
   document.getElementById('ob-dots').innerHTML =
@@ -543,52 +511,17 @@ function obCalToggle() {
   document.getElementById('ob-cal-card').classList.toggle('on',obCalOn);
   document.getElementById('ob-cal-fields').style.display = obCalOn?'block':'none';
 }
-function obSetCalMode(mode) {
-  obCalMode = mode;
-  document.getElementById('ob-mode-set').classList.toggle('active', mode==='set');
-  document.getElementById('ob-mode-find').classList.toggle('active', mode==='find');
-  document.getElementById('ob-cal-set-fields').style.display  = mode==='set' ? 'block' : 'none';
-  document.getElementById('ob-cal-find-fields').style.display = mode==='find' ? 'block' : 'none';
+function previewPhoto(inp) {
+  const file = inp.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    obPhoto = e.target.result;
+    const img = document.getElementById('ob-photo-prev');
+    img.src = e.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(file);
 }
-
-// ── Multiple goals during onboarding ─────────────────────────────
-function renderObGoalsList() {
-  var list = document.getElementById('ob-goals-list');
-  if (!obGoalsList.length) { list.innerHTML = ''; return; }
-  list.innerHTML = '<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin-bottom:.4rem">your goals (' + obGoalsList.length + ')</div>'
-    + obGoalsList.map(function(g, i){
-        return '<div style="background:var(--bright);border:1px solid var(--border);border-radius:9px;padding:.5rem .75rem;margin-bottom:.35rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem">'
-          + '<span style="font-size:.825rem;line-height:1.4">' + g.replace(/</g,'&lt;') + '</span>'
-          + '<button onclick="obRemoveGoal(' + i + ')" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:.1rem .35rem" title="remove">×</button>'
-          + '</div>';
-      }).join('');
-}
-function obAddGoal() {
-  var inp = document.getElementById('ob-goal');
-  var text = inp.value.trim();
-  if (!text) { inp.focus(); return; }
-  obGoalsList.push(text);
-  inp.value = '';
-  inp.focus();
-  renderObGoalsList();
-}
-function obRemoveGoal(i) {
-  obGoalsList.splice(i, 1);
-  renderObGoalsList();
-}
-
 function obComplete() {
-  // Build calendarSanctity based on selected mode
-  var calSanctity = { enabled: obCalOn, mode: obCalMode };
-  if (obCalMode === 'set') {
-    calSanctity.day      = document.getElementById('ob-cal-day').value;
-    calSanctity.time     = document.getElementById('ob-cal-time').value;
-    calSanctity.duration = document.getElementById('ob-cal-dur').value;
-  } else {
-    calSanctity.preference = document.getElementById('ob-cal-pref').value;
-    calSanctity.duration   = document.getElementById('ob-cal-find-dur').value;
-  }
-
   PD.saveProfile({
     name:          document.getElementById('ob-name').value.trim()||'you',
     role:          document.getElementById('ob-role').value.trim(),
@@ -598,17 +531,15 @@ function obComplete() {
     coach:         document.getElementById('ob-coach').value.trim(),
     pdTimeEnabled: obTimeOn,
     pdTimeMinutes: parseInt(document.getElementById('ob-minutes').value)||96,
-    calendarSanctity: calSanctity
+    calendarSanctity: {
+      enabled:  obCalOn,
+      day:      document.getElementById('ob-cal-day').value,
+      time:     document.getElementById('ob-cal-time').value,
+      duration: document.getElementById('ob-cal-dur').value
+    }
   });
-
-  // Include any goal still typed in the input but not yet added
-  var pending = document.getElementById('ob-goal').value.trim();
-  if (pending) obGoalsList.push(pending);
-
-  obGoalsList.forEach(function(title){
-    PD.saveGoal({ title: title, subgoals: [] });
-  });
-
+  const goalText = document.getElementById('ob-goal').value.trim();
+  if(goalText) PD.saveGoal({title:goalText,photo:obPhoto,subgoals:[]});
   PD.completeFirstRun();
   showDashboard();
 }
@@ -739,34 +670,13 @@ function renderOverTime(goals) {
     el.innerHTML='<div class="ot-empty">add goals and complete actions to see your growth trajectory here.</div>';
     return;
   }
-  // Work out the time window this progress covers.
-  let earliest = null, lastActivity = null;
-  goals.forEach(g=>{ if(g.createdAt){ const t=new Date(g.createdAt); if(!earliest||t<earliest) earliest=t; } });
-  PD.actions().forEach(a=>{ if(a.done&&a.doneAt){ const t=new Date(a.doneAt); if(!lastActivity||t>lastActivity) lastActivity=t; } });
-  PD.reflections().forEach(r=>{ if(r.date){ const t=new Date(r.date); if(!lastActivity||t>lastActivity) lastActivity=t; } });
-  let windowLabel = '';
-  if(earliest){
-    const months = Math.max(1, Math.round((Date.now()-earliest.getTime())/(30*864e5)));
-    windowLabel = 'over the past ' + (months===1?'month':months+' months');
-  }
-  let sinceLabel = '';
-  if(lastActivity){
-    const days = Math.round((Date.now()-lastActivity.getTime())/864e5);
-    sinceLabel = days<=0 ? 'last activity: today'
-               : days===1 ? 'last activity: yesterday'
-               : 'last activity: ' + days + ' days ago';
-  }
-
   const dims={Delivery:{t:0,d:0},People:{t:0,d:0},'Added value':{t:0,d:0}};
   goals.forEach(g=>{
     const dim=g.dimension&&dims[g.dimension]?g.dimension:'Delivery';
     (g.subgoals||[]).forEach(sg=>{dims[dim].t++;if(sg.done)dims[dim].d++;});
   });
   const colors={Delivery:'#044524',People:'#579B7A','Added value':'#b7994a'};
-  const header = (windowLabel||sinceLabel)
-    ? `<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem;font-size:.72rem;color:var(--muted)"><span>${windowLabel}</span><span>${sinceLabel}</span></div>`
-    : '';
-  el.innerHTML = header + Object.entries(dims).map(([dim,v])=>{
+  el.innerHTML=Object.entries(dims).map(([dim,v])=>{
     const pct=v.t?Math.round(v.d/v.t*100):0;
     return `<div class="ot-dim">
       <div class="ot-dim-head"><span class="ot-dim-label">${dim}</span><span class="ot-dim-pct">${v.d}/${v.t} · ${pct}%</span></div>
@@ -841,7 +751,7 @@ function setSancPref(p) {
 function setSancDur(d) {
   _sancDur = d;
   ['30 min','45 min','60 min','90 min'].forEach(function(k) {
-    var btn = document.getElementById('dur-' + k.replace(' min',''));
+    var btn = document.getElementById('dur-' + k.replace(' ',''));
     if (btn) btn.classList.toggle('active', k === d);
   });
   saveSancPrefs();
@@ -984,7 +894,7 @@ function closeDemoPanel() {}
 
 function loadDemoFirstUse() {
   closeDemoPanel();
-  PD.init('demo');
+  PD.init('demo-first');
   PD.reset();
   sessionStorage.setItem('pdMode','demo-first');
   location.reload();
@@ -992,7 +902,7 @@ function loadDemoFirstUse() {
 
 function loadDemoInUse() {
   closeDemoPanel();
-  PD.init('demo');
+  PD.init('demo-inuse');
   PD.reset();
   PD.save(DEMO_DATA);
   sessionStorage.setItem('pdMode','demo-inuse');
@@ -1014,8 +924,13 @@ function exitDemo() {
 
 function initDemoUI() {
   var mode = sessionStorage.getItem('pdMode');
+  // Re-init correct namespace when loaded via sessionStorage (no URL param)
+  var urlParam = new URLSearchParams(window.location.search).get('demo');
+  if (!urlParam) {
+    if (mode === 'demo-inuse') PD.init('demo-inuse');
+    else if (mode === 'demo-first') PD.init('demo-first');
+  }
   // Update strip button highlight
-
   if (mode === 'demo-inuse') {
     var btn = document.getElementById('sc-inuse');
     if (btn) btn.classList.add('active');

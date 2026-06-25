@@ -40,15 +40,7 @@ body{font-family:var(--font-body);color:var(--charcoal);background:var(--white);
 .ic-dot.good{background:var(--essense)}
 .ic-dot.improve{background:#d4a800}
 .ic-text{font-size:.875rem;color:var(--charcoal);line-height:1.45;font-style:italic}
-.ic-heading{font-family:var(--font-head);font-size:1.05rem;color:var(--charcoal);line-height:1.3;margin-bottom:.6rem}
-.ic-bullets{list-style:none;padding:0;margin:0 0 .5rem}
-.ic-bullets li{font-size:.825rem;color:var(--charcoal);line-height:1.5;padding:.15rem 0 .15rem 1.1rem;position:relative}
-.ic-bullets li::before{content:'';width:6px;height:6px;border-radius:50%;position:absolute;left:0;top:.55rem}
-.insight-card.good .ic-bullets li::before{background:var(--essense)}
-.insight-card.improve .ic-bullets li::before{background:#d4a800}
-.ic-src{font-size:.7rem;color:var(--muted);margin-top:.5rem;font-style:italic}
-.ic-select-item{display:flex;align-items:flex-start;gap:.5rem;padding:.4rem .5rem;border-radius:7px;cursor:pointer;transition:background .15s}
-.ic-select-item:hover{background:var(--bright)}
+.ic-src{font-size:.7rem;color:var(--muted);margin-top:.5rem}
 .ic-empty-msg{font-size:.78rem;color:var(--muted);text-align:center;font-style:italic;padding:.5rem}
 
 /* Insight → goal action row */
@@ -229,18 +221,15 @@ textarea.fb-input{resize:vertical;min-height:72px;line-height:1.6}
 // ?demo=first  → show empty/onboarding state, no UI shown
 var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5).toISOString()},profile:{name:'Rosie de Vries',role:'Junior Service Designer',track:'Service Design',level:'L1 — The Learner',targetLevel:'L2 — The Practitioner',coach:'Giusivelia',pdTimeEnabled:true,pdTimeMinutes:96,calendarSanctity:{enabled:true,day:'Tuesday',time:'11:00',duration:'45 min'}},goals:[{id:'dg1',title:'Get better at facilitating stakeholder workshops',dimension:'People',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-28*864e5).toISOString(),subgoals:[{id:'ds1',title:'Shadow a senior facilitation session and take notes',done:true},{id:'ds2',title:'Read Facilitating Complex Conversations',done:true},{id:'ds3',title:'Run a low-stakes internal workshop and reflect',done:true},{id:'ds4',title:'Get peer feedback on my facilitation style',done:false},{id:'ds5',title:'Lead the next client co-design session end-to-end',done:false}]},{id:'dg2',title:'Build my systems thinking skills',dimension:'Delivery',linkedToFramework:true,photo:null,createdAt:new Date(Date.now()-20*864e5).toISOString(),subgoals:[{id:'ds6',title:'Complete Systems Thinking Fundamentals on IDEO U',done:true},{id:'ds7',title:'Map the feedback loops in a current client project',done:false},{id:'ds8',title:'Present a systems map to the team',done:false}]}],actions:[{id:'da1',title:'Shadow Guus in the city council co-design session',goalId:'dg1',done:true,doneAt:new Date(Date.now()-6*864e5).toISOString(),minutesSpent:10,energy:'energised',note:'Learned how she handles resistance in the room.'},{id:'da2',title:'Read chapter 3 of This is Service Design Doing',goalId:'dg2',done:true,doneAt:new Date(Date.now()-4*864e5).toISOString(),minutesSpent:8,energy:'neutral',note:''},{id:'da3',title:'Watch NN/g workshop facilitation videos',goalId:'dg1',done:true,doneAt:new Date(Date.now()-2*864e5).toISOString(),minutesSpent:5,energy:'energised',note:''},{id:'da4',title:'Prepare facilitation guide for Woonplus session',goalId:'dg1',done:false,createdAt:new Date().toISOString()},{id:'da5',title:'Map feedback loops in the Woonplus project',goalId:'dg2',done:false,createdAt:new Date().toISOString()}],reflections:[{id:'dr1',format:'written',date:new Date(Date.now()-5*864e5).toISOString(),energy:'energised',minutesSpent:9,content:{'wr-0':'The Woonplus discovery session.','wr-1':'Managed to keep the group on track when participants went off-tangent.','wr-3':'Structure gives me freedom — design workshops around clear transitions.','wr-4':'Ask for feedback right after the session.'}},{id:'dr2',format:'quick',date:new Date(Date.now()-3*864e5).toISOString(),energy:'neutral',minutesSpent:4,content:{'qk-0':'The blueprint review took twice as long as expected.','qk-1':'Build in more orientation time before showing a blueprint.'}},{id:'dr3',format:'walk',date:new Date(Date.now()-1*864e5).toISOString(),energy:'surprised',minutesSpent:16,content:{'wk-0':'Why I feel more confident when I have a clear agenda.','wk-1':'Structure is what gives me freedom.'}}],feedback:[{id:'df1',from:'Giusivelia',type:'positive',text:'Your synthesis slide was really clear — it told a story rather than just showing data.',date:new Date(Date.now()-7*864e5).toISOString()},{id:'df2',from:'Client (Woonplus)',type:'improve',text:'It would help to slow down when introducing the blueprint — we were slightly lost at first.',date:new Date(Date.now()-2*864e5).toISOString()}],coaching:{nextSessionDate:new Date(Date.now()+7*864e5).toISOString(),nextSessionDuration:60,myTopics:'I want to talk about how to handle a room where key stakeholders are not engaging.',commitments:[{id:'dc1',text:'Reflect on the Woonplus facilitation before next session',done:true},{id:'dc2',text:'Share the systems map draft with the team',done:false}],prepShared:false}};
 (function(){
-  var p=new URLSearchParams(window.location.search).get('demo');
-  if(p==='inuse'){
-    PD.init('demo');
-    var ex=null;try{ex=PD.get();}catch(e){}
-    var base=SC_DEMO.goals.length+SC_DEMO.reflections.length+SC_DEMO.feedback.length;
-    var cur=ex?((ex.goals||[]).length+(ex.reflections||[]).length+(ex.feedback||[]).length):0;
-    if(cur<=base)PD.save(SC_DEMO);
-  } else if(p==='first'){
-    PD.init('demo');
-    var ex2=null;try{ex2=PD.get();}catch(e){}
-    if(!ex2||((ex2.goals||[]).length===0&&!(ex2.meta||{}).firstRunComplete))PD.reset();
+  var p = new URLSearchParams(window.location.search).get('demo');
+  if (p === 'inuse') {
+    PD.init('demo-inuse');
+    PD.save(SC_DEMO); // always refresh demo data — never stale
+  } else if (p === 'first') {
+    PD.init('demo-first');
+    PD.reset(); // always empty — true first-usage state
   }
+  // no param = real data, default namespace
 })();
 
 
@@ -250,7 +239,7 @@ var SC_DEMO={meta:{firstRunComplete:true,createdAt:new Date(Date.now()-30*864e5)
 // ── AI helper ─────────────────────────────────────────────────────
 async function callAI(messages, system, maxTokens) {
   try {
-    var body = { model:'claude-sonnet-4-6', max_tokens:maxTokens||1000, messages:messages };
+    var body = { model:'claude-sonnet-4-20250514', max_tokens:maxTokens||1000, messages:messages };
     if (system) body.system = system;
     var resp = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
     var data = await resp.json();
@@ -277,260 +266,184 @@ function renderMain() {
 }
 
 var IS_DEMO = !!(new URLSearchParams(window.location.search).get('demo'));
-
-function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function renderMain(){renderGuidedIntro();renderReflections();renderFeedbackList();}
-
-// ── Card builder (v7 format) ────────────────────────────────────
-function insightCardHTML(type, data, withGoalBtn) {
-  var tag = type==='good'
-    ? '<div class="ic-tag good-tag"><div class="ic-dot good"></div>what you\u2019re good at</div>'
-    : '<div class="ic-tag improve-tag"><div class="ic-dot improve"></div>what to grow</div>';
-  var bullets = (data.bullets||[data.text||'']).map(function(b){return '<li>'+esc(b)+'</li>';}).join('');
-  var growBullet = (data.bullets&&data.bullets[0])||data.text||'';
-  var goalBtn = withGoalBtn&&growBullet
-    ? '<button class="ia-btn" style="margin-top:.75rem;font-size:.78rem" onclick="makeGoalFromInsight('+JSON.stringify(growBullet).replace(/"/g,'&quot;')+')">make this a goal \u2192</button>'
-    : '';
-  return '<div class="insight-card '+type+'">'+tag+'<div class="ic-heading">'+esc(data.heading||'')+'</div><ul class="ic-bullets">'+bullets+'</ul>'+(data.src?'<div class="ic-src">'+esc(data.src)+'</div>':'')+goalBtn+'</div>';
-}
-
-// ── Render: merge ALL saved bullets into 2 cards ────────────────
-function renderGuidedIntro() {
-  var grid=document.getElementById('insight-cards');
-  var refls=PD.reflections(), feedbs=PD.feedback();
-  document.getElementById('insight-action-row').innerHTML='';
-  if(!refls.length&&!feedbs.length){
-    grid.innerHTML='<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add a few reflections or feedback items first \u2014 insights are drawn from them</div></div>';
+var DEMO_INSIGHTS = {
+  good: [
+    {insight:'Structure is your engine: across three reflections you perform best — and feel most confident — when you have designed clear transitions and a firm agenda in advance.', source:'pattern across written + walk reflections'},
+    {insight:'Your synthesis work lands: you turn raw research into a story rather than a data dump, which Giusivelia explicitly called out.', source:'coach feedback + reflection on Woonplus session'}
+  ],
+  improve: [
+    {insight:'Pacing under complexity: both the client and your own blueprint reflection point the same way — when you introduce a complex artefact, you move faster than your audience can follow.', source:'client feedback + quick check-in, same week'},
+    {insight:'You collect feedback reactively rather than asking for it in the moment — your own reflection notes you should ask right after a session, not a week later.', source:'written reflection, Woonplus'}
+  ]
+};
+async function generateAIInsights() {
+  if (IS_DEMO) {
+    var refls0 = PD.reflections(), feedbs0 = PD.feedback();
+    if (!refls0.length && !feedbs0.length) {
+      document.getElementById('insight-cards').innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add reflections and feedback to see your insights here</div></div>';
+      document.getElementById('insight-action-row').innerHTML = '';
+      return;
+    }
+    renderInsightCards(DEMO_INSIGHTS.good, DEMO_INSIGHTS.improve);
+    renderActionRow(DEMO_INSIGHTS.improve[0]);
     return;
   }
-  // Collect ALL saved strength+growth bullets from every saved insight
-  var savedInsights=refls.filter(function(r){return r.format==='insight';});
-  var allStrengths=[], allGrowths=[], latestSrc='';
-  savedInsights.forEach(function(r){
-    var c=r.content||{};
-    if(c['strength']) allStrengths.push(c['strength']);
-    if(c['growth'])   allGrowths.push(c['growth']);
-    if(c['source'])   latestSrc=c['source'];
-  });
-  // Derive from raw data if needed
-  var derived=(!allStrengths.length||!allGrowths.length)?asIfInsightCards():null;
-  if(!allStrengths.length&&derived&&derived.good)    allStrengths=(derived.good.bullets||[derived.good.text]);
-  if(!allGrowths.length&&derived&&derived.improve)   allGrowths=(derived.improve.bullets||[derived.improve.text]);
+  var grid = document.getElementById('insight-cards');
+  var refls = PD.reflections();
+  var feedbs = PD.feedback();
 
-  var strengthData=allStrengths.length?{heading:'your strengths from feedback + reflection',bullets:allStrengths.slice(0,5),src:latestSrc||''}:null;
-  var growthData  =allGrowths.length  ?{heading:'where feedback says you have room',        bullets:allGrowths.slice(0,5),  src:latestSrc||''}:null;
-
-  var actionCard='<div class="insight-card" style="grid-column:span 2;background:var(--bright);border:1.5px solid var(--border)">'
-    +'<div class="ic-tag" style="color:var(--essense)">create insight</div>'
-    +'<div class="ic-text" style="font-size:.825rem">pick one reflection or feedback item and answer three short questions to turn it into a named insight.</div>'
-    +'<div style="display:flex;gap:.6rem;margin-top:.75rem;flex-wrap:wrap">'
-    +'<button class="ia-btn" onclick="startGuided()">create insight \u2192</button>'
-    +'<button class="ia-btn" style="background:var(--white);color:var(--forest);border:1.5px solid var(--forest)" onclick="startAutoGenerate()">\u2728 auto-generate with AI</button>'
-    +'</div><div id="auto-insight-out"></div></div>';
-  var cardsHTML='';
-  if(strengthData) cardsHTML+=insightCardHTML('good',strengthData,false);
-  if(growthData)   cardsHTML+=insightCardHTML('improve',growthData,true);
-  grid.innerHTML=cardsHTML+actionCard;
-}
-
-// ── Derive from raw data ────────────────────────────────────────
-function asIfInsightCards() {
-  var refls=PD.reflections(),feedbs=PD.feedback();
-  var sb=[],gb=[];
-  feedbs.forEach(function(f){if(f.type==='positive'&&f.text&&sb.length<3)sb.push(f.text);});
-  refls.forEach(function(r){var c=r.content||{};var t=c['wr-3']||c['wk-1']||c['strength']||'';if(t&&sb.length<3)sb.push(t);});
-  feedbs.forEach(function(f){if(f.type==='improve'&&f.text&&gb.length<3)gb.push(f.text);});
-  refls.forEach(function(r){var c=r.content||{};var n=c['wr-4']||c['qk-1']||c['growth']||'';if(n&&gb.length<3)gb.push(n);});
-  var pf=feedbs.filter(function(f){return f.type==='positive';}).length;
-  var he=refls.filter(function(r){return r.energy==='energised';}).length;
-  var cf=feedbs.filter(function(f){return f.type==='improve';}).length;
-  var td=refls.filter(function(r){return r.energy==='drained';}).length;
-  return {
-    good:   sb.length?{heading:'your strengths from feedback + reflection',bullets:sb.slice(0,3),src:'based on '+(pf||1)+' positive feedback item'+(pf!==1?'s':'')+' + '+(he||1)+' reflection'+(he!==1?'s':'')+' marked high energy'}:null,
-    improve:gb.length?{heading:'where feedback says you have room',bullets:gb.slice(0,3),src:'based on '+(cf||1)+' constructive item'+(cf!==1?'s':'')+' + '+(td||1)+' reflection marked \"try differently\"'}:null
-  };
-}
-
-// ── Select step: shown after guided/auto-generate ───────────────
-// Lets the user pick which bullets to add before saving.
-function showSelectStep(strength, growth, source) {
-  var out=document.getElementById('auto-insight-out');
-  if(!out) { show('v-main'); renderMain(); return; }
-  var html='<div style="margin-top:.75rem;border-top:1px solid var(--border);padding-top:.75rem">';
-  html+='<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem">select what to add to your insights</div>';
-
-  if(strength) {
-    html+='<div style="font-size:.7rem;font-weight:600;color:var(--essense);margin-bottom:.3rem">STRENGTH</div>';
-    html+='<label class="ic-select-item"><input type="checkbox" id="sel-strength" checked style="flex-shrink:0;margin-top:.2rem;accent-color:var(--essense)">'
-      +'<span style="font-size:.825rem;line-height:1.4">'+esc(strength)+'</span></label>';
+  if (!refls.length && !feedbs.length) {
+    grid.innerHTML = '<div class="insight-card empty-card" style="grid-column:span 2"><div class="ic-empty-msg">add reflections and feedback to see your insights here</div></div>';
+    document.getElementById('insight-action-row').innerHTML = '';
+    return;
   }
-  if(growth) {
-    html+='<div style="font-size:.7rem;font-weight:600;color:#b7994a;margin:.6rem 0 .3rem">GROWTH AREA</div>';
-    html+='<label class="ic-select-item"><input type="checkbox" id="sel-growth" checked style="flex-shrink:0;margin-top:.2rem;accent-color:#d4a800">'
-      +'<span style="font-size:.825rem;line-height:1.4">'+esc(growth)+'</span></label>';
-  }
-  html+='<div style="display:flex;gap:.5rem;margin-top:.75rem">';
-  html+='<button class="ia-btn" onclick="confirmSaveInsight('+JSON.stringify(strength||'').replace(/"/g,'&quot;')+','+JSON.stringify(growth||'').replace(/"/g,'&quot;')+','+JSON.stringify(source||'').replace(/"/g,'&quot;')+')">add selected \u2192</button>';
-  html+='<button class="btn-s" style="font-size:.78rem;padding:.4rem .875rem" onclick="showMain()">cancel</button>';
-  html+='</div></div>';
-  out.innerHTML=html;
-}
 
-function confirmSaveInsight(strength, growth, source) {
-  var keepStrength = document.getElementById('sel-strength') ? document.getElementById('sel-strength').checked : !!strength;
-  var keepGrowth   = document.getElementById('sel-growth')   ? document.getElementById('sel-growth').checked   : !!growth;
-  var s = keepStrength ? strength : '';
-  var g = keepGrowth   ? growth   : '';
-  if(!s&&!g) { show('v-main'); renderMain(); return; }
-  PD.saveReflection({format:'insight',energy:'',content:{strength:s,growth:g,source:source},minutesSpent:5});
-  show('v-main'); renderMain();
-}
+  grid.innerHTML = '<div style="grid-column:span 2;padding:.75rem 0;color:var(--muted);font-style:italic;font-size:.825rem">analysing your reflections…</div>';
 
-// ── Guided create-insight flow ──────────────────────────────────
-var guidedStep=0, guidedAnswers=[], guidedSourceItem=null;
-var CREATE_QUESTIONS=[
-  'What does this tell you about how you work \u2014 or how you approach your work?',
-  'What is a strength you can identify in this?',
-  'What is something you could improve based on this?'
-];
-
-function startGuided(){
-  guidedSourceItem=null; guidedStep=0; guidedAnswers=[];
-  show('v-guided');
-  document.getElementById('guided-body').innerHTML=itemSelectorHTML();
-}
-
-function itemSelectorHTML(){
-  var refls=PD.reflections().slice(0,8), feedbs=PD.feedback().slice(0,8);
-  var html='<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem">pick one item to reflect on</div>';
-  html+='<div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem">';
-  refls.forEach(function(r,i){
-    var c=r.content||{}, texts=Object.values(c).filter(function(v){return typeof v==='string'&&v.length>5;});
-    var preview=texts.length?texts[0].slice(0,100):(FMT_LABELS&&FMT_LABELS[r.format]||'reflection');
-    html+='<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;padding:.5rem .65rem;border:1.5px solid var(--border);border-radius:9px;background:var(--white)">'
-      +'<input type="radio" name="insight-item" data-type="r" data-idx="'+i+'" style="margin-top:.2rem;flex-shrink:0" onchange="pickInsightItem(this)">'
-      +'<span style="font-size:.8rem;line-height:1.4">\uD83D\uDCDD '+esc(preview)+'</span></label>';
+  // Build data summary for Claude
+  var reflTexts = refls.slice(0, 10).map(function(r) {
+    var c = r.content || {};
+    var texts = Object.values(c).filter(function(v) { return typeof v === 'string' && v.length > 5; });
+    return { date: r.date, format: r.format, energy: r.energy, text: texts.join(' | ').slice(0, 250) };
   });
-  feedbs.forEach(function(f,i){
-    html+='<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;padding:.5rem .65rem;border:1.5px solid var(--border);border-radius:9px;background:var(--white)">'
-      +'<input type="radio" name="insight-item" data-type="f" data-idx="'+i+'" style="margin-top:.2rem;flex-shrink:0" onchange="pickInsightItem(this)">'
-      +'<span style="font-size:.8rem;line-height:1.4">\uD83D\uDCAC <strong>'+esc(f.from||'feedback')+':</strong> '+esc((f.text||'').slice(0,100))+'</span></label>';
+  var fbTexts = feedbs.slice(0, 8).map(function(f) {
+    return { from: f.from, type: f.type, text: (f.text || '').slice(0, 180) };
   });
-  html+='</div><div id="item-error" style="font-size:.78rem;color:#c0392b;display:none;margin-bottom:.4rem"></div>';
-  html+='<button class="btn-p" onclick="startWithSelectedItem()">continue \u2192</button>';
-  return html;
-}
 
-function pickInsightItem(el){var type=el.dataset.type,idx=parseInt(el.dataset.idx);
-  var refls=PD.reflections(), feedbs=PD.feedback();
-  if(type==='r'){var r=refls[idx];var c=r.content||{};var texts=Object.values(c).filter(function(v){return typeof v==='string'&&v.length>5;});guidedSourceItem={label:(FMT_LABELS&&FMT_LABELS[r.format])||'reflection',text:texts.join(' | ').slice(0,300)};}
-  else{var f=feedbs[idx];guidedSourceItem={label:(f.from||'feedback'),text:(f.text||'')};}
-}
+  var sys = "You are an experienced professional development coach. Analyze this service designer's reflections and feedback to find genuine patterns. Be specific — reference actual things you see in the data, not generic praise. Be honest about growth areas.";
+  var prompt = 'Reflections and feedback data: REFLECTIONS: ' + JSON.stringify(reflTexts) + ' FEEDBACK: ' + JSON.stringify(fbTexts) + ' Find 2 genuine strengths (Good!) and 2 growth areas (Improve!). Respond ONLY with valid JSON: {"good":[{"insight":"...","source":"..."}],"improve":[{"insight":"...","source":"..."}]}';
+  var result = await callAI([{ role: 'user', content: prompt }], sys, 600);
 
-function startWithSelectedItem(){
-  if(!guidedSourceItem){var e=document.getElementById('item-error');if(e){e.textContent='please select an item first';e.style.display='block';}return;}
-  guidedStep=0; guidedAnswers=[]; renderGuidedStep();
-}
-
-function renderGuidedStep(){
-  var wrap=document.getElementById('guided-body');
-  var q=CREATE_QUESTIONS[guidedStep];
-  var sourceBox=guidedStep===0&&guidedSourceItem
-    ? '<div style="background:var(--bright);border:1px solid var(--border);border-radius:9px;padding:.55rem .75rem;font-size:.8rem;line-height:1.45;margin-bottom:1rem"><div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin-bottom:.3rem">'+esc(guidedSourceItem.label)+'</div>'+esc(guidedSourceItem.text)+'</div>'
-    : '';
-  wrap.innerHTML=sourceBox
-    +'<div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.5rem">question '+(guidedStep+1)+' of '+CREATE_QUESTIONS.length+'</div>'
-    +'<div style="font-family:var(--font-head);font-size:1.1rem;color:var(--charcoal);margin-bottom:.875rem;line-height:1.35">'+esc(q)+'</div>'
-    +'<textarea id="guided-answer" rows="4" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.65rem .8rem;font-family:var(--font-body);font-size:.875rem;resize:vertical" placeholder="take your time\u2026">'+(guidedAnswers[guidedStep]||'')+'</textarea>'
-    +'<div style="display:flex;gap:.6rem;margin-top:.875rem">'
-    +(guidedStep>0?'<button class="btn-s" onclick="guidedBack()">&larr; back</button>':'')
-    +(guidedStep<CREATE_QUESTIONS.length-1
-        ?'<button class="btn-p" onclick="guidedNext()">next \u2192</button>'
-        :'<button class="btn-y" onclick="guidedFinish()">see result \u2192</button>')
-    +'</div>';
-  document.getElementById('guided-answer').focus();
-}
-
-function guidedNext(){guidedAnswers[guidedStep]=document.getElementById('guided-answer').value.trim();guidedStep++;renderGuidedStep();}
-function guidedBack(){guidedAnswers[guidedStep]=document.getElementById('guided-answer').value.trim();guidedStep--;renderGuidedStep();}
-
-function guidedFinish(){
-  guidedAnswers[guidedStep]=document.getElementById('guided-answer').value.trim();
-  var strength=guidedAnswers[1]||'';
-  var growth=guidedAnswers[2]||'';
-  var source=guidedSourceItem?guidedSourceItem.label:'reflection';
-  // Go back to main and show the select step inline
-  show('v-main'); renderMain();
-  // Give renderMain time to build the DOM, then show select step
-  setTimeout(function(){ showSelectStep(strength, growth, source); }, 50);
-}
-
-// ── Auto-generate: pick item first ─────────────────────────────
-function startAutoGenerate(){
-  var out=document.getElementById('auto-insight-out'); if(!out) return;
-  var refls=PD.reflections().slice(0,8), feedbs=PD.feedback().slice(0,8);
-  var html='<div style="margin-top:.75rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.4rem">pick one item to generate from</div>';
-  html+='<div style="display:flex;flex-direction:column;gap:.35rem;margin-bottom:.6rem">';
-  refls.forEach(function(r,i){
-    var c=r.content||{},texts=Object.values(c).filter(function(v){return typeof v==='string'&&v.length>5;});
-    var preview=texts.length?texts[0].slice(0,90):(FMT_LABELS&&FMT_LABELS[r.format]||'reflection');
-    html+='<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:8px;background:var(--white)"><input type="radio" name="auto-item" data-type="r" data-idx="'+i+'" style="margin-top:.2rem;flex-shrink:0" onchange="setAutoItem(this)"><span style="font-size:.78rem;line-height:1.4">\uD83D\uDCDD '+esc(preview)+'</span></label>';
-  });
-  feedbs.forEach(function(f,i){
-    html+='<label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:8px;background:var(--white)"><input type="radio" name="auto-item" data-type="f" data-idx="'+i+'" style="margin-top:.2rem;flex-shrink:0" onchange="setAutoItem(this)"><span style="font-size:.78rem;line-height:1.4">\uD83D\uDCAC <strong>'+esc(f.from||'feedback')+':</strong> '+esc((f.text||'').slice(0,90))+'</span></label>';
-  });
-  html+='</div><div id="auto-item-error" style="font-size:.78rem;color:#c0392b;display:none;margin-bottom:.3rem"></div>';
-  html+='<button class="ia-btn" onclick="runAutoGenerate()">\u2728 generate insight</button>';
-  out.innerHTML=html; window._autoItem=null;
-}
-
-function setAutoItem(el){
-  var type=el.dataset.type,idx=parseInt(el.dataset.idx);
-  var refls=PD.reflections(),feedbs=PD.feedback();
-  if(type==='r'){var r=refls[idx];var c=r.content||{};var texts=Object.values(c).filter(function(v){return typeof v==='string'&&v.length>5;});window._autoItem={type:'reflection',text:texts.join(' | ').slice(0,400),label:(FMT_LABELS&&FMT_LABELS[r.format])||'reflection'};}
-  else{var f=feedbs[idx];window._autoItem={type:'feedback',text:(f.text||''),label:(f.from||'feedback')};}
-}
-
-async function runAutoGenerate(){
-  var errEl=document.getElementById('auto-item-error');
-  if(!window._autoItem){if(errEl){errEl.textContent='please select an item first';errEl.style.display='block';}return;}
-  if(errEl)errEl.style.display='none';
-  var out=document.getElementById('auto-insight-out'),item=window._autoItem;
-  out.innerHTML='<div style="padding:.6rem 0;color:var(--muted);font-style:italic;font-size:.825rem">\u2728 generating insight from '+esc(item.label)+'\u2026</div>';
-  var sys='You are a professional development coach. Given one specific reflection or feedback item from a service designer, identify one concrete strength and one concrete growth area grounded in the actual content. Respond ONLY with valid JSON: {"strength":"one specific strength sentence","growth":"one specific growth area sentence","source":"from '+item.label+'"}. No markdown.';
-  var result=await callAI([{role:'user',content:'Item: '+item.text}],sys,400);
-  if(result){
-    var parsed=parseJSON(result);
-    if(parsed&&(parsed.strength||parsed.growth)){
-      showSelectStep(parsed.strength||'',parsed.growth||'',parsed.source||('from '+item.label));
+  if (result) {
+    var parsed = parseJSON(result);
+    if (parsed && (parsed.good || parsed.improve)) {
+      renderInsightCards(parsed.good || [], parsed.improve || []);
+      var topImprove = parsed.improve && parsed.improve[0];
+      renderActionRow(topImprove || null);
       return;
     }
   }
-  // Fallback: use item text as strength
-  showSelectStep(item.text.slice(0,120),'',item.label);
+
+  // Fallback: use raw text from reflections/feedback
+  var good = null, improve = null;
+  feedbs.forEach(function(f) { if (f.text && f.type === 'positive' && !good) good = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
+  feedbs.forEach(function(f) { if (f.text && f.type === 'improve' && !improve) improve = { insight: f.text.slice(0, 120), source: f.from || 'feedback' }; });
+  refls.forEach(function(r) {
+    var c = r.content || {};
+    var t = c['wr-3'] || c['wk-0'] || c['qk-0'] || '';
+    if (t.length > 10 && !good) good = { insight: t.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
+    var n = c['wr-4'] || c['wk-1'] || c['qk-1'] || '';
+    if (n.length > 10 && !improve) improve = { insight: n.slice(0, 120), source: fmtDate(r.date) + ' reflection' };
+  });
+  renderInsightCards(good ? [good] : [], improve ? [improve] : []);
+  renderActionRow(improve);
 }
 
-// ── API ─────────────────────────────────────────────────────────
-async function callAI(messages,system,maxTokens){
-  try{
-    var body={model:'claude-sonnet-4-6',max_tokens:maxTokens||800,messages:messages};
-    if(system)body.system=system;
-    var resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    var data=await resp.json();
-    if(data.content&&data.content[0])return data.content[0].text;
-    return null;
-  }catch(e){return null;}
+function renderInsightCards(goods, improves) {
+  var grid = document.getElementById('insight-cards');
+  var makeCard = function(item, type) {
+    if (!item) return '<div class="insight-card empty-card"><div class="ic-empty-msg">not enough data yet</div></div>';
+    return '<div class="insight-card ' + type + '">'
+      + '<div class="ic-tag ' + type + '-tag"><div class="ic-dot ' + type + '"></div>' + (type === 'good' ? 'Good!' : 'Improve!') + '</div>'
+      + '<div class="ic-text">' + esc(item.insight) + '</div>'
+      + '<div class="ic-src">' + esc(item.source || '') + '</div>'
+      + '</div>';
+  };
+  grid.innerHTML = makeCard(goods[0] || null, 'good') + makeCard(improves[0] || null, 'improve');
 }
-function parseJSON(text){try{return JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){return null;}}
-function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 
-function showMain(){show("v-main");renderMain();}
-function makeGoalFromInsight(text){
-  PD.saveGoal({title:text,subgoals:[]});
-  renderMain();
-  var ar=document.getElementById('insight-action-row');
-  if(ar){ar.innerHTML='<div style="background:var(--bright);border:1px solid var(--essense);border-radius:9px;padding:.5rem .875rem;font-size:.8rem;color:var(--forest);margin-top:.5rem">\u2713 goal added to your goals overview</div>';setTimeout(function(){ar.innerHTML='';},3000);}
+function renderActionRow(topImprove) {
+  var actionRow = document.getElementById('insight-action-row');
+  if (!topImprove) { actionRow.innerHTML = ''; return; }
+  var igJson = JSON.stringify(topImprove).replace(/"/g, '&quot;');
+  actionRow.innerHTML = '<div class="insight-action-row"><div class="ia-text">This growth area could become a goal. Want to shape it into one?</div><button class="ia-btn" onclick="openInsightGoalPanel(' + igJson + ')">shape into goal →</button></div>';
 }
+
+function openInsight() {} // placeholder
+
+// Insight → goal panel
+var igItem = null, igMode = 'subgoal';
+
+async function openInsightGoalPanel(item) {
+  igItem = item; igMode = 'subgoal';
+  var goals = PD.goals();
+  var panel = document.getElementById('ig-panel');
+
+  // Build insight chooser: all current insights, pick one to shape
+  var all = [];
+  if (IS_DEMO) { all = DEMO_INSIGHTS.improve.concat(DEMO_INSIGHTS.good); }
+  else if (item) { all = [item]; }
+  var chooser = document.getElementById('ig-insight-chooser');
+  if (!chooser) {
+    chooser = document.createElement('div');
+    chooser.id = 'ig-insight-chooser';
+    panel.insertBefore(chooser, panel.firstChild);
+  }
+  chooser.innerHTML = '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin:.25rem 0 .4rem">1 · choose an insight</div>'
+    + all.map(function(it, i) {
+        return '<div class="ig-ins-opt" data-i="'+i+'" onclick="igChooseInsight('+i+', this)" style="border:1.5px solid var(--border);border-radius:9px;padding:.5rem .7rem;margin-bottom:.3rem;font-size:.8rem;cursor:pointer;background:var(--white)">'+esc(it.insight)+'</div>';
+      }).join('')
+    + '<div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--essense);font-weight:600;margin:.6rem 0 .3rem">2 · shape it into a goal</div>';
+  window._igAll = all;
+  var ta = document.getElementById('ig-text');
+  ta.value = ''; ta.placeholder = 'pick an insight above, then edit the goal here…';
+
+  var sel = document.getElementById('ig-goal-sel');
+  sel.innerHTML = '<option value="">— pick a goal to add as sub-goal —</option>';
+  goals.forEach(function(g) { sel.innerHTML += '<option value="' + g.id + '">' + esc(g.title) + '</option>'; });
+  panel.classList.add('open');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+  if (all.length === 1) igChooseInsight(0, null);
+}
+
+async function igChooseInsight(i, el) {
+  document.querySelectorAll('.ig-ins-opt').forEach(function(o){ o.style.borderColor='var(--border)'; o.style.background='var(--white)'; });
+  if (el) { el.style.borderColor='var(--essense)'; el.style.background='var(--bright)'; }
+  var it = window._igAll[i];
+  var ta = document.getElementById('ig-text');
+  ta.value = ''; ta.placeholder = 'shaping into a goal…';
+  var canned = {
+    'Pacing under complexity': 'Get better at pacing when presenting complex artefacts — build in orientation moments and check understanding before moving on.',
+    'You collect feedback reactively': 'Build the habit of asking for feedback immediately after sessions, while impressions are fresh.',
+    'Structure is your engine': 'Use my strength in structure deliberately — design every workshop around clear transitions and share the agenda upfront.',
+    'Your synthesis work lands': 'Develop my synthesis storytelling further — turn it into a repeatable approach I can apply to any research project.'
+  };
+  var hit = Object.keys(canned).find(function(k){ return (it.insight||'').indexOf(k) === 0; });
+  if (hit) { ta.value = canned[hit]; ta.placeholder=''; return; }
+  var sys = 'You are a professional development coach. Transform this insight into a clear, specific, first-person development goal (1-2 sentences, starting with a verb). Return ONLY the goal statement.';
+  var result = await callAI([{role:'user', content:'Insight: ' + (it.insight || '')}], sys, 150);
+  ta.value = result || ('Get better at: ' + (it.insight || '').split('—')[0].trim());
+  ta.placeholder = '';
+}
+
+function igPickMode(mode, el) {
+  igMode = mode;
+  document.querySelectorAll('.ig-type-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('ig-goal-sel').className = 'ig-sel' + (mode === 'newgoal' ? ' hidden' : '');
+}
+
+function igConfirm() {
+  var text = document.getElementById('ig-text').value.trim();
+  if (!text) { document.getElementById('ig-text').focus(); return; }
+  if (igMode === 'subgoal') {
+    var goalId = document.getElementById('ig-goal-sel').value;
+    if (!goalId) { document.getElementById('ig-goal-sel').focus(); return; }
+    PD.saveSubgoal(goalId, {title:text, done:false});
+  } else {
+    PD.saveGoal({title:text, subgoals:[]});
+  }
+  document.getElementById('ig-panel').classList.remove('open');
+  document.getElementById('insight-action-row').innerHTML = '<div style="background:var(--bright);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;font-size:.825rem;color:var(--forest)">✓ ' + (igMode==='subgoal'?'added as a sub-goal':'added as a new goal') + '</div>';
+}
+function igCancel() { document.getElementById('ig-panel').classList.remove('open'); }
+
+function openInsight(item, type) {
+  // Just scroll to the relevant section for now
+  const target = type==='good'?'refl-list':'refl-list';
+  document.getElementById(target)?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 // ── Reflections list ────────────────────────────────────────────────
 const FMT_ICONS = {written:'✍️', walk:'🚶', quick:'⚡', audio:'🎙️', talk:'🤖'};
 const FMT_LABELS= {written:'Written', walk:'Walk-and-talk', quick:'Quick check-in', audio:'Audio', talk:'Guided'};
